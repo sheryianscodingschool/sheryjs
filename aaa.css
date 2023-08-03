@@ -10,18 +10,21 @@ html,body{
     height: 100%;
 }
 
-#first{
-    width: 300px;
+img{
+    width: 200px;
 }
 
-#sec{
-    width: 100px;
-}
-
-h1{
-    font-size: 5vw;
+.a{
     position: absolute;
+    width: 280px;
+}
+
+#aa{
     top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    left: 60%;
+}
+
+#bb{
+    top: 30%;
+    left: 30%;
 }
