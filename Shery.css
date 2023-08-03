@@ -1,0 +1,46 @@
+:root{
+    --mousefollowercolor: black;
+}
+
+.mousefollower{
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+    position: fixed;
+    top: -10%;
+    left: -10%;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    z-index: 99999;
+    background-color: var(--mousefollowercolor);
+}
+
+.mask{
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.circle{
+    text-align: center;
+    pointer-events: none;
+    box-sizing: content-box;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: -10%;
+    left: -10%;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    position: absolute;
+    z-index: 9999;
+    background-color: #000000e8;
+    color: #fff;
+    font-family: inherit;
+    font-size: 10px;
+}
+
+.sheryelem span{
+    display: inline-block;
+}
