@@ -2,6 +2,7 @@ function Shery() {
   var globalMouseFollower = null;
   const lerp = (x, y, a) => x * (1 - a) + y * a;
   return {
+    // SECTION - Mouse Followerv
     mouseFollower: function (opts = {}) {
       globalMouseFollower = document.createElement("div");
       globalMouseFollower.classList.add("mousefollower");
@@ -33,7 +34,9 @@ function Shery() {
         });
       });
       document.body.appendChild(globalMouseFollower);
-    },
+    },//!SECTION 
+
+    // SECTION - Image Masker 
     imageMasker: function (element = "img", opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
         var parent = elem.parentNode;
@@ -108,7 +111,9 @@ function Shery() {
           });
         });
       });
-    },
+    }, //!SECTION 
+
+    // SECTION - Make Magnet 
     makeMagnet: function (element, opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
         elem.addEventListener("mousemove", function (dets) {
@@ -144,7 +149,9 @@ function Shery() {
           });
         });
       });
-    },
+    }, //!SECTION 
+
+    // SECTION - Text Animate 
     textAnimate: function (element, opts = {}) {
       var alltexts = document.querySelectorAll(element);
       alltexts.forEach(function (elem) {
@@ -199,7 +206,9 @@ function Shery() {
             "SheryJS : no such style available for text, mentioned in textanimate()"
           );
       }
-    },
+    }, //!SECTION 
+
+    // SECTION - Image Effects 
     imageEffect: function (element = "img", opts = {}) {
       var isdebug1 = false;
       var isdebug2 = false;
@@ -216,6 +225,8 @@ function Shery() {
         // parent setter done
         // image effects
         switch (opts.style || 1) {
+
+          // STUB - Simple Liquid Distortion Effect 
           case 1: {
             const vertex = /*glsl*/ `
             varying vec2 vuv;
@@ -226,9 +237,8 @@ function Shery() {
             const fragment = /*glsl*/ `
             #define PI 3.141592653589793238462643383279502884197
             uniform sampler2D uTexture;
-            uniform float uIntercept;
+            uniform float uIntercept,uTime;
             uniform vec2 uMouse;
-            uniform float uTime;
             varying vec2 vuv;
                 
             vec2 fade(vec2 t){return t*t*t*(t*(t*6.-15.)+10.);}
@@ -274,84 +284,52 @@ function Shery() {
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
-            const sizes = {
-              width: elem.width,
-              height: elem.height,
-            };
             const scene = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(
-              sizes.width / -2,
-              sizes.width / 2,
-              sizes.height / 2,
-              sizes.height / -2,
-              1,
-              2
-            );
+            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2);
             camera.position.z = 1;
             const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(sizes.width, sizes.height);
+            renderer.setSize(elem.width, elem.height);
             elem.style.display = "none";
             elem.parentElement.appendChild(renderer.domElement);
 
-            const textureLoader = new THREE.TextureLoader();
-            const texture = textureLoader.load(elem.getAttribute("src"));
-
-            texture.needsUpdate = true;
-            const planeGeometry = new THREE.PlaneGeometry(
-              sizes.width,
-              sizes.height
-            );
-            const planeMaterial = new THREE.ShaderMaterial({
-              vertexShader: vertex,
-              fragmentShader: fragment,
-              uniforms: {
-                uTime: {
-                  value: 0,
+            const plane = new THREE.Mesh(
+              new THREE.PlaneGeometry(elem.width, elem.height),
+              new THREE.ShaderMaterial({
+                vertexShader: vertex,
+                fragmentShader: fragment,
+                uniforms: {
+                  uTime: { value: 0, },
+                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute("src")), },
+                  uMouse: { value: new THREE.Vector2(mouse.x, mouse.y), },
+                  uIntercept: { value: 0, },
                 },
-                uTexture: {
-                  value: texture,
-                },
-                uMouse: {
-                  value: new THREE.Vector2(mouse.x, mouse.y),
-                },
-                uIntercept: {
-                  value: 0,
-                },
-              },
-            });
-            const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+              }));
             scene.add(plane);
 
             renderer.domElement.addEventListener("mousemove", (event) => {
-              mouse.x = (event.offsetX / sizes.width) * 2 - 1;
-              mouse.y = -((event.offsetY / sizes.height) * 2 - 1);
+              mouse.x = (event.offsetX / elem.width) * 2 - 1;
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
             });
             renderer.domElement.addEventListener("mouseleave", (event) => {
-              mouse.x = (event.offsetX / sizes.width) * 2 - 1;
-              mouse.y = -((event.offsetY / sizes.height) * 2 - 1);
+              mouse.x = (event.offsetX / elem.width) * 2 - 1;
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
             });
 
             window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
 
             const clock = new THREE.Clock();
             function animate() {
-              const elapsedTime = clock.getElapsedTime();
               renderer.domElement.style = elem.style.display;
               renderer.domElement.display = "";
               raycaster.setFromCamera(mouse, camera);
               const intersect = raycaster.intersectObject(plane);
-              planeMaterial.uniforms.uIntercept.value = THREE.Math.lerp(
-                planeMaterial.uniforms.uIntercept.value,
-                intersect.length === 1 ? 1 : 0,
-                0.1
-              );
-              planeMaterial.uniforms.uTime.value = elapsedTime;
-              planeMaterial.uniforms.uMouse.value.set(mouse.x, mouse.y);
+              plane.material.uniforms.uIntercept.value = THREE.Math.lerp(plane.material.uniforms.uIntercept.value, intersect.length === 1 ? 1 : 0, 0.1);
+              plane.material.uniforms.uTime.value = clock.getElapsedTime();
+              plane.material.uniforms.uMouse.value.set(mouse.x, mouse.y);
               requestAnimationFrame(animate);
               renderer.render(scene, camera);
             }
             animate();
-
             return {
               updateTexture: (newTexture) => {
                 texture.image = newTexture;
@@ -359,68 +337,30 @@ function Shery() {
               },
             };
           }
-            break;
-          case 2:
-            {
-              const vertex = /*glsl*/ `
-              varying vec2 vuv;
-                    void main(){
-                      gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);
-                      vuv = uv;
-                    }`;
-              const fragment = /*glsl*/ `
+            break;//!STUB 
+
+          // STUB - Dynamic Distortion Effect 
+          case 2: {
+            const vertex = /*glsl*/ `
+            varying vec2 vuv;
+            void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`;
+
+            const fragment = /*glsl*/ `
+            uniform vec2 resolution,mouse;
+            uniform float uIntercept,time,frequency, angle, speed, waveFactor,contrast,pixelStrength, quality, brightness, colorExposer, strength, exposer;
+            uniform int mousemove, mode, modeA, modeN;
+            uniform bool onMouse,distortion;
+            uniform vec3 color;
             varying vec2 vuv;
             uniform sampler2D uTexture;
-            uniform vec2 mouse;
-            uniform float uIntercept;
-            uniform vec2 resolution;
-            uniform float time;
-                  
-            uniform bool onMouse;
-            uniform bool distortion;
-            uniform int mousemove;  
-            uniform int mode;
-            uniform int modeA;
-            uniform int modeN;
-            uniform float frequency;
-            uniform float angle;
-            uniform float speed;
-            uniform float waveFactor;
-                  
-            uniform float contrast;
-            uniform float pixelStrength;
-                  
-            uniform vec3 color;
-            uniform float quality;
-            uniform float brightness;
-            uniform float colorExposer;
-            uniform float strength;
-            uniform float exposer;
-                  
-                  
-                  
-                  
-            vec4 minn(vec4 a , vec4 b){
-              return vec4(min(a.r,b.r),min(a.g,b.g),min(a.b,b.b),1.0);
-            }
+
+            float mina(vec4 a){return min(min(a.r, a.g),a.b);}
+            float maxa(vec4 a){return max(max(a.r, a.g),a.b);}
+            vec4 minn(vec4 a , vec4 b){return vec4(min(a.r,b.r),min(a.g,b.g),min(a.b,b.b),1.0);}
+            vec4 maxx(vec4 a , vec4 b){return vec4(max(a.r,b.r),max(a.g,b.g),max(a.b,b.b),1.0);}
+            mat2 rotate2D(float r) {return mat2(cos(r), sin(r), -sin(r), cos(r));}
             
-            vec4 maxx(vec4 a , vec4 b){
-              return vec4(max(a.r,b.r),max(a.g,b.g),max(a.b,b.b),1.0);
-            }
-            
-            float mina(vec4 a){
-              return min(min(a.r, a.g),a.b);
-            }
-            
-            float maxa(vec4 a){
-              return max(max(a.r, a.g),a.b);
-            }
-            
-            mat2 rotate2D(float r) {
-              return mat2(cos(r), sin(r), -sin(r), cos(r));
-            }
             void main() {
-            
                 float brightness = clamp(brightness, -1.0,25.0);
                 float frequency=clamp(frequency,-999.0,999.0);
                 float contrast=clamp(contrast,-50.,50.0);
@@ -429,501 +369,249 @@ function Shery() {
                 float colorExposer=clamp(colorExposer,-5.,5.);
             
                 vec2 uv = .5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
-                if(mousemove !=0)
-                  uv=mix(uv,.5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y+mouse.xy/300.,uIntercept);
+                uv=mousemove!=0 ? mix(uv,.5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y+mouse.xy/300.,uIntercept):uv;
                 vec3 col = vec3(0);
-                vec2 n = vec2(0);
-                vec2 q = vec2(0);
+                vec2 n,q = vec2(0);
                 vec2 p = (uv + brightness/10.0);
                 float d = dot(p, p);
                 float a = -(contrast/100.0);
                 mat2 angle = rotate2D(angle);
                 
                 for(float i = 1.; i <= 10.0; i++) {
-                  if(i>quality) break;
-                    p *= angle;
-                    n *= angle;
-                
-                    if(mousemove==0)
-                    q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength * n ;
-                    if(mousemove==1)
-                    q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength * n ;
-                    if(mousemove==2)
-                    q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength + mouse * n ;
-                    if(mousemove==3)
-                    q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength + mouse * n ;
-                    
-                
-                    if(modeA==0)
-                      a += dot(cos(q) / frequency, vec2(strength));
-                    else if(modeA==1)
-                      a += dot(sin(q) / frequency, vec2(strength));
-                    else if(modeA==2)
-                      a += dot(tan(q) / frequency , vec2(strength));
-                    else if(modeA==3)
-                      a += dot(atan(q) / frequency , vec2(strength));
-                
-                    if(modeN==0)
-                      n -= sin(q);
-                    else if(modeN==1)
-                      n -= cos(q);
-                    else if(modeN==2)
-                      n -= tan(q);
-                    else if(modeN==3)
-                      n -= atan(q);
-                
-                    if(mousemove !=0)
-                        n = mix(n+mouse,n,uIntercept); 
-                
-                    frequency *= waveFactor;
+                  if(i>quality) break;  
+                  p,n *= angle;              
+                  if(mousemove==0) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength * n ;
+                  if(mousemove==1) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength * n ;
+                  if(mousemove==2) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength + mouse * n ;
+                  if(mousemove==3) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength + mouse * n ;
+                  if(modeA==0)   a += dot(cos(q) / frequency, vec2(strength));
+                  else if(modeA==1)   a += dot(sin(q) / frequency, vec2(strength));
+                  else if(modeA==2)   a += dot(tan(q) / frequency , vec2(strength));
+                  else if(modeA==3)   a += dot(atan(q) / frequency , vec2(strength));
+                  if(modeN==0)   n -= sin(q);
+                  else if(modeN==1)   n -= cos(q);
+                  else if(modeN==2)   n -= tan(q);
+                  else if(modeN==3)   n -= atan(q);
+                  n =mousemove !=0 ? mix(n+mouse,n,uIntercept):n;
+                  frequency *= waveFactor;
                 }
-              
                 col = (color*4.5) * (a + colorExposer) +exposer* a + a + d;
-              
                 vec4 base = distortion? texture2D(uTexture,vuv+a+contrast/100.0):texture2D(uTexture,vuv);
-              
-                if(onMouse)
-                  base = mix( texture2D(uTexture,vuv),base,uIntercept);
-              
-              
+                base =onMouse? mix( texture2D(uTexture,vuv),base,uIntercept):base;
                 vec4 blend = vec4(col, 1.0);
-              
                 vec4 final = mix( base,gl_FragColor,uIntercept);
-              
-                if (mode == -10)
-                   final =	minn(base,blend)-maxx(base,blend)+vec4(1.0);
-                if (mode == -9)
-                   final =	(maxa(blend)==1.0)?blend:minn(base*base/(1.0-blend),vec4(1.0));
-                if (mode == -8)
-                   final =	base+blend-2.0*base*blend;
-                if (mode == -7)
-                   final =	abs(base-blend);
-                if (mode == -6)
-                   final =	minn(base,blend);
-                if (mode == -5)
-                   final =	(mina(blend)==0.0)?blend:maxx((1.0-((1.0-base)/blend)),vec4(0.0));
-                if (mode == -4)
-                   final =	maxa(base)==1.0? blend : minn(base/(1.0-blend),vec4(1.0));
-                if (mode == -3)
-                   final = (1.0-2.0*blend)*base*base+2.0*base*blend;
-                if (mode == -2)
-                   final = maxa(base) < 0.5? 2.0 * base * blend : 1.0 - 2.0* (1.0 - base)*(1.0 - blend);
-                if (mode == -1)
-                   final = base;
-                else if(mode==0)
-                   final = base + blend ;
-                else if(mode==1)
-                   final = base * blend ;
-                else if(mode==2)
-                   final = 1.0 - (1.0 - base)*(1.0 - blend);
-                else if(mode==3)
-                   final = blend - base ;
-                else if(mode==4)
-                   final = base / blend ;
-                else if(mode==5)
-                   final =	maxx(base+blend-1.0,vec4(0.0));
-                else if(mode==6)
-                final = (base + blend / base)-.55;
-                else if(mode==7)
-                  final = base + blend *base;
-                else if(mode==8)
-                  final = mod(base , blend);
-                else if(mode==9)
-                final = 1.0-(base + blend / base)+.5;
-                else if(mode==10)
-                  final = blend - base * blend;
-                else if(mode==13)
-                  final = (base +  blend/2.0);
-              
+                if (mode == -1) final = base;
+                else if (mode == -10) final =	minn(base,blend)-maxx(base,blend)+vec4(1.0);
+                else if (mode == -9) final =	(maxa(blend)==1.0)?blend:minn(base*base/(1.0-blend),vec4(1.0));
+                else if (mode == -8) final =	base+blend-2.0*base*blend;
+                else if (mode == -7) final =	abs(base-blend);
+                else if (mode == -6) final =	minn(base,blend);
+                else if (mode == -5) final =	(mina(blend)==0.0)?blend:maxx((1.0-((1.0-base)/blend)),vec4(0.0));
+                else if (mode == -4) final =	maxa(base)==1.0? blend : minn(base/(1.0-blend),vec4(1.0));
+                else if (mode == -3) final = (1.0-2.0*blend)*base*base+2.0*base*blend;
+                else if (mode == -2) final = maxa(base) < 0.5? 2.0 * base * blend : 1.0 - 2.0* (1.0 - base)*(1.0 - blend);
+                else if(mode==0) final = base + blend ;
+                else if(mode==1) final = base * blend ;
+                else if(mode==2) final = 1.0 - (1.0 - base)*(1.0 - blend);
+                else if(mode==3) final = blend - base ;
+                else if(mode==4) final = base / blend ;
+                else if(mode==5) final =	maxx(base+blend-1.0,vec4(0.0));
+                else if(mode==6) final = (base + blend / base)-.55;
+                else if(mode==7) final = base + blend *base;
+                else if(mode==8) final = mod(base , blend);
+                else if(mode==9) final = 1.0-(base + blend / base)+.5;
+                else if(mode==10) final = blend - base * blend;
+                else if(mode==13) final = (base +  blend/2.0);
                 final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
-                if(onMouse)
-                 final = mix( base , final ,uIntercept);
-                
-                gl_FragColor=final;
-              
-              
+                final =onMouse? mix( base , final ,uIntercept):final;
+                gl_FragColor=final;          
             }`;
-
-              const raycaster = new THREE.Raycaster();
-              const mouse = new THREE.Vector2();
-
-              const sizes = {
-                width: elem.width,
-                height: elem.height,
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            const scene = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2);
+            camera.position.z = 1;
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(elem.width, elem.height);
+            elem.style.display = "none";
+            elem.parentElement.appendChild(renderer.domElement);
+            const plane = new THREE.Mesh(new THREE.PlaneGeometry(elem.width, elem.height), new THREE.ShaderMaterial({
+              vertexShader: vertex,
+              fragmentShader: fragment,
+              uniforms: {
+                time: { value: 0 },
+                resolution: { value: new THREE.Vector2(elem.width, elem.height) },
+                uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute("src")) },
+                mouse: { value: new THREE.Vector2(mouse.x, mouse.y) },
+                uIntercept: { value: 0 },
+                onMouse: { value: false },
+                distortion: { value: true },
+                mode: { value: -3 },
+                mousemove: { value: 0 },
+                modeA: { value: 0 },
+                modeN: { value: 0 },
+                speed: { value: 1 },
+                frequency: { value: 50 },
+                angle: { value: 0.5 },
+                waveFactor: { value: 1.4 },
+                color: { value: new THREE.Color(0.33, 0.66, 1) },
+                pixelStrength: { value: 3 },
+                quality: { value: 5 },
+                contrast: { value: 1 },
+                brightness: { value: 1 },
+                colorExposer: { value: 0.182 },
+                strength: { value: 0.2 },
+                exposer: { value: 8 },
+              },
+            }));
+            scene.add(plane);
+            const uniform = plane.material.uniforms;
+            if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value; });
+            if ((opts.debug && !isdebug2) || false) {
+              isdebug2 = true;
+              const gui = new dat.GUI();
+              const debug = {
+                color: '#ffffff',
+                SAVECONFIG: () => {
+                  const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform;
+                  navigator.clipboard.writeText(JSON.stringify(rest))
+                }
               };
-              const scene = new THREE.Scene();
-              const camera = new THREE.OrthographicCamera(
-                sizes.width / -2,
-                sizes.width / 2,
-                sizes.height / 2,
-                sizes.height / -2,
-                1,
-                2
-              );
-              camera.position.z = 1;
-              const renderer = new THREE.WebGLRenderer();
-              renderer.setSize(sizes.width, sizes.height);
-              elem.style.display = "none";
-              elem.parentElement.appendChild(renderer.domElement);
-              const textureLoader = new THREE.TextureLoader();
-              const texture = textureLoader.load(elem.getAttribute("src"));
-              texture.needsUpdate = true;
-              const planeGeometry = new THREE.PlaneGeometry(
-                sizes.width,
-                sizes.height
-              );
-              const planeMaterial = new THREE.ShaderMaterial({
+              gui.add(uniform.onMouse, "value").name("Effect On Hower");
+              gui.add(uniform.distortion, "value").name("Distortion Effect");
+              gui.add(uniform.mode, "value", { Off: -1, Add: 0, Multiply: 1, Screen: 2, Negitive: 3, Natural: 7, Overlay: -2, SoftLight: -3, ColorDoge: -4, ColorBurn: -5, Avarage: 13, Darken: -6, Diffrance: -7, Exclusion: -8, "Reflact/Glow": -9, Phonix: -10, Substract: 5, Mod: 8, Neon: 6, NeonNegative: 9, Dark: 10, }).name("Blend/Overlay Mode");
+              gui.add(uniform.mousemove, "value", { Off: 0, Mode1: 1, Mode2: 2, Mode3: 3, }).name("Mousemove Effect");
+              gui.add(uniform.modeA, "value", { sin: 1, cos: 0, tan: 2, atan: 3, }).name("Effect StyleA");
+              gui.add(uniform.modeN, "value", { sin: 0, cos: 1, tan: 2, atan: 3, }).name("Effect StyleN");
+              gui.add(uniform.speed, "value", -500, 500, 0.001).name("Speed");
+              gui.add(uniform.speed, "value", -10, 10, 0.001).name("Speed Precise");
+              gui.add(uniform.frequency, "value", -800, 800, 10).name("Frequency");
+              gui.add(uniform.frequency, "value", -50, 50, 0.0001).name("Frequency Precise");
+              gui.add(uniform.angle, "value", 0, Math.PI, 0.0001).name("Angle");
+              gui.add(uniform.waveFactor, "value", -3, 3, 0.0001).name("Wave Factor");
+              gui.add(uniform.pixelStrength, "value", -20, 100, 0.1).name("Pixel Strength");
+              gui.add(uniform.pixelStrength, "value", -20, 20, 0.0001).name("Precise Pixel Strength");
+              gui.add(uniform.quality, "value", 0, 10, 1).name("Quality");
+              gui.add(uniform.contrast, "value", -25, 25, 0.0001).name("Contrast");
+              gui.add(uniform.brightness, "value", -1, 25, 0.0001).name("Brightness");
+              gui.add(uniform.colorExposer, "value", -5, 5, 0.00001).name("Color Exposer");
+              gui.add(uniform.strength, "value", -40, 40, 0.0001).name("Strength");
+              gui.add(uniform.strength, "value", -5, 5, 0.0001).name("Strength Precise");
+              gui.add(uniform.exposer, "value", -100, 100, 0.0001).name("Exposer");
+              gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color); }).name("Tint");
+              gui.add(debug, "SAVECONFIG");
+            }
+            renderer.domElement.addEventListener("mousemove", (event) => {
+              mouse.x = (event.offsetX / elem.width) * 2 - 1;
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
+            });
+            renderer.domElement.addEventListener("mouseleave", (event) => {
+              mouse.x = (event.offsetX / elem.width) * 2 - 1;
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
+            });
+
+            window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+
+            const clock = new THREE.Clock();
+            function animate() {
+              const elapsedTime = clock.getElapsedTime();
+              renderer.domElement.display = "";
+              raycaster.setFromCamera(mouse, camera);
+              uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, raycaster.intersectObject(plane).length === 1 ? 1 : 0, 0.1);
+              uniform.time.value = elapsedTime;
+              uniform.mouse.value.set(mouse.x, mouse.y);
+              requestAnimationFrame(animate);
+              renderer.render(scene, camera);
+            }
+            animate();
+            return {
+              updateTexture: (newTexture) => {
+                texture.image = newTexture;
+                texture.needsUpdate = true;
+              },
+            };
+          }
+            break;//!STUB 
+
+          // STUB - Dynamic 3d Wave/Wobble Effect 
+          case 3: {
+            const vertex = /*glsl*/ `
+            uniform vec3 uFrequency;
+            uniform float uTime;
+            varying vec2 vUv;
+            void main(){
+                vec3 uFrequency=vec3(uFrequency.xy/.01744,uFrequency.z);
+                vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+                float elevation = sin(modelPosition.x * uFrequency.x - uTime) *uFrequency.z/1000.0;
+                elevation += sin(modelPosition.y * uFrequency.y - uTime) *uFrequency.z/1000.0;
+                modelPosition.z += elevation;
+                vec4 viewPosition = viewMatrix * modelPosition;
+                vec4 projectedPosition = projectionMatrix * viewPosition;
+                gl_Position = projectedPosition;
+                vUv = uv;
+            }`
+            const fragment = /*glsl*/ `
+            uniform sampler2D uTexture;
+            varying vec2 vUv;
+            void main(){vec4 textureColor = texture2D(uTexture, vUv);gl_FragColor = textureColor;}`
+
+            const scene = new THREE.Scene()
+            new THREE.TextureLoader().load(elem.getAttribute('src'), texture => {
+              const mesh = new THREE.Mesh(new THREE.PlaneGeometry(.01744, .01744, 150, 150), new THREE.ShaderMaterial({
                 vertexShader: vertex,
                 fragmentShader: fragment,
                 uniforms: {
-                  time: {
-                    value: 0,
-                  },
-                  resolution: {
-                    value: new THREE.Vector2(sizes.width, sizes.height),
-                  },
-                  uTexture: {
-                    value: texture,
-                  },
-                  mouse: {
-                    value: new THREE.Vector2(mouse.x, mouse.y),
-                  },
-                  uIntercept: {
-                    value: 0,
-                  },
-                  onMouse: {
-                    value: false,
-                  },
-                  distortion: {
-                    value: true,
-                  },
-                  mode: {
-                    value: -3,
-                  },
-                  mousemove: {
-                    value: 0,
-                  },
-                  modeA: {
-                    value: 0,
-                  },
-                  modeN: {
-                    value: 0,
-                  },
-                  speed: {
-                    value: 1,
-                  },
-                  frequency: {
-                    value: 50,
-                  },
-                  angle: {
-                    value: 0.5,
-                  },
-                  waveFactor: {
-                    value: 1.4,
-                  },
-                  color: {
-                    value: new THREE.Color(0.33, 0.66, 1),
-                  },
-                  pixelStrength: {
-                    value: 3,
-                  },
-                  quality: {
-                    value: 5,
-                  },
-                  contrast: {
-                    value: 1,
-                  },
-                  brightness: {
-                    value: 1,
-                  },
-                  colorExposer: {
-                    value: 0.182,
-                  },
-                  strength: {
-                    value: 0.2,
-                  },
-                  exposer: {
-                    value: 8,
-                  },
-                },
-              });
-
-              // if (opts.config) planeMaterial.uniforms = opts.config;
-              const uniform = planeMaterial.uniforms;
-              if (opts.config) {
-                Object.keys(opts.config).forEach((key) => {
-                  uniform[key].value =
-                    key == "color"
-                      ? new THREE.Color(opts.config[key].value)
-                      : opts.config[key].value;
-                });
-              }
-              if ((opts.debug && !isdebug2) || false) {
-                isdebug2 = true;
+                  uFrequency: { value: new THREE.Vector3(25, 25, 15) },
+                  uTime: { value: 0 },
+                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
+                }
+              }))
+              scene.add(mesh)
+              const uniform = mesh.material.uniforms;
+              if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value);
+              if ((opts.debug && !isdebug3) || false) {
+                isdebug3 = true;
                 const gui = new dat.GUI();
                 const debug = {
-                  color: '#ffffff',
                   SAVECONFIG: () => {
-                    const {
-                      time,
-                      resolution,
-                      uTexture,
-                      mouse,
-                      uIntercept,
-                      ...uniformTrimmed
-                    } = uniform;
-                    const config = JSON.stringify(uniformTrimmed);
-                    navigator.clipboard.writeText(config).then(
-                      function () {
-                        console.log("Config Copied!");
-                      },
-                      function (err) {
-                        console.error("Could not copy config: ", err);
-                      }
-                    );
+                    const { uTime, uTexture, ...rest } = uniform;
+                    navigator.clipboard.writeText(JSON.stringify(rest))
                   },
                 };
-                gui.add(uniform.onMouse, "value").name("Effect On Hower");
-
-                gui.add(uniform.distortion, "value").name("Distortion Effect");
-                gui
-                  .add(uniform.mode, "value", {
-                    Off: -1,
-                    Add: 0,
-                    Multiply: 1,
-                    Screen: 2,
-                    Negitive: 3,
-                    Natural: 7,
-                    Overlay: -2,
-                    SoftLight: -3,
-                    ColorDoge: -4,
-                    ColorBurn: -5,
-                    Avarage: 13,
-                    Darken: -6,
-                    Diffrance: -7,
-                    Exclusion: -8,
-                    "Reflact/Glow": -9,
-                    Phonix: -10,
-                    Substract: 5,
-                    Mod: 8,
-                    Neon: 6,
-                    NeonNegative: 9,
-                    Dark: 10,
-                  })
-                  .name("Blend/Overlay Mode");
-                gui
-                  .add(uniform.mousemove, "value", {
-                    Off: 0,
-                    Mode1: 1,
-                    Mode2: 2,
-                    Mode3: 3,
-                  })
-                  .name("Mousemove Effect");
-                gui
-                  .add(uniform.modeA, "value", {
-                    sin: 1,
-                    cos: 0,
-                    tan: 2,
-                    atan: 3,
-                  })
-                  .name("Effect StyleA");
-                gui
-                  .add(uniform.modeN, "value", {
-                    sin: 0,
-                    cos: 1,
-                    tan: 2,
-                    atan: 3,
-                  })
-                  .name("Effect StyleN");
-                gui.add(uniform.speed, "value", -500, 500, 0.001).name("Speed");
-                gui
-                  .add(uniform.speed, "value", -10, 10, 0.001)
-                  .name("Speed Precise");
-                gui
-                  .add(uniform.frequency, "value", -800, 800, 10)
-                  .name("Frequency");
-                gui
-                  .add(uniform.frequency, "value", -50, 50, 0.0001)
-                  .name("Frequency Precise");
-                gui
-                  .add(uniform.angle, "value", 0, Math.PI, 0.0001)
-                  .name("Angle");
-                gui
-                  .add(uniform.waveFactor, "value", -3, 3, 0.0001)
-                  .name("Wave Factor");
-                gui
-                  .add(uniform.pixelStrength, "value", -20, 100, 0.1)
-                  .name("Pixel Strength");
-                gui
-                  .add(uniform.pixelStrength, "value", -20, 20, 0.0001)
-                  .name("Precise Pixel Strength");
-                gui.add(uniform.quality, "value", 0, 10, 1).name("Quality");
-                gui
-                  .add(uniform.contrast, "value", -25, 25, 0.0001)
-                  .name("Contrast");
-                gui
-                  .add(uniform.brightness, "value", -1, 25, 0.0001)
-                  .name("Brightness");
-                gui
-                  .add(uniform.colorExposer, "value", -5, 5, 0.00001)
-                  .name("Color Exposer");
-                gui
-                  .add(uniform.strength, "value", -40, 40, 0.0001)
-                  .name("Strength");
-                gui
-                  .add(uniform.strength, "value", -5, 5, 0.0001)
-                  .name("Strength Precise");
-                gui
-                  .add(uniform.exposer, "value", -100, 100, 0.0001)
-                  .name("Exposer");
-                gui
-                  .addColor(debug, "color")
-                  .onChange(() => {
-                    uniform.color.value.set(debug.color);
-                  })
-                  .name("Tint");
+                gui.add(uniform.uFrequency.value, 'x').min(0).max(100).step(0.01).name('frequencyX')
+                gui.add(uniform.uFrequency.value, 'y').min(0).max(100).step(0.01).name('frequencyY')
+                gui.add(uniform.uFrequency.value, 'z').min(0).max(100).step(0.01).name('frequencyZ').onChange((x) => {
+                  camera.fov = 1 + x / 400
+                  camera.updateProjectionMatrix();
+                })
                 gui.add(debug, "SAVECONFIG");
+
               }
+              const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
+              camera.position.z = 1
+              scene.add(camera)
 
-              const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-              scene.add(plane);
-
-              renderer.domElement.addEventListener("mousemove", (event) => {
-                mouse.x = (event.offsetX / sizes.width) * 2 - 1;
-                mouse.y = -((event.offsetY / sizes.height) * 2 - 1);
-              });
-              renderer.domElement.addEventListener("mouseleave", (event) => {
-                mouse.x = (event.offsetX / sizes.width) * 2 - 1;
-                mouse.y = -((event.offsetY / sizes.height) * 2 - 1);
-              });
+              const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+              renderer.setSize(elem.width, elem.height)
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+              elem.style.display = 'none'
+              elem.parentElement.appendChild(renderer.domElement)
 
               window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
 
-              const clock = new THREE.Clock();
-              function animate() {
-                const elapsedTime = clock.getElapsedTime();
-                renderer.domElement.style = elem.style.display;
-                renderer.domElement.display = "";
-                raycaster.setFromCamera(mouse, camera);
-                const intersect = raycaster.intersectObject(plane);
-                planeMaterial.uniforms.uIntercept.value = THREE.Math.lerp(
-                  planeMaterial.uniforms.uIntercept.value,
-                  intersect.length === 1 ? 1 : 0,
-                  0.1
-                );
-                planeMaterial.uniforms.time.value = elapsedTime;
-                planeMaterial.uniforms.mouse.value.set(mouse.x, mouse.y);
-                requestAnimationFrame(animate);
-                renderer.render(scene, camera);
+              const clock = new THREE.Clock()
+              const tick = () => {
+                uniform.uTime.value = clock.getElapsedTime()
+                renderer.render(scene, camera)
+                window.requestAnimationFrame(tick)
               }
-              animate();
+              tick()
+            })
 
-              return {
-                updateTexture: (newTexture) => {
-                  texture.image = newTexture;
-                  texture.needsUpdate = true;
-                },
-              };
-            }
-            break;
-          case 3:
-            {
-              const vertex = /*glsl*/ `
-              uniform vec3 uFrequency;
-              uniform float uTime;
-              varying vec2 vUv;
-              void main(){
-                  vec3 uFrequency=vec3(uFrequency.xy/.01744,uFrequency.z);
-                  vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-                  float elevation = sin(modelPosition.x * uFrequency.x - uTime) *uFrequency.z/1000.0;
-                  elevation += sin(modelPosition.y * uFrequency.y - uTime) *uFrequency.z/1000.0;
-                  modelPosition.z += elevation;
-                  vec4 viewPosition = viewMatrix * modelPosition;
-                  vec4 projectedPosition = projectionMatrix * viewPosition;
-                  gl_Position = projectedPosition;
-                  vUv = uv;
-              }`
-              const fragment = /*glsl*/ `
-              uniform sampler2D uTexture;
-              varying vec2 vUv;
-              void main(){
-                  vec4 textureColor = texture2D(uTexture, vUv);
-                  gl_FragColor = textureColor;
-              }`
-
-              const scene = new THREE.Scene()
-              new THREE.TextureLoader().load(elem.getAttribute('src'), texture => {
-                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(.01744, .01744, 32, 32), new THREE.ShaderMaterial({
-                  vertexShader: vertex,
-                  fragmentShader: fragment,
-                  uniforms: {
-                    uFrequency: { value: new THREE.Vector3(25, 25, 15) },
-                    uTime: { value: 0 },
-                    uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
-                  }
-                }))
-                scene.add(mesh)
-
-                const uniform = mesh.material.uniforms;
-                if (opts.config) {
-                  Object.keys(opts.config).forEach((key) => {
-                    uniform[key].value =
-                      key == "color"
-                        ? new THREE.Color(opts.config[key].value)
-                        : opts.config[key].value;
-                  });
-                }
-                if ((opts.debug && !isdebug3) || false) {
-                  isdebug3 = true;
-                  const gui = new dat.GUI();
-                  const debug = {
-                    SAVECONFIG: () => {
-                      const {uTime,uTexture, ...rest } = uniform;
-                      const config = JSON.stringify(rest);
-                      navigator.clipboard.writeText(config).then(
-                        function () {
-                          console.log("Config Copied!");
-                        },
-                        function (err) {
-                          console.error("Could not copy config: ", err);
-                        }
-                      );
-                    },
-                  };
-                  gui.add(uniform.uFrequency.value, 'x').min(0).max(100).step(0.01).name('frequencyX')
-                  gui.add(uniform.uFrequency.value, 'y').min(0).max(100).step(0.01).name('frequencyY')
-                  gui.add(uniform.uFrequency.value, 'z').min(0).max(100).step(0.01).name('frequencyZ').onChange((x) => {
-                    camera.fov = 1 + x / 400
-                    camera.updateProjectionMatrix();
-                  })
-                  gui.add(debug, "SAVECONFIG");
-
-                }
-                  const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
-                  camera.position.z = 1
-                  scene.add(camera)
-
-                  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-                  renderer.setSize(elem.width, elem.height)
-                  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-                  elem.style.display = 'none'
-                  elem.parentElement.appendChild(renderer.domElement)
-
-                  window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
-
-                  const clock = new THREE.Clock()
-                  const tick = () => {
-                    uniform.uTime.value = clock.getElapsedTime()
-                    renderer.render(scene, camera)
-                    window.requestAnimationFrame(tick)
-                  }
-                  tick()
-                })
-
-            }
-            break
+          }
+            break;//!STUB
         }
       });
-    },
+    }, //!SECTION
   };
 }
