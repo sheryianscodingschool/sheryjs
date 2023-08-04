@@ -44,3 +44,7 @@
 .sheryelem span{
     display: inline-block;
 }
+
+.parent{
+    display: inline-block;
+}
