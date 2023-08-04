@@ -656,7 +656,7 @@ function Shery() {
                 isdebug = true;
                 const gui = new dat.GUI();
                 const debug = {
-                  color: [1, 1, 1],
+                  color: '#ffffff',
                   SAVECONFIG: () => {
                     const {
                       time,
@@ -770,7 +770,6 @@ function Shery() {
                 gui
                   .add(uniform.exposer, "value", -100, 100, 0.0001)
                   .name("Exposer");
-                gui.add(uniform.mode, "value", -40, 70, 1).name("");
                 gui
                   .addColor(debug, "color")
                   .onChange(() => {
