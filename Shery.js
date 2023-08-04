@@ -1,21 +1,21 @@
 function Shery() {
-  var globalMouseFollower = null;
-  const lerp = (x, y, a) => x * (1 - a) + y * a;
+  var globalMouseFollower = null
+  const lerp = (x, y, a) => x * (1 - a) + y * a
   return {
     // SECTION - Mouse Followerv
     mouseFollower: function (opts = {}) {
-      globalMouseFollower = document.createElement("div");
-      globalMouseFollower.classList.add("mousefollower");
-      var posx = 0;
+      globalMouseFollower = document.createElement("div")
+      globalMouseFollower.classList.add("mousefollower")
+      var posx = 0
       window.addEventListener("mousemove", function (dets) {
         if (opts.skew) {
-          diff = gsap.utils.clamp(15, 35, dets.clientX - posx);
-          posx = dets.clientX;
+          diff = gsap.utils.clamp(15, 35, dets.clientX - posx)
+          posx = dets.clientX
           gsap.to(".mousefollower", {
             width: diff + "px",
             ease: opts.ease || Expo.easeOut,
             duration: opts.duration || 1,
-          });
+          })
         }
         // difference nikaalo
         gsap.to(".mousefollower", {
@@ -24,121 +24,121 @@ function Shery() {
           left: dets.clientX,
           duration: opts.duration || 1,
           ease: opts.ease || Expo.easeOut,
-        });
-      });
+        })
+      })
       document.addEventListener("mouseleave", function () {
         gsap.to(".mousefollower", {
           opacity: 0,
           duration: opts.duration || 1,
           ease: opts.ease || Expo.easeOut,
-        });
-      });
-      document.body.appendChild(globalMouseFollower);
+        })
+      })
+      document.body.appendChild(globalMouseFollower)
     },//!SECTION 
 
     // SECTION - Image Masker 
     imageMasker: function (element = "img", opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
-        var parent = elem.parentNode;
-        var mask = document.createElement("div");
+        var parent = elem.parentNode
+        var mask = document.createElement("div")
 
         if (opts.mouseFollower) {
-          var circle = document.createElement("div");
+          var circle = document.createElement("div")
 
           circle.style.width =
             gsap.utils.clamp(50, 70, elem.getBoundingClientRect().width * 0.3) +
-            "px";
+            "px"
           circle.style.height =
             gsap.utils.clamp(50, 70, elem.getBoundingClientRect().width * 0.3) +
-            "px";
+            "px"
 
-          circle.textContent = opts.text || "View More";
+          circle.textContent = opts.text || "View More"
 
-          circle.classList.add("circle");
+          circle.classList.add("circle")
 
           mask.addEventListener("mouseenter", function () {
             gsap.to(circle, {
               opacity: 1,
               ease: Expo.easeOut,
               duration: 1,
-            });
-          });
+            })
+          })
 
           mask.addEventListener("mousemove", function (dets) {
-            mask.appendChild(circle);
+            mask.appendChild(circle)
             gsap.to(circle, {
               top: dets.clientY - mask.getBoundingClientRect().y,
               left: dets.clientX - mask.getBoundingClientRect().x,
               ease: Expo.easeOut,
               duration: 2,
-            });
-          });
+            })
+          })
 
           mask.addEventListener("mouseleave", function () {
             gsap.to(circle, {
               opacity: 0,
               ease: Expo.easeOut,
               duration: 0.8,
-            });
-          });
+            })
+          })
         }
-        mask.classList.add("mask");
-        parent.replaceChild(mask, elem);
+        mask.classList.add("mask")
+        parent.replaceChild(mask, elem)
 
-        mask.appendChild(elem);
+        mask.appendChild(elem)
         mask.addEventListener("mouseenter", function () {
           gsap.to(globalMouseFollower, {
             opacity: 0,
             ease: Power1,
-          });
-        });
+          })
+        })
         mask.addEventListener("mousemove", function (dets) {
           gsap.to(elem, {
             scale: opts.scale || 1.2,
             ease: opts.ease || Expo.easeOut,
             duration: opts.duration || 1,
-          });
-        });
+          })
+        })
         mask.addEventListener("mouseleave", function () {
           gsap.to(globalMouseFollower, {
             opacity: 1,
             ease: Power1,
-          });
+          })
           gsap.to(this.childNodes[0], {
             scale: 1,
             ease: opts.ease || Expo.easeOut,
             duration: opts.duration || 1,
-          });
-        });
-      });
+          })
+        })
+      })
     }, //!SECTION 
 
     // SECTION - Make Magnet 
     makeMagnet: function (element, opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
         elem.addEventListener("mousemove", function (dets) {
-          var bcr = elem.getBoundingClientRect();
+          var bcr = elem.getBoundingClientRect()
           var zeroonex = gsap.utils.mapRange(
             0,
             bcr.width,
             0,
             1,
             dets.clientX - bcr.left
-          );
+          )
           var zerooney = gsap.utils.mapRange(
             0,
             bcr.height,
             0,
             1,
             dets.clientY - bcr.top
-          );
+          )
           gsap.to(elem, {
             x: lerp(-50, 50, zeroonex),
             y: lerp(-50, 50, zerooney),
             duration: opts.duration || 1,
             ease: opts.ease || Expo.easeOut,
-          });
-        });
+          })
+        })
 
         elem.addEventListener("mouseleave", function (dets) {
           gsap.to(elem, {
@@ -146,22 +146,22 @@ function Shery() {
             y: 0,
             duration: opts.duration || 1,
             ease: opts.ease || Expo.easeOut,
-          });
-        });
-      });
+          })
+        })
+      })
     }, //!SECTION 
 
     // SECTION - Text Animate 
     textAnimate: function (element, opts = {}) {
-      var alltexts = document.querySelectorAll(element);
+      var alltexts = document.querySelectorAll(element)
       alltexts.forEach(function (elem) {
-        elem.classList.add("sheryelem");
-        var clutter = "";
+        elem.classList.add("sheryelem")
+        var clutter = ""
         elem.textContent.split("").forEach(function (char) {
-          clutter += `<span>${char}</span>`;
-        });
-        elem.innerHTML = clutter;
-      });
+          clutter += `<span>${char}</span>`
+        })
+        elem.innerHTML = clutter
+      })
       switch (opts.style || 1) {
         case 1:
           alltexts.forEach(function (elem) {
@@ -175,21 +175,21 @@ function Shery() {
               opacity: 0,
               duration: opts.duration || 2,
               ease: opts.ease || Expo.easeOut,
-            });
-          });
-          break;
+            })
+          })
+          break
         case 2:
           alltexts.forEach(function (elem, i) {
-            var len = elem.childNodes.length - 1;
+            var len = elem.childNodes.length - 1
             for (var i = 0; i < elem.childNodes.length / 2; i++) {
-              elem.childNodes[i].dataset.delay = i;
+              elem.childNodes[i].dataset.delay = i
             }
             for (
               var i = Math.floor(elem.childNodes.length / 2);
               i < elem.childNodes.length;
               i++
             ) {
-              elem.childNodes[i].dataset.delay = len - i;
+              elem.childNodes[i].dataset.delay = len - i
             }
             elem.childNodes.forEach(function (al) {
               gsap.from(al, {
@@ -197,31 +197,31 @@ function Shery() {
                 delay: al.dataset.delay * (opts.multiplier || 0.1),
                 opacity: 0,
                 ease: opts.ease || Expo.easeOut,
-              });
-            });
-          });
-          break;
+              })
+            })
+          })
+          break
         default:
           console.warn(
             "SheryJS : no such style available for text, mentioned in textanimate()"
-          );
+          )
       }
     }, //!SECTION 
 
     // SECTION - Image Effects 
     imageEffect: function (element = "img", opts = {}) {
-      var isdebug1 = false;
-      var isdebug2 = false;
-      var isdebug3 = false;
+      var isdebug1 = false
+      var isdebug2 = false
+      var isdebug3 = false
       document.querySelectorAll(element).forEach(function (elem) {
         // parent setter
-        var parent = elem.parentNode;
-        var div = document.createElement("div");
-        div.classList.add(elem.classList[0]);
-        div.id = elem.id;
-        div.style.display = "inline-block";
-        parent.replaceChild(div, elem);
-        div.appendChild(elem);
+        var parent = elem.parentNode
+        var div = document.createElement("div")
+        div.classList.add(elem.classList[0])
+        div.id = elem.id
+        div.style.display = "inline-block"
+        parent.replaceChild(div, elem)
+        div.appendChild(elem)
         // parent setter done
         // image effects
         switch (opts.style || 1) {
@@ -233,7 +233,7 @@ function Shery() {
                   void main(){
                     gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);
                     vuv = uv;
-                  }`;
+                  }`
             const fragment = /*glsl*/ `
             #define PI 3.141592653589793238462643383279502884197
             uniform sampler2D uTexture;
@@ -279,18 +279,18 @@ function Shery() {
                   vec2 surface=vec2(cnoise(uv-uMouse/7.+.2*uTime)*.08,cnoise(uv-uMouse/7.+.2*uTime)*.08);
                   uv+=refract(vec2(uMouse.x/600.,uMouse.y/600.),mix(vec2(0.,0.),surface,uIntercept),1./1.333);
                   gl_FragColor=texture2D(uTexture,uv);
-            }`;
+            }`
 
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
+            const raycaster = new THREE.Raycaster()
+            const mouse = new THREE.Vector2()
 
-            const scene = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2);
-            camera.position.z = 1;
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(elem.width, elem.height);
-            elem.style.display = "none";
-            elem.parentElement.appendChild(renderer.domElement);
+            const scene = new THREE.Scene()
+            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2)
+            camera.position.z = 1
+            const renderer = new THREE.WebGLRenderer()
+            renderer.setSize(elem.width, elem.height)
+            elem.style.display = "none"
+            elem.parentElement.appendChild(renderer.domElement)
 
             const plane = new THREE.Mesh(
               new THREE.PlaneGeometry(elem.width, elem.height),
@@ -303,47 +303,47 @@ function Shery() {
                   uMouse: { value: new THREE.Vector2(mouse.x, mouse.y), },
                   uIntercept: { value: 0, },
                 },
-              }));
-            scene.add(plane);
+              }))
+            scene.add(plane)
 
             renderer.domElement.addEventListener("mousemove", (event) => {
-              mouse.x = (event.offsetX / elem.width) * 2 - 1;
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
-            });
+              mouse.x = (event.offsetX / elem.width) * 2 - 1
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            })
             renderer.domElement.addEventListener("mouseleave", (event) => {
-              mouse.x = (event.offsetX / elem.width) * 2 - 1;
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
-            });
+              mouse.x = (event.offsetX / elem.width) * 2 - 1
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            })
 
             window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
 
-            const clock = new THREE.Clock();
+            const clock = new THREE.Clock()
             function animate() {
-              renderer.domElement.style = elem.style.display;
-              renderer.domElement.display = "";
-              raycaster.setFromCamera(mouse, camera);
-              const intersect = raycaster.intersectObject(plane);
-              plane.material.uniforms.uIntercept.value = THREE.Math.lerp(plane.material.uniforms.uIntercept.value, intersect.length === 1 ? 1 : 0, 0.1);
-              plane.material.uniforms.uTime.value = clock.getElapsedTime();
-              plane.material.uniforms.uMouse.value.set(mouse.x, mouse.y);
-              requestAnimationFrame(animate);
-              renderer.render(scene, camera);
+              renderer.domElement.style = elem.style.display
+              renderer.domElement.display = ""
+              raycaster.setFromCamera(mouse, camera)
+              const intersect = raycaster.intersectObject(plane)
+              plane.material.uniforms.uIntercept.value = THREE.Math.lerp(plane.material.uniforms.uIntercept.value, intersect.length === 1 ? 1 : 0, 0.1)
+              plane.material.uniforms.uTime.value = clock.getElapsedTime()
+              plane.material.uniforms.uMouse.value.set(mouse.x, mouse.y)
+              requestAnimationFrame(animate)
+              renderer.render(scene, camera)
             }
-            animate();
+            animate()
             return {
               updateTexture: (newTexture) => {
-                texture.image = newTexture;
-                texture.needsUpdate = true;
+                texture.image = newTexture
+                texture.needsUpdate = true
               },
-            };
+            }
           }
-            break;//!STUB 
+            break//!STUB 
 
           // STUB - Dynamic Distortion Effect 
           case 2: {
             const vertex = /*glsl*/ `
             varying vec2 vuv;
-            void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`;
+            void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`
 
             const fragment = /*glsl*/ `
             uniform vec2 resolution,mouse;
@@ -425,16 +425,16 @@ function Shery() {
                 final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
                 final =onMouse? mix( base , final ,uIntercept):final;
                 gl_FragColor=final;          
-            }`;
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
-            const scene = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2);
-            camera.position.z = 1;
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(elem.width, elem.height);
-            elem.style.display = "none";
-            elem.parentElement.appendChild(renderer.domElement);
+            }`
+            const raycaster = new THREE.Raycaster()
+            const mouse = new THREE.Vector2()
+            const scene = new THREE.Scene()
+            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2)
+            camera.position.z = 1
+            const renderer = new THREE.WebGLRenderer()
+            renderer.setSize(elem.width, elem.height)
+            elem.style.display = "none"
+            elem.parentElement.appendChild(renderer.domElement)
             const plane = new THREE.Mesh(new THREE.PlaneGeometry(elem.width, elem.height), new THREE.ShaderMaterial({
               vertexShader: vertex,
               fragmentShader: fragment,
@@ -463,75 +463,75 @@ function Shery() {
                 strength: { value: 0.2 },
                 exposer: { value: 8 },
               },
-            }));
-            scene.add(plane);
-            const uniform = plane.material.uniforms;
-            if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value; });
+            }))
+            scene.add(plane)
+            const uniform = plane.material.uniforms
+            if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
             if ((opts.debug && !isdebug2) || false) {
-              isdebug2 = true;
-              const gui = new dat.GUI();
+              isdebug2 = true
+              const gui = new dat.GUI()
               const debug = {
                 color: '#ffffff',
                 SAVECONFIG: () => {
-                  const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform;
+                  const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
                   navigator.clipboard.writeText(JSON.stringify(rest))
                 }
-              };
-              gui.add(uniform.onMouse, "value").name("Effect On Hower");
-              gui.add(uniform.distortion, "value").name("Distortion Effect");
-              gui.add(uniform.mode, "value", { Off: -1, Add: 0, Multiply: 1, Screen: 2, Negitive: 3, Natural: 7, Overlay: -2, SoftLight: -3, ColorDoge: -4, ColorBurn: -5, Avarage: 13, Darken: -6, Diffrance: -7, Exclusion: -8, "Reflact/Glow": -9, Phonix: -10, Substract: 5, Mod: 8, Neon: 6, NeonNegative: 9, Dark: 10, }).name("Blend/Overlay Mode");
-              gui.add(uniform.mousemove, "value", { Off: 0, Mode1: 1, Mode2: 2, Mode3: 3, }).name("Mousemove Effect");
-              gui.add(uniform.modeA, "value", { sin: 1, cos: 0, tan: 2, atan: 3, }).name("Effect StyleA");
-              gui.add(uniform.modeN, "value", { sin: 0, cos: 1, tan: 2, atan: 3, }).name("Effect StyleN");
-              gui.add(uniform.speed, "value", -500, 500, 0.001).name("Speed");
-              gui.add(uniform.speed, "value", -10, 10, 0.001).name("Speed Precise");
-              gui.add(uniform.frequency, "value", -800, 800, 10).name("Frequency");
-              gui.add(uniform.frequency, "value", -50, 50, 0.0001).name("Frequency Precise");
-              gui.add(uniform.angle, "value", 0, Math.PI, 0.0001).name("Angle");
-              gui.add(uniform.waveFactor, "value", -3, 3, 0.0001).name("Wave Factor");
-              gui.add(uniform.pixelStrength, "value", -20, 100, 0.1).name("Pixel Strength");
-              gui.add(uniform.pixelStrength, "value", -20, 20, 0.0001).name("Precise Pixel Strength");
-              gui.add(uniform.quality, "value", 0, 10, 1).name("Quality");
-              gui.add(uniform.contrast, "value", -25, 25, 0.0001).name("Contrast");
-              gui.add(uniform.brightness, "value", -1, 25, 0.0001).name("Brightness");
-              gui.add(uniform.colorExposer, "value", -5, 5, 0.00001).name("Color Exposer");
-              gui.add(uniform.strength, "value", -40, 40, 0.0001).name("Strength");
-              gui.add(uniform.strength, "value", -5, 5, 0.0001).name("Strength Precise");
-              gui.add(uniform.exposer, "value", -100, 100, 0.0001).name("Exposer");
-              gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color); }).name("Tint");
-              gui.add(debug, "SAVECONFIG");
+              }
+              gui.add(uniform.onMouse, "value").name("Effect On Hower")
+              gui.add(uniform.distortion, "value").name("Distortion Effect")
+              gui.add(uniform.mode, "value", { Off: -1, Add: 0, Multiply: 1, Screen: 2, Negitive: 3, Natural: 7, Overlay: -2, SoftLight: -3, ColorDoge: -4, ColorBurn: -5, Avarage: 13, Darken: -6, Diffrance: -7, Exclusion: -8, "Reflact/Glow": -9, Phonix: -10, Substract: 5, Mod: 8, Neon: 6, NeonNegative: 9, Dark: 10, }).name("Blend/Overlay Mode")
+              gui.add(uniform.mousemove, "value", { Off: 0, Mode1: 1, Mode2: 2, Mode3: 3, }).name("Mousemove Effect")
+              gui.add(uniform.modeA, "value", { sin: 1, cos: 0, tan: 2, atan: 3, }).name("Effect StyleA")
+              gui.add(uniform.modeN, "value", { sin: 0, cos: 1, tan: 2, atan: 3, }).name("Effect StyleN")
+              gui.add(uniform.speed, "value", -500, 500, 0.001).name("Speed")
+              gui.add(uniform.speed, "value", -10, 10, 0.001).name("Speed Precise")
+              gui.add(uniform.frequency, "value", -800, 800, 10).name("Frequency")
+              gui.add(uniform.frequency, "value", -50, 50, 0.0001).name("Frequency Precise")
+              gui.add(uniform.angle, "value", 0, Math.PI, 0.0001).name("Angle")
+              gui.add(uniform.waveFactor, "value", -3, 3, 0.0001).name("Wave Factor")
+              gui.add(uniform.pixelStrength, "value", -20, 100, 0.1).name("Pixel Strength")
+              gui.add(uniform.pixelStrength, "value", -20, 20, 0.0001).name("Precise Pixel Strength")
+              gui.add(uniform.quality, "value", 0, 10, 1).name("Quality")
+              gui.add(uniform.contrast, "value", -25, 25, 0.0001).name("Contrast")
+              gui.add(uniform.brightness, "value", -1, 25, 0.0001).name("Brightness")
+              gui.add(uniform.colorExposer, "value", -5, 5, 0.00001).name("Color Exposer")
+              gui.add(uniform.strength, "value", -40, 40, 0.0001).name("Strength")
+              gui.add(uniform.strength, "value", -5, 5, 0.0001).name("Strength Precise")
+              gui.add(uniform.exposer, "value", -100, 100, 0.0001).name("Exposer")
+              gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color) }).name("Tint")
+              gui.add(debug, "SAVECONFIG")
             }
             renderer.domElement.addEventListener("mousemove", (event) => {
-              mouse.x = (event.offsetX / elem.width) * 2 - 1;
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
-            });
+              mouse.x = (event.offsetX / elem.width) * 2 - 1
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            })
             renderer.domElement.addEventListener("mouseleave", (event) => {
-              mouse.x = (event.offsetX / elem.width) * 2 - 1;
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1);
-            });
+              mouse.x = (event.offsetX / elem.width) * 2 - 1
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            })
 
             window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
 
-            const clock = new THREE.Clock();
+            const clock = new THREE.Clock()
             function animate() {
-              const elapsedTime = clock.getElapsedTime();
-              renderer.domElement.display = "";
-              raycaster.setFromCamera(mouse, camera);
-              uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, raycaster.intersectObject(plane).length === 1 ? 1 : 0, 0.1);
-              uniform.time.value = elapsedTime;
-              uniform.mouse.value.set(mouse.x, mouse.y);
-              requestAnimationFrame(animate);
-              renderer.render(scene, camera);
+              const elapsedTime = clock.getElapsedTime()
+              renderer.domElement.display = ""
+              raycaster.setFromCamera(mouse, camera)
+              uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, raycaster.intersectObject(plane).length === 1 ? 1 : 0, 0.1)
+              uniform.time.value = elapsedTime
+              uniform.mouse.value.set(mouse.x, mouse.y)
+              requestAnimationFrame(animate)
+              renderer.render(scene, camera)
             }
-            animate();
+            animate()
             return {
               updateTexture: (newTexture) => {
-                texture.image = newTexture;
-                texture.needsUpdate = true;
+                texture.image = newTexture
+                texture.needsUpdate = true
               },
-            };
+            }
           }
-            break;//!STUB 
+            break//!STUB 
 
           // STUB - Dynamic 3d Wave/Wobble Effect 
           case 3: {
@@ -567,24 +567,24 @@ function Shery() {
                 }
               }))
               scene.add(mesh)
-              const uniform = mesh.material.uniforms;
-              if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value);
+              const uniform = mesh.material.uniforms
+              if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value)
               if ((opts.debug && !isdebug3) || false) {
-                isdebug3 = true;
-                const gui = new dat.GUI();
+                isdebug3 = true
+                const gui = new dat.GUI()
                 const debug = {
                   SAVECONFIG: () => {
-                    const { uTime, uTexture, ...rest } = uniform;
+                    const { uTime, uTexture, ...rest } = uniform
                     navigator.clipboard.writeText(JSON.stringify(rest))
                   },
-                };
+                }
                 gui.add(uniform.uFrequency.value, 'x').min(0).max(100).step(0.01).name('frequencyX')
                 gui.add(uniform.uFrequency.value, 'y').min(0).max(100).step(0.01).name('frequencyY')
                 gui.add(uniform.uFrequency.value, 'z').min(0).max(100).step(0.01).name('frequencyZ').onChange((x) => {
                   camera.fov = 1 + x / 400
-                  camera.updateProjectionMatrix();
+                  camera.updateProjectionMatrix()
                 })
-                gui.add(debug, "SAVECONFIG");
+                gui.add(debug, "SAVECONFIG")
 
               }
               const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
@@ -609,9 +609,13 @@ function Shery() {
             })
 
           }
-            break;//!STUB
+            break//!STUB 
+          case 4: {
+
+          }
+            break //!STUB 
         }
-      });
-    }, //!SECTION
-  };
+      })
+    }, //!SECTION 
+  }
 }
