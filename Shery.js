@@ -201,7 +201,9 @@ function Shery() {
       }
     },
     imageEffect: function (element = "img", opts = {}) {
-      var isdebug = false;
+      var isdebug1 = false;
+      var isdebug2 = false;
+      var isdebug3 = false;
       document.querySelectorAll(element).forEach(function (elem) {
         // parent setter
         var parent = elem.parentNode;
@@ -214,7 +216,7 @@ function Shery() {
         // parent setter done
         // image effects
         switch (opts.style || 1) {
-          case 1:
+          case 1: {
             const vertex = /*glsl*/ `
             varying vec2 vuv;
                   void main(){
@@ -328,6 +330,9 @@ function Shery() {
               mouse.x = (event.offsetX / sizes.width) * 2 - 1;
               mouse.y = -((event.offsetY / sizes.height) * 2 - 1);
             });
+
+            window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+
             const clock = new THREE.Clock();
             function animate() {
               const elapsedTime = clock.getElapsedTime();
@@ -353,6 +358,7 @@ function Shery() {
                 texture.needsUpdate = true;
               },
             };
+          }
             break;
           case 2:
             {
@@ -652,8 +658,8 @@ function Shery() {
                       : opts.config[key].value;
                 });
               }
-              if ((opts.debug && !isdebug) || false) {
-                isdebug = true;
+              if ((opts.debug && !isdebug2) || false) {
+                isdebug2 = true;
                 const gui = new dat.GUI();
                 const debug = {
                   color: '#ffffff',
@@ -790,6 +796,9 @@ function Shery() {
                 mouse.x = (event.offsetX / sizes.width) * 2 - 1;
                 mouse.y = -((event.offsetY / sizes.height) * 2 - 1);
               });
+
+              window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+
               const clock = new THREE.Clock();
               function animate() {
                 const elapsedTime = clock.getElapsedTime();
@@ -817,6 +826,102 @@ function Shery() {
               };
             }
             break;
+          case 3:
+            {
+              const vertex = /*glsl*/ `
+              uniform vec3 uFrequency;
+              uniform float uTime;
+              varying vec2 vUv;
+              void main(){
+                  vec3 uFrequency=vec3(uFrequency.xy/.01744,uFrequency.z);
+                  vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+                  float elevation = sin(modelPosition.x * uFrequency.x - uTime) *uFrequency.z/1000.0;
+                  elevation += sin(modelPosition.y * uFrequency.y - uTime) *uFrequency.z/1000.0;
+                  modelPosition.z += elevation;
+                  vec4 viewPosition = viewMatrix * modelPosition;
+                  vec4 projectedPosition = projectionMatrix * viewPosition;
+                  gl_Position = projectedPosition;
+                  vUv = uv;
+              }`
+              const fragment = /*glsl*/ `
+              uniform sampler2D uTexture;
+              varying vec2 vUv;
+              void main(){
+                  vec4 textureColor = texture2D(uTexture, vUv);
+                  gl_FragColor = textureColor;
+              }`
+
+              const scene = new THREE.Scene()
+              new THREE.TextureLoader().load(elem.getAttribute('src'), texture => {
+                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(.01744, .01744, 32, 32), new THREE.ShaderMaterial({
+                  vertexShader: vertex,
+                  fragmentShader: fragment,
+                  uniforms: {
+                    uFrequency: { value: new THREE.Vector3(25, 25, 15) },
+                    uTime: { value: 0 },
+                    uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
+                  }
+                }))
+                scene.add(mesh)
+
+                const uniform = mesh.material.uniforms;
+                if (opts.config) {
+                  Object.keys(opts.config).forEach((key) => {
+                    uniform[key].value =
+                      key == "color"
+                        ? new THREE.Color(opts.config[key].value)
+                        : opts.config[key].value;
+                  });
+                }
+                if ((opts.debug && !isdebug3) || false) {
+                  isdebug3 = true;
+                  const gui = new dat.GUI();
+                  const debug = {
+                    SAVECONFIG: () => {
+                      const {uTime,uTexture, ...rest } = uniform;
+                      const config = JSON.stringify(rest);
+                      navigator.clipboard.writeText(config).then(
+                        function () {
+                          console.log("Config Copied!");
+                        },
+                        function (err) {
+                          console.error("Could not copy config: ", err);
+                        }
+                      );
+                    },
+                  };
+                  gui.add(uniform.uFrequency.value, 'x').min(0).max(100).step(0.01).name('frequencyX')
+                  gui.add(uniform.uFrequency.value, 'y').min(0).max(100).step(0.01).name('frequencyY')
+                  gui.add(uniform.uFrequency.value, 'z').min(0).max(100).step(0.01).name('frequencyZ').onChange((x) => {
+                    camera.fov = 1 + x / 400
+                    camera.updateProjectionMatrix();
+                  })
+                  gui.add(debug, "SAVECONFIG");
+
+                }
+                  const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
+                  camera.position.z = 1
+                  scene.add(camera)
+
+                  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+                  renderer.setSize(elem.width, elem.height)
+                  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+                  elem.style.display = 'none'
+                  elem.parentElement.appendChild(renderer.domElement)
+
+                  window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+
+                  const clock = new THREE.Clock()
+                  const tick = () => {
+                    uniform.uTime.value = clock.getElapsedTime()
+                    renderer.render(scene, camera)
+                    window.requestAnimationFrame(tick)
+                  }
+                  tick()
+                })
+
+            }
+            break
         }
       });
     },
