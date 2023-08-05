@@ -210,9 +210,7 @@ function Shery() {
 
     // SECTION - Image Effects 
     imageEffect: function (element = "img", opts = {}) {
-      var isdebug1 = false
-      var isdebug2 = false
-      var isdebug3 = false
+      var isdebug = []
       document.querySelectorAll(element).forEach(function (elem) {
         // parent setter
         var parent = elem.parentNode
@@ -220,6 +218,7 @@ function Shery() {
         div.classList.add(elem.classList[0])
         div.id = elem.id
         div.style.display = "inline-block"
+        const aspect = elem.offsetWidth / elem.offsetHeight
         parent.replaceChild(div, elem)
         div.appendChild(elem)
         // parent setter done
@@ -280,12 +279,11 @@ function Shery() {
                   uv+=refract(vec2(uMouse.x/600.,uMouse.y/600.),mix(vec2(0.,0.),surface,uIntercept),1./1.333);
                   gl_FragColor=texture2D(uTexture,uv);
             }`
-
-            const raycaster = new THREE.Raycaster()
+            let intersect = 0;
             const mouse = new THREE.Vector2()
 
             const scene = new THREE.Scene()
-            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2)
+            const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
             camera.position.z = 1
             const renderer = new THREE.WebGLRenderer()
             renderer.setSize(elem.width, elem.height)
@@ -293,7 +291,7 @@ function Shery() {
             elem.parentElement.appendChild(renderer.domElement)
 
             const plane = new THREE.Mesh(
-              new THREE.PlaneGeometry(elem.width, elem.height),
+              new THREE.PlaneGeometry(.01744, .01744),
               new THREE.ShaderMaterial({
                 vertexShader: vertex,
                 fragmentShader: fragment,
@@ -311,19 +309,26 @@ function Shery() {
               mouse.y = -((event.offsetY / elem.height) * 2 - 1)
             })
             renderer.domElement.addEventListener("mouseleave", (event) => {
+              intersect = 0
+              mouse.x = (event.offsetX / elem.width) * 2 - 1
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            })
+            renderer.domElement.addEventListener("mouseenter", (event) => {
+              intersect = 1
               mouse.x = (event.offsetX / elem.width) * 2 - 1
               mouse.y = -((event.offsetY / elem.height) * 2 - 1)
             })
 
-            window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+            window.addEventListener('resize', () => {
+              renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+            })
 
             const clock = new THREE.Clock()
             function animate() {
               renderer.domElement.style = elem.style.display
               renderer.domElement.display = ""
-              raycaster.setFromCamera(mouse, camera)
-              const intersect = raycaster.intersectObject(plane)
-              plane.material.uniforms.uIntercept.value = THREE.Math.lerp(plane.material.uniforms.uIntercept.value, intersect.length === 1 ? 1 : 0, 0.1)
+              plane.material.uniforms.uIntercept.value = THREE.Math.lerp(plane.material.uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.1)
               plane.material.uniforms.uTime.value = clock.getElapsedTime()
               plane.material.uniforms.uMouse.value.set(mouse.x, mouse.y)
               requestAnimationFrame(animate)
@@ -426,16 +431,16 @@ function Shery() {
                 final =onMouse? mix( base , final ,uIntercept):final;
                 gl_FragColor=final;          
             }`
-            const raycaster = new THREE.Raycaster()
+            let intersect = 0;
             const mouse = new THREE.Vector2()
             const scene = new THREE.Scene()
-            const camera = new THREE.OrthographicCamera(elem.width / -2, elem.width / 2, elem.height / 2, elem.height / -2, 1, 2)
+            const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
             camera.position.z = 1
             const renderer = new THREE.WebGLRenderer()
             renderer.setSize(elem.width, elem.height)
             elem.style.display = "none"
             elem.parentElement.appendChild(renderer.domElement)
-            const plane = new THREE.Mesh(new THREE.PlaneGeometry(elem.width, elem.height), new THREE.ShaderMaterial({
+            const plane = new THREE.Mesh(new THREE.PlaneGeometry(.01744, .01744), new THREE.ShaderMaterial({
               vertexShader: vertex,
               fragmentShader: fragment,
               uniforms: {
@@ -467,8 +472,8 @@ function Shery() {
             scene.add(plane)
             const uniform = plane.material.uniforms
             if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
-            if ((opts.debug && !isdebug2) || false) {
-              isdebug2 = true
+            if ((opts.debug && !isdebug[1]) || false) {
+              isdebug[1] = true
               const gui = new dat.GUI()
               const debug = {
                 color: '#ffffff',
@@ -506,18 +511,25 @@ function Shery() {
               mouse.y = -((event.offsetY / elem.height) * 2 - 1)
             })
             renderer.domElement.addEventListener("mouseleave", (event) => {
+              intersect = 0
               mouse.x = (event.offsetX / elem.width) * 2 - 1
               mouse.y = -((event.offsetY / elem.height) * 2 - 1)
             })
-
-            window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+            renderer.domElement.addEventListener("mouseenter", (event) => {
+              intersect = 1
+              mouse.x = (event.offsetX / elem.width) * 2 - 1
+              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            })
+            window.addEventListener('resize', () => {
+              renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+            })
 
             const clock = new THREE.Clock()
             function animate() {
               const elapsedTime = clock.getElapsedTime()
               renderer.domElement.display = ""
-              raycaster.setFromCamera(mouse, camera)
-              uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, raycaster.intersectObject(plane).length === 1 ? 1 : 0, 0.1)
+              uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, intersect === 1 ? 1 : 0, 0.1)
               uniform.time.value = elapsedTime
               uniform.mouse.value.set(mouse.x, mouse.y)
               requestAnimationFrame(animate)
@@ -567,10 +579,18 @@ function Shery() {
                 }
               }))
               scene.add(mesh)
+
+              const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
+              camera.position.z = 1
+              scene.add(camera)
               const uniform = mesh.material.uniforms
-              if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value)
-              if ((opts.debug && !isdebug3) || false) {
-                isdebug3 = true
+              if (opts.config) Object.keys(opts.config).forEach((key) => {
+                uniform[key].value = opts.config[key].value
+                camera.fov = 1 + uniform.uFrequency.value.z / 400
+                camera.updateProjectionMatrix()
+              })
+              if ((opts.debug && !isdebug[2]) || false) {
+                isdebug[2] = true
                 const gui = new dat.GUI()
                 const debug = {
                   SAVECONFIG: () => {
@@ -587,9 +607,6 @@ function Shery() {
                 gui.add(debug, "SAVECONFIG")
 
               }
-              const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
-              camera.position.z = 1
-              scene.add(camera)
 
               const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
               renderer.setSize(elem.width, elem.height)
@@ -597,7 +614,10 @@ function Shery() {
               elem.style.display = 'none'
               elem.parentElement.appendChild(renderer.domElement)
 
-              window.addEventListener('resize', () => renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)))
+              window.addEventListener('resize', () => {
+                renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+              })
 
               const clock = new THREE.Clock()
               const tick = () => {
@@ -610,22 +630,169 @@ function Shery() {
 
           }
             break//!STUB 
-          case 4: {
 
+          // STUB - Wind Distortion Effect 
+          case 4: {
+            const vertex = /*glsl*/ `
+            precision mediump float;
+            varying vec2 vUv;
+            varying float vWave;
+            uniform float uTime;
+            uniform float uFrequency;
+            uniform float uAmplitude;
+            uniform float uSpeed;
+                      
+            vec3 mod289(vec3 x){	return x-floor(x*(1./289.))*289.;}
+            vec4 mod289(vec4 x){	return x-floor(x*(1./289.))*289.;}
+            vec4 permute(vec4 x){	return mod289(((x*34.)+1.)*x);}
+                      
+            vec4 taylorInvSqrt(vec4 r){	return 1.79284291400159-.85373472095314*r;}
+                      
+            float snoise(vec3 v){
+              const vec2 C=vec2(1./6.,1./3.);
+              const vec4 D=vec4(0.,.5,1.,2.);
+              vec3 i=floor(v+dot(v,C.yyy));
+              vec3 x0=v-i+dot(i,C.xxx);
+              vec3 g=step(x0.yzx,x0.xyz);
+              vec3 l=1.-g;
+              vec3 i1=min(g.xyz,l.zxy);
+              vec3 i2=max(g.xyz,l.zxy);
+              vec3 x1=x0-i1+C.xxx;
+              vec3 x2=x0-i2+C.yyy;
+              vec3 x3=x0-D.yyy;
+              
+              i=mod289(i);
+              vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+                    float n_=.142857142857;// 1.0/7.0
+                    vec3 ns=n_*D.wyz-D.xzx;
+                    vec4 j=p-49.*floor(p*ns.z*ns.z);
+                    vec4 x_=floor(j*ns.z);
+                    vec4 y_=floor(j-7.*x_);
+                    vec4 x=x_*ns.x+ns.yyyy;
+                    vec4 y=y_*ns.x+ns.yyyy;
+                    vec4 h=1.-abs(x)-abs(y);
+                    vec4 b0=vec4(x.xy,y.xy);
+                    vec4 b1=vec4(x.zw,y.zw);
+                    vec4 s0=floor(b0)*2.+1.;
+                    vec4 s1=floor(b1)*2.+1.;
+                    vec4 sh=-step(h,vec4(0.));
+                    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+                    vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+                    vec3 p0=vec3(a0.xy,h.x);
+                    vec3 p1=vec3(a0.zw,h.y);
+                    vec3 p2=vec3(a1.xy,h.z);
+                    vec3 p3=vec3(a1.zw,h.w);
+                    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+                    p0*=norm.x;
+                    p1*=norm.y;
+                    p2*=norm.z;
+                    p3*=norm.w;
+                    vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
+                    m=m*m;
+                    return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
+                    dot(p2,x2),dot(p3,x3)));
+                  }
+                  
+                  void main(){
+                    vUv=uv;
+                    vec3 pos=position;
+                    float noiseFreq=uFrequency;
+                    float noiseAmp=uAmplitude/10.0;
+                    vec3 noisePos=vec3(pos.x*noiseFreq+uTime*uSpeed,pos.y,pos.z);
+                    pos.z+=snoise(noisePos)*noiseAmp;
+                    vWave=pos.z;
+                    gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.);
+                  }
+            `
+            const fragment = /*glsl*/ `
+            uniform vec3 uColor;
+            uniform sampler2D uTexture;
+            varying vec2 vUv;
+            varying float vWave;
+            void main() {
+              vec2 uv = vUv;
+              float wave = vWave * 0.1;
+              float r = texture2D(uTexture, uv ).r;
+              float g = texture2D(uTexture, uv ).g;
+              float b = texture2D(uTexture, uv + wave ).b;
+              vec3 color = vec3(r,g,b);
+              gl_FragColor = vec4(color, 1.);
+            }`
+
+            const scene = new THREE.Scene()
+            new THREE.TextureLoader().load(elem.getAttribute('src'), texture => {
+              const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4 / (elem.width / elem.height), 100, 100), new THREE.ShaderMaterial({
+                vertexShader: vertex,
+                fragmentShader: fragment,
+                uniforms: {
+                  uTime: { value: 0 },
+                  uSpeed: { value: .6 },
+                  uAmplitude: { value: 1.5 },
+                  uFrequency: { value: 3.5 },
+                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
+                },
+                wireframe: false,
+                side: THREE.DoubleSide
+
+              }))
+              scene.add(mesh)
+              const uniform = mesh.material.uniforms
+              if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value)
+              if ((opts.debug && !isdebug[3]) || false) {
+                isdebug[3] = true
+                const gui = new dat.GUI()
+                const debug = {
+                  SAVECONFIG: () => {
+                    const { uTime, uTexture, ...rest } = uniform
+                    navigator.clipboard.writeText(JSON.stringify(rest))
+                  },
+                }
+                gui.add(uniform.uSpeed, 'value').min(0.1).max(1).step(0.01).name('Speed')
+                gui.add(uniform.uSpeed, 'value').min(1).max(10).step(0.01).name('FastForward')
+                gui.add(uniform.uFrequency, 'value').min(0).max(10).step(0.01).name('Frequency')
+                gui.add(uniform.uAmplitude, 'value').min(0).max(5).step(0.01).name('Amplitude')
+                gui.add(debug, "SAVECONFIG")
+              }
+
+              const camera = new THREE.PerspectiveCamera(25, elem.width / elem.height, 0.1, 100);
+              camera.position.set(0, 0, 1);
+              scene.add(camera)
+
+              const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+              renderer.setSize(elem.width, elem.height)
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+              elem.style.display = 'none'
+
+              elem.parentElement.appendChild(renderer.domElement)
+
+              window.addEventListener('resize', () => {
+                renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+              })
+              const clock = new THREE.Clock()
+              const tick = () => {
+                uniform.uTime.value = clock.getElapsedTime()
+                renderer.render(scene, camera)
+                window.requestAnimationFrame(tick)
+              }
+              tick()
+            })
           }
             break //!STUB 
         }
       })
     }, //!SECTION 
 
-    
+
     // SECTION - 3D Text Effect 
-    text3DEffect: (element, opts = {para:{}},) => {
+    text3DEffect: (element, opts = { para: {} },) => {
       document.querySelectorAll(element).forEach(function (elem) {
         var parent = elem.parentNode
         var div = document.createElement("div")
         div.classList.add(elem.classList[0])
         div.id = elem.id
+        const aspect = elem.offsetWidth / elem.offsetHeight
         parent.replaceChild(div, elem)
         div.appendChild(elem)
         const scene = new THREE.Scene()
@@ -667,6 +834,12 @@ function Shery() {
               opts.animation(textMesh, clock.getElapsedTime()) // Call the user-defined animate function and pass textMesh as an argument
             renderer.render(scene, camera)
           }
+
+
+          window.addEventListener('resize', () => {
+            renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+          })
 
           function renderLoop() {
             if (!opts.animation || isAnimated) {
