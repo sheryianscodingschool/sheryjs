@@ -617,5 +617,69 @@ function Shery() {
         }
       })
     }, //!SECTION 
+
+    
+    // SECTION - 3D Text Effect 
+    text3DEffect: (element, opts = {para:{}},) => {
+      document.querySelectorAll(element).forEach(function (elem) {
+        var parent = elem.parentNode
+        var div = document.createElement("div")
+        div.classList.add(elem.classList[0])
+        div.id = elem.id
+        parent.replaceChild(div, elem)
+        div.appendChild(elem)
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(1, elem.offsetWidth / elem.offsetHeight, 0.1, 100)
+        camera.position.z = 3
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        renderer.setSize(elem.offsetWidth, elem.offsetHeight)
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        elem.style.display = "none"
+        elem.parentElement.appendChild(renderer.domElement)
+        const { size, height, curveSegments, bevelEnabled, bevelThickness, bevelSize, bevelOffset, bevelSegments } = opts['para']
+        const fontLoader = new THREE.FontLoader()
+        const text = elem.textContent
+        if (!font)
+          var font = 'https://gist.githubusercontent.com/aayushchouhan24/d13b1402b75d5dad25de027a89627fcc/raw/c3823eac9d61c6b749785826327180aeca36b402/font.json'
+        fontLoader.load(font, function (font) {
+          const textGeometry = new THREE.TextGeometry(text.replace('  ', '\n'), {
+            font: font,
+            size: size ? size / (text.split('\n').length + 1) : 0.03 / (text.split('\n').length + 1),
+            height: height ? height : 0.02,
+            curveSegments: curveSegments ? curveSegments : 12,
+            bevelEnabled: bevelEnabled ? bevelEnabled : true,
+            bevelThickness: bevelThickness ? bevelThickness : 0,
+            bevelSize: bevelSize ? bevelSize : 0,
+            bevelOffset: bevelOffset ? bevelOffset : 0,
+            bevelSegments: bevelSegments ? bevelSegments : 0
+
+          })
+          const material = opts.color || opts.matcap ? new THREE.MeshMatcapMaterial({ color: new THREE.Color(color) }) : new THREE.MeshNormalMaterial()
+          if (opts.matcap) material.matcap = new THREE.TextureLoader().load(matcap)
+          const textMesh = new THREE.Mesh(textGeometry, material)
+          textGeometry.center()
+          scene.add(textMesh)
+
+          const clock = new THREE.Clock()
+
+          function animate() {
+            if (typeof opts.animation === 'function')
+              opts.animation(textMesh, clock.getElapsedTime()) // Call the user-defined animate function and pass textMesh as an argument
+            renderer.render(scene, camera)
+          }
+
+          function renderLoop() {
+            if (!opts.animation || isAnimated) {
+              textMesh.rotation.y = Math.cos(clock.getElapsedTime()) / 6
+              textMesh.rotation.x = Math.sin(clock.getElapsedTime()) / 4
+            }
+            requestAnimationFrame(renderLoop)
+            animate()
+          }
+          renderLoop()
+        })
+
+      })
+    },//!SECTION 
   }
 }

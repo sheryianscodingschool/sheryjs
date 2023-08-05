@@ -11,9 +11,7 @@
 
 <body>
 
-    <img class="a"
-        src="https://images.unsplash.com/photo-1690362156187-0eda74b8d53f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-        alt="">
+    <div style="height: 150px" class="text">This div will <br> have 3D text!</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
@@ -26,8 +24,8 @@
 
     <script src="Shery.js"></script>
     <script>
-        var shery = new Shery();
-        shery.imageEffect("img",{debug:true,style:2})
+        var shery = new Shery()
+        shery.text3DEffect('.text',{para:{size:.021}})
     </script>
 </body>
 
