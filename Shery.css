@@ -114,6 +114,17 @@
 
 }
 
+.dg.main ul .cr.function{
+    background-color:rgb(0, 255, 157) !important;
+    text-align: center;
+    font-size: 1.4rem;
+    text-shadow: none;
+    font-weight: 900;
+    color: rgb(255, 255, 255);
+}
+
+
+
 .dg.main ul li .property-name {
     padding-right: 0.5rem;
 }

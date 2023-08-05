@@ -504,7 +504,7 @@ function Shery() {
               gui.add(uniform.strength, "value", -5, 5, 0.0001).name("Strength Precise")
               gui.add(uniform.exposer, "value", -100, 100, 0.0001).name("Exposer")
               gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color) }).name("Tint")
-              gui.add(debug, "SAVECONFIG")
+              gui.add(debug, "SAVECONFIG").name('Copy To Clipboard ')
 
 
             }
