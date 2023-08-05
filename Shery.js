@@ -432,6 +432,7 @@ function Shery() {
                 gl_FragColor=final;          
             }`
             let intersect = 0;
+            const gui = new dat.GUI()
             const mouse = new THREE.Vector2()
             const scene = new THREE.Scene()
             const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
@@ -474,7 +475,6 @@ function Shery() {
             if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
             if ((opts.debug && !isdebug[1]) || false) {
               isdebug[1] = true
-              const gui = new dat.GUI()
               const debug = {
                 color: '#ffffff',
                 SAVECONFIG: () => {
@@ -505,7 +505,10 @@ function Shery() {
               gui.add(uniform.exposer, "value", -100, 100, 0.0001).name("Exposer")
               gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color) }).name("Tint")
               gui.add(debug, "SAVECONFIG")
+
+
             }
+
             renderer.domElement.addEventListener("mousemove", (event) => {
               mouse.x = (event.offsetX / elem.width) * 2 - 1
               mouse.y = -((event.offsetY / elem.height) * 2 - 1)
@@ -528,6 +531,17 @@ function Shery() {
             const clock = new THREE.Clock()
             function animate() {
               const elapsedTime = clock.getElapsedTime()
+              if (!gui.closed)
+                gui.domElement.querySelectorAll('.dg li:not(.folder)').forEach(le => {
+                  le.style.height = "35px"
+                  le.style.display = ""
+
+                })
+              else {
+                gui.domElement.querySelectorAll('.dg li:not(.folder)').forEach(le => {
+                  le.style.display = "none"
+                })
+              }
               renderer.domElement.display = ""
               uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, intersect === 1 ? 1 : 0, 0.1)
               uniform.time.value = elapsedTime

@@ -1,10 +1,10 @@
-:root{
+:root {
     --mousefollowercolor: black;
 }
 
-.mousefollower{
+.mousefollower {
     pointer-events: none;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     position: fixed;
     top: -10%;
     left: -10%;
@@ -15,13 +15,13 @@
     background-color: var(--mousefollowercolor);
 }
 
-.mask{
+.mask {
     position: relative;
     display: inline-block;
     overflow: hidden;
 }
 
-.circle{
+.circle {
     text-align: center;
     pointer-events: none;
     box-sizing: content-box;
@@ -31,7 +31,7 @@
     justify-content: center;
     top: -10%;
     left: -10%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     border-radius: 50%;
     position: absolute;
     z-index: 9999;
@@ -41,10 +41,94 @@
     font-size: 10px;
 }
 
-.sheryelem span{
+.sheryelem span {
     display: inline-block;
 }
 
-.parent{
+.parent {
     display: inline-block;
+}
+
+.dg {
+    margin: 5px;
+}
+
+.dg.main {
+    padding: 7px 0px;
+    border-radius: 15px;
+    background-color: rgb(34, 45, 54) !important;
+    display: block !important;
+    opacity: 1 !important;
+    overflow: hidden;
+    min-width: 23rem;
+}
+
+
+.dg.main ul li .c .slider {
+    background-color: transparent;
+}
+
+.dg.main ul li .c input {
+    border-radius: 0.3rem;
+    background-color: #fff;
+    text-align: center;
+    width: 3rem;
+}
+.dg.main ul li .c select {
+    border-radius: 0.3rem;
+    border: none;
+    text-align: center;
+    width:70%;
+    height : 24px !important;
+}
+
+.dg li:not(.folder) {
+    /* height: 35px; */
+}
+
+.dg .property-name {
+    padding-top: 5px !important;
+}
+
+.dg.main ul .color .c input {
+    background-color: #fff;
+    border-radius: 0.3rem;
+    text-align: center;
+    width: 100%;
+    /* margin-bottom: 0.7rem; */
+}
+
+.selector {
+    left: -50%;
+    top: -230%;
+}
+
+.dg.main ul li {
+    padding-left: 13px;
+    background-color: rgb(34, 45, 54) !important;
+    border-left: none !important;
+    border-bottom: 1px solid rgb(120, 131, 141);
+    font-size: 0.75rem;
+    maar: 0.15rem 0.7rem;
+    padding-right: 1rem;
+
+}
+
+.dg.main ul li .property-name {
+    padding-right: 0.5rem;
+}
+
+.close-button.close-bottom {
+    background-color: rgb(34, 45, 54) !important;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    height: 4vh !important;
+    font-size: 15px;
+    margin-right: 10 !important;
+    position: initial !important;
+    width: initial !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 }
