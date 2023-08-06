@@ -74,6 +74,15 @@
     font-weight: 800 !important;
 }
 
+#controlKit .panel .button:hover{
+    background-color: #007bff !important;
+    color: #fff !important;
+}
+#controlKit .panel .button:active{
+    background-color: #292d39 !important;
+    color: #fff !important;
+}
+
 #controlKit .panel .head .label,
 #controlKit .picker .head .label {
     color: #8c92a4 !important;

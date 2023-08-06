@@ -488,6 +488,9 @@ function Shery() {
                   const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
                   navigator.clipboard.writeText(JSON.stringify(rest))
                 })
+
+                //FIXME Fix The same value uniform
+
                 .addCheckbox(uniform.onMouse, "value", { label: "Effect On Hower" })
                 .addCheckbox(uniform.distortion, "value", { label: "Distortion Effect" })
                 .addSelect(debugObj, 'Mode', { target: "Mode Active", label: 'Blend/Overlay Mode', onChange: x => uniform.mode.value = x - 10 })
@@ -515,23 +518,6 @@ function Shery() {
               document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
               document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
               document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color').parentElement.style.width = '60%'
-
-            }
-
-
-            if (false) {
-              const gui = new dat.GUI()
-              isdebug[1] = true
-              const debug = {
-                color: '#ffffff',
-                SAVECONFIG: () => {
-                  const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
-                  navigator.clipboard.writeText(JSON.stringify(rest))
-                }
-              }
-              gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color) }).name("Tint")
-              gui.add(debug, "SAVECONFIG").name('Copy To Clipboard ')
-
 
             }
 
@@ -580,11 +566,13 @@ function Shery() {
           // STUB - Dynamic 3d Wave/Wobble Effect 
           case 3: {
             const vertex = /*glsl*/ `
-            uniform vec3 uFrequency;
+            uniform float uFrequencyX;
+            uniform float uFrequencyY;
+            uniform float uFrequencyZ;
             uniform float uTime;
             varying vec2 vUv;
             void main(){
-                vec3 uFrequency=vec3(uFrequency.xy/.01744,uFrequency.z);
+                vec3 uFrequency=vec3(uFrequencyX/.01744,uFrequencyY/.01744,uFrequencyZ);
                 vec4 modelPosition = modelMatrix * vec4(position, 1.0);
                 float elevation = sin(modelPosition.x * uFrequency.x - uTime) *uFrequency.z/1000.0;
                 elevation += sin(modelPosition.y * uFrequency.y - uTime) *uFrequency.z/1000.0;
@@ -605,7 +593,9 @@ function Shery() {
                 vertexShader: vertex,
                 fragmentShader: fragment,
                 uniforms: {
-                  uFrequency: { value: new THREE.Vector3(25, 25, 15) },
+                  uFrequencyX: { value: 25, range: [0, 100] },
+                  uFrequencyY: { value: 25, range: [0, 100] },
+                  uFrequencyZ: { value: 15, range: [0, 100] },
                   uTime: { value: 0 },
                   uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
                 }
@@ -623,20 +613,24 @@ function Shery() {
               })
               if ((opts.debug && !isdebug[2]) || false) {
                 isdebug[2] = true
-                const gui = new dat.GUI()
-                const debug = {
-                  SAVECONFIG: () => {
-                    const { uTime, uTexture, ...rest } = uniform
+                var controlKit = new ControlKit({ loadAndSave: true })
+                controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [5, 5], width: 250 })
+                  .addButton('Save To Clipboard', () => {
+                    const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
                     navigator.clipboard.writeText(JSON.stringify(rest))
-                  },
-                }
-                gui.add(uniform.uFrequency.value, 'x').min(0).max(100).step(0.01).name('frequencyX')
-                gui.add(uniform.uFrequency.value, 'y').min(0).max(100).step(0.01).name('frequencyY')
-                gui.add(uniform.uFrequency.value, 'z').min(0).max(100).step(0.01).name('frequencyZ').onChange((x) => {
-                  camera.fov = 1 + x / 400
-                  camera.updateProjectionMatrix()
-                })
-                gui.add(debug, "SAVECONFIG")
+                  })
+                  .addSlider(uniform.uFrequencyX, "value", "range", { label: "FrequencyX", step: 0.01 })
+                  .addSlider(uniform.uFrequencyY, "value", "range", { label: "FrequencyY", step: 0.01 })
+                  .addSlider(uniform.uFrequencyZ, "value", "range", {
+                    label: "FrequencyZ", onChange: x => {
+                      camera.fov = 1 + x / 400
+                      camera.updateProjectionMatrix()
+                    }, step: 0.01
+                  })
+                document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = 'auto')
+                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
+                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
+
 
               }
 
@@ -758,32 +752,34 @@ function Shery() {
                 fragmentShader: fragment,
                 uniforms: {
                   uTime: { value: 0 },
-                  uSpeed: { value: .6 },
-                  uAmplitude: { value: 1.5 },
-                  uFrequency: { value: 3.5 },
+                  uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
+                  uAmplitude: { value: 1.5, range: [0, 5] },
+                  uFrequency: { value: 3.5, range: [0, 10] },
                   uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
-                },
-                wireframe: false,
-                side: THREE.DoubleSide
-
+                }
               }))
               scene.add(mesh)
               const uniform = mesh.material.uniforms
               if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value)
               if ((opts.debug && !isdebug[3]) || false) {
                 isdebug[3] = true
-                const gui = new dat.GUI()
-                const debug = {
-                  SAVECONFIG: () => {
-                    const { uTime, uTexture, ...rest } = uniform
-                    navigator.clipboard.writeText(JSON.stringify(rest))
-                  },
+                var controlKit = new ControlKit({ loadAndSave: true })
+                var obj = {
+                  s: .6, range: [.1, 1],
+                  f: .6, rangef: [1, 10]
                 }
-                gui.add(uniform.uSpeed, 'value').min(0.1).max(1).step(0.01).name('Speed')
-                gui.add(uniform.uSpeed, 'value').min(1).max(10).step(0.01).name('FastForward')
-                gui.add(uniform.uFrequency, 'value').min(0).max(10).step(0.01).name('Frequency')
-                gui.add(uniform.uAmplitude, 'value').min(0).max(5).step(0.01).name('Amplitude')
-                gui.add(debug, "SAVECONFIG")
+                controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [5, 5], width: 250 })
+                  .addButton('Save To Clipboard', () => {
+                    const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
+                    navigator.clipboard.writeText(JSON.stringify(rest))
+                  })
+                  .addSlider(obj, "s", "range", { label: "Speed", onChange: () => uniform.uSpeed.value = obj.s, step: 0.01 })
+                  .addSlider(obj, "f", "rangef", { label: "FastForward", onChange: () => uniform.uSpeed.value = obj.f, step: 0.01 })
+                  .addSlider(uniform.uAmplitude, "value", "range", { label: "Amplitude", step: 0.01 })
+                  .addSlider(uniform.uFrequency, "value", "range", { label: "Frequency", step: 0.01 })
+                document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = 'auto')
+                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
+                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
               }
 
               const camera = new THREE.PerspectiveCamera(25, elem.width / elem.height, 0.1, 100)
