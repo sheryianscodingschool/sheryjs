@@ -279,9 +279,8 @@ function Shery() {
                   uv+=refract(vec2(uMouse.x/600.,uMouse.y/600.),mix(vec2(0.,0.),surface,uIntercept),1./1.333);
                   gl_FragColor=texture2D(uTexture,uv);
             }`
-            let intersect = 0;
+            let intersect = 0
             const mouse = new THREE.Vector2()
-
             const scene = new THREE.Scene()
             const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
             camera.position.z = 1
@@ -323,7 +322,6 @@ function Shery() {
               renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
               renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
             })
-
             const clock = new THREE.Clock()
             function animate() {
               renderer.domElement.style = elem.style.display
@@ -389,8 +387,8 @@ function Shery() {
                   if(mousemove==1) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength * n ;
                   if(mousemove==2) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength + mouse * n ;
                   if(mousemove==3) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength + mouse * n ;
-                  if(modeA==0)   a += dot(cos(q) / frequency, vec2(strength));
-                  else if(modeA==1)   a += dot(sin(q) / frequency, vec2(strength));
+                  if(modeA==0)   a += dot(sin(q) / frequency, vec2(strength));
+                  else if(modeA==1)   a += dot(cos(q) / frequency, vec2(strength));
                   else if(modeA==2)   a += dot(tan(q) / frequency , vec2(strength));
                   else if(modeA==3)   a += dot(atan(q) / frequency , vec2(strength));
                   if(modeN==0)   n -= sin(q);
@@ -405,8 +403,8 @@ function Shery() {
                 base =onMouse? mix( texture2D(uTexture,vuv),base,uIntercept):base;
                 vec4 blend = vec4(col, 1.0);
                 vec4 final = mix( base,gl_FragColor,uIntercept);
-                if (mode == -1) final = base;
-                else if (mode == -10) final =	minn(base,blend)-maxx(base,blend)+vec4(1.0);
+                if (mode == -10) final = base;
+                else if (mode == -1) final =	minn(base,blend)-maxx(base,blend)+vec4(1.0);
                 else if (mode == -9) final =	(maxa(blend)==1.0)?blend:minn(base*base/(1.0-blend),vec4(1.0));
                 else if (mode == -8) final =	base+blend-2.0*base*blend;
                 else if (mode == -7) final =	abs(base-blend);
@@ -426,13 +424,12 @@ function Shery() {
                 else if(mode==8) final = mod(base , blend);
                 else if(mode==9) final = 1.0-(base + blend / base)+.5;
                 else if(mode==10) final = blend - base * blend;
-                else if(mode==13) final = (base +  blend/2.0);
+                else if(mode==11) final = (base +  blend/2.0);
                 final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
                 final =onMouse? mix( base , final ,uIntercept):final;
                 gl_FragColor=final;          
             }`
-            let intersect = 0;
-            const gui = new dat.GUI()
+            let intersect = 0
             const mouse = new THREE.Vector2()
             const scene = new THREE.Scene()
             const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
@@ -454,26 +451,76 @@ function Shery() {
                 distortion: { value: true },
                 mode: { value: -3 },
                 mousemove: { value: 0 },
-                modeA: { value: 0 },
+                modeA: { value: 1 },
                 modeN: { value: 0 },
-                speed: { value: 1 },
-                frequency: { value: 50 },
-                angle: { value: 0.5 },
-                waveFactor: { value: 1.4 },
+                speed: { value: 1, range: [-500, 500], rangep: [-10, 10] },
+                frequency: { value: 50, range: [-800, 800], rangep: [-50, 50] },
+                angle: { value: 0.5, range: [0, Math.PI] },
+                waveFactor: { value: 1.4, range: [-3, 3] },
                 color: { value: new THREE.Color(0.33, 0.66, 1) },
-                pixelStrength: { value: 3 },
-                quality: { value: 5 },
-                contrast: { value: 1 },
-                brightness: { value: 1 },
-                colorExposer: { value: 0.182 },
-                strength: { value: 0.2 },
-                exposer: { value: 8 },
+                pixelStrength: { value: 3, range: [-20, 100], rangep: [-20, 20] },
+                quality: { value: 5, range: [0, 10] },
+                contrast: { value: 1, range: [-25, 25] },
+                brightness: { value: 1, range: [-1, 25] },
+                colorExposer: { value: 0.182, range: [-5, 5] },
+                strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
+                exposer: { value: 8, range: [-100, 100] },
               },
             }))
             scene.add(plane)
             const uniform = plane.material.uniforms
             if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
+
             if ((opts.debug && !isdebug[1]) || false) {
+              var controlKit = new ControlKit({ loadAndSave: true })
+              var debugObj = {
+                "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
+                "Mode Active": "Soft Light",
+                "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+                "Trig A": "Cos",
+                "Trig N": "Sin",
+                "Mouse": ["Off", "Mode 1", "Mode 2", "Mode 3"],
+                "Mouse Active": "Off",
+                "Color": "#54A8FF"
+              }
+              controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [550, 0], width: 200 })
+                .addButton('Save To Clipboard', () => {
+                  const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
+                  navigator.clipboard.writeText(JSON.stringify(rest))
+                })
+                .addCheckbox(uniform.onMouse, "value", { label: "Effect On Hower" })
+                .addCheckbox(uniform.distortion, "value", { label: "Distortion Effect" })
+                .addSelect(debugObj, 'Mode', { target: "Mode Active", label: 'Blend/Overlay Mode', onChange: x => uniform.mode.value = x - 10 })
+                .addSelect(debugObj, 'Mouse', { target: "Mouse Active", label: 'Mousemove Effect', onChange: x => uniform.mousemove.value = x })
+                .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniform.modeA.value = x })
+                .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniform.modeN.value = x })
+                .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniform.color.value.set(x) })
+              controlKit.addPanel({ label: "Debug Panel", width: 350, position: 'right' })
+                .addSlider(uniform.speed, "value", "range", { label: "Speed", step: 0.00001 })
+                .addSlider(uniform.speed, "value", "rangep", { label: "Speed Precise", step: 0.00001 })
+                .addSlider(uniform.frequency, "value", "range", { label: "Frequency", step: 0.00001 })
+                .addSlider(uniform.frequency, "value", "rangep", { label: "Frequency Precise", step: 0.00001 })
+                .addSlider(uniform.angle, "value", "range", { label: "Angle", step: 0.00001 })
+                .addSlider(uniform.waveFactor, "value", "range", { label: "Wave Factor", step: 0.00001 })
+                .addSlider(uniform.pixelStrength, "value", "range", { label: "Pixel Strength", step: 0.00001 })
+                .addSlider(uniform.pixelStrength, "value", "rangep", { label: "Precise Pixel", step: 0.00001 })
+                .addSlider(uniform.quality, "value", "range", { label: "Quality", step: 0.00001 })
+                .addSlider(uniform.contrast, "value", "range", { label: "Contrast", step: 0.00001 })
+                .addSlider(uniform.brightness, "value", "range", { label: "Brightness", step: 0.00001 })
+                .addSlider(uniform.colorExposer, "value", "range", { label: "Color Exposer", step: 0.00001 })
+                .addSlider(uniform.strength, "value", "range", { label: "Strength", step: 0.00001 })
+                .addSlider(uniform.strength, "value", "rangep", { label: "Strength Precise", step: 0.00001 })
+                .addSlider(uniform.exposer, "value", "range", { label: "Exposer", step: 0.00001 })
+              document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = 'auto')
+              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
+              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
+              document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color').parentElement.style.width = '60%'
+
+            }
+
+
+            if (false) {
+              const gui = new dat.GUI()
               isdebug[1] = true
               const debug = {
                 color: '#ffffff',
@@ -482,27 +529,6 @@ function Shery() {
                   navigator.clipboard.writeText(JSON.stringify(rest))
                 }
               }
-              gui.add(uniform.onMouse, "value").name("Effect On Hower")
-              gui.add(uniform.distortion, "value").name("Distortion Effect")
-              gui.add(uniform.mode, "value", { Off: -1, Add: 0, Multiply: 1, Screen: 2, Negitive: 3, Natural: 7, Overlay: -2, SoftLight: -3, ColorDoge: -4, ColorBurn: -5, Avarage: 13, Darken: -6, Diffrance: -7, Exclusion: -8, "Reflact/Glow": -9, Phonix: -10, Substract: 5, Mod: 8, Neon: 6, NeonNegative: 9, Dark: 10, }).name("Blend/Overlay Mode")
-              gui.add(uniform.mousemove, "value", { Off: 0, Mode1: 1, Mode2: 2, Mode3: 3, }).name("Mousemove Effect")
-              gui.add(uniform.modeA, "value", { sin: 1, cos: 0, tan: 2, atan: 3, }).name("Effect StyleA")
-              gui.add(uniform.modeN, "value", { sin: 0, cos: 1, tan: 2, atan: 3, }).name("Effect StyleN")
-              gui.add(uniform.speed, "value", -500, 500, 0.001).name("Speed")
-              gui.add(uniform.speed, "value", -10, 10, 0.001).name("Speed Precise")
-              gui.add(uniform.frequency, "value", -800, 800, 10).name("Frequency")
-              gui.add(uniform.frequency, "value", -50, 50, 0.0001).name("Frequency Precise")
-              gui.add(uniform.angle, "value", 0, Math.PI, 0.0001).name("Angle")
-              gui.add(uniform.waveFactor, "value", -3, 3, 0.0001).name("Wave Factor")
-              gui.add(uniform.pixelStrength, "value", -20, 100, 0.1).name("Pixel Strength")
-              gui.add(uniform.pixelStrength, "value", -20, 20, 0.0001).name("Precise Pixel Strength")
-              gui.add(uniform.quality, "value", 0, 10, 1).name("Quality")
-              gui.add(uniform.contrast, "value", -25, 25, 0.0001).name("Contrast")
-              gui.add(uniform.brightness, "value", -1, 25, 0.0001).name("Brightness")
-              gui.add(uniform.colorExposer, "value", -5, 5, 0.00001).name("Color Exposer")
-              gui.add(uniform.strength, "value", -40, 40, 0.0001).name("Strength")
-              gui.add(uniform.strength, "value", -5, 5, 0.0001).name("Strength Precise")
-              gui.add(uniform.exposer, "value", -100, 100, 0.0001).name("Exposer")
               gui.addColor(debug, "color").onChange(() => { uniform.color.value.set(debug.color) }).name("Tint")
               gui.add(debug, "SAVECONFIG").name('Copy To Clipboard ')
 
@@ -531,17 +557,9 @@ function Shery() {
             const clock = new THREE.Clock()
             function animate() {
               const elapsedTime = clock.getElapsedTime()
-              if (!gui.closed)
-                gui.domElement.querySelectorAll('.dg li:not(.folder)').forEach(le => {
-                  le.style.height = "35px"
-                  le.style.display = ""
-
-                })
-              else {
-                gui.domElement.querySelectorAll('.dg li:not(.folder)').forEach(le => {
-                  le.style.display = "none"
-                })
-              }
+              if (document.querySelector('#controlKit .options'))
+                if (parseInt(document.querySelector('#controlKit .options').style.top) < 0)
+                  document.querySelector('#controlKit .options').style.top = '0px'
               renderer.domElement.display = ""
               uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, intersect === 1 ? 1 : 0, 0.1)
               uniform.time.value = elapsedTime
@@ -768,8 +786,8 @@ function Shery() {
                 gui.add(debug, "SAVECONFIG")
               }
 
-              const camera = new THREE.PerspectiveCamera(25, elem.width / elem.height, 0.1, 100);
-              camera.position.set(0, 0, 1);
+              const camera = new THREE.PerspectiveCamera(25, elem.width / elem.height, 0.1, 100)
+              camera.position.set(0, 0, 1)
               scene.add(camera)
 
               const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
