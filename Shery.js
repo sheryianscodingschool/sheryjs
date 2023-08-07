@@ -351,8 +351,8 @@ function Shery() {
             const fragment = /*glsl*/ `
             uniform vec2 resolution,mouse;
             uniform float uIntercept,time,frequency, angle, speed, waveFactor,contrast,pixelStrength, quality, brightness, colorExposer, strength, exposer;
-            uniform int mousemove, mode, modeA, modeN;
-            uniform bool onMouse,distortion;
+            uniform int onMouse, mousemove, mode, modeA, modeN;
+            uniform bool distortion,onMouseExit;
             uniform vec3 color;
             varying vec2 vuv;
             uniform sampler2D uTexture;
@@ -400,7 +400,7 @@ function Shery() {
                 }
                 col = (color*4.5) * (a + colorExposer) +exposer* a + a + d;
                 vec4 base = distortion? texture2D(uTexture,vuv+a+contrast/100.0):texture2D(uTexture,vuv);
-                base =onMouse? mix( texture2D(uTexture,vuv),base,uIntercept):base;
+                base = onMouse == 0 ? base : onMouse == 1 ? mix( texture2D(uTexture,vuv),base,uIntercept) : mix( base,texture2D(uTexture,vuv),uIntercept);
                 vec4 blend = vec4(col, 1.0);
                 vec4 final = mix( base,gl_FragColor,uIntercept);
                 if (mode == -10) final = base;
@@ -426,7 +426,7 @@ function Shery() {
                 else if(mode==10) final = blend - base * blend;
                 else if(mode==11) final = (base +  blend/2.0);
                 final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
-                final =onMouse? mix( base , final ,uIntercept):final;
+                final = onMouse == 0 ? final : onMouse == 1 ? mix( base , final ,uIntercept) : mix( final , base ,uIntercept) ;
                 gl_FragColor=final;          
             }`
             let intersect = 0
@@ -447,7 +447,8 @@ function Shery() {
                 uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute("src")) },
                 mouse: { value: new THREE.Vector2(mouse.x, mouse.y) },
                 uIntercept: { value: 0 },
-                onMouse: { value: false },
+                onMouse: { value: 0 },
+                onMouseExit: { value: false },
                 distortion: { value: true },
                 mode: { value: -3 },
                 mousemove: { value: 0 },
@@ -480,39 +481,43 @@ function Shery() {
                 "Trig A": "Cos",
                 "Trig N": "Sin",
                 "Mouse": ["Off", "Mode 1", "Mode 2", "Mode 3"],
+                "onMouse": ["Always Active", "Deactive On Hover", "Active On Hover"],
+                "Active": "Always Active",
                 "Mouse Active": "Off",
-                "Color": "#54A8FF"
+                "Color": "#54A8FF",
+                'speed': { 'precise': 1, 'normal': 1, 'range': [-500, 500], 'rangep': [-10, 10] },
+                'frequency': { 'precise': 1, 'normal': 50, 'range': [-800, 800], 'rangep': [-50, 50] },
+                'pixelStrength': { 'precise': 1, 'normal': 3, range: [-20, 100], 'rangep': [-20, 20] },
+                'strength': { 'precise': 1, 'normal': 0.2, 'range': [-40, 40], 'rangep': [-5, 5] },
+
               }
-              controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [550, 0], width: 200 })
+              controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [350, 0], width: 250 })
                 .addButton('Save To Clipboard', () => {
                   const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
                   navigator.clipboard.writeText(JSON.stringify(rest))
                 })
-
-                //FIXME Fix The same value uniform
-
-                .addCheckbox(uniform.onMouse, "value", { label: "Effect On Hower" })
                 .addCheckbox(uniform.distortion, "value", { label: "Distortion Effect" })
+                .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniform.onMouse.value = x })
                 .addSelect(debugObj, 'Mode', { target: "Mode Active", label: 'Blend/Overlay Mode', onChange: x => uniform.mode.value = x - 10 })
                 .addSelect(debugObj, 'Mouse', { target: "Mouse Active", label: 'Mousemove Effect', onChange: x => uniform.mousemove.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniform.modeA.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniform.modeN.value = x })
                 .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniform.color.value.set(x) })
               controlKit.addPanel({ label: "Debug Panel", width: 350, position: 'right' })
-                .addSlider(uniform.speed, "value", "range", { label: "Speed", step: 0.00001 })
-                .addSlider(uniform.speed, "value", "rangep", { label: "Speed Precise", step: 0.00001 })
-                .addSlider(uniform.frequency, "value", "range", { label: "Frequency", step: 0.00001 })
-                .addSlider(uniform.frequency, "value", "rangep", { label: "Frequency Precise", step: 0.00001 })
+                .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniform.speed.value = debugObj.speed.normal })
+                .addSlider(debugObj.speed, "precise", "rangep", { label: "Speed Precise", step: 0.00001, onChange: () => uniform.speed.value = debugObj.speed.precise })
+                .addSlider(debugObj.frequency, "normal", "range", { label: "Frequency", step: 0.00001, onChange: () => uniform.frequency.value = debugObj.frequency.normal })
+                .addSlider(debugObj.frequency, "precise", "rangep", { label: "Frequency Precise", step: 0.00001, onChange: () => uniform.frequency.value = debugObj.frequency.precise })
                 .addSlider(uniform.angle, "value", "range", { label: "Angle", step: 0.00001 })
                 .addSlider(uniform.waveFactor, "value", "range", { label: "Wave Factor", step: 0.00001 })
-                .addSlider(uniform.pixelStrength, "value", "range", { label: "Pixel Strength", step: 0.00001 })
-                .addSlider(uniform.pixelStrength, "value", "rangep", { label: "Precise Pixel", step: 0.00001 })
+                .addSlider(debugObj.pixelStrength, "normal", "range", { label: "Pixel Strength", step: 0.00001, onChange: () => uniform.pixelStrength.value = debugObj.pixelStrength.normal })
+                .addSlider(debugObj.pixelStrength, "precise", "rangep", { label: "Precise Pixel", step: 0.00001, onChange: () => uniform.pixelStrength.value = debugObj.pixelStrength.normal })
                 .addSlider(uniform.quality, "value", "range", { label: "Quality", step: 0.00001 })
                 .addSlider(uniform.contrast, "value", "range", { label: "Contrast", step: 0.00001 })
                 .addSlider(uniform.brightness, "value", "range", { label: "Brightness", step: 0.00001 })
                 .addSlider(uniform.colorExposer, "value", "range", { label: "Color Exposer", step: 0.00001 })
-                .addSlider(uniform.strength, "value", "range", { label: "Strength", step: 0.00001 })
-                .addSlider(uniform.strength, "value", "rangep", { label: "Strength Precise", step: 0.00001 })
+                .addSlider(debugObj.strength, "normal", "range", { label: "Strength", step: 0.00001, onChange: x => uniform.strength.value = debugObj.strength.normal })
+                .addSlider(debugObj.strength, "precise", "rangep", { label: "Strength Precise", step: 0.00001, onChange: x => uniform.strength.value = debugObj.strength.precise })
                 .addSlider(uniform.exposer, "value", "range", { label: "Exposer", step: 0.00001 })
               document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = 'auto')
               document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
@@ -623,7 +628,7 @@ function Shery() {
                   .addSlider(uniform.uFrequencyY, "value", "range", { label: "FrequencyY", step: 0.01 })
                   .addSlider(uniform.uFrequencyZ, "value", "range", {
                     label: "FrequencyZ", onChange: x => {
-                      camera.fov = 1 + x / 400
+                      camera.fov = 1 + uniform.uFrequencyZ.value / 400
                       camera.updateProjectionMatrix()
                     }, step: 0.01
                   })
@@ -813,74 +818,74 @@ function Shery() {
     }, //!SECTION 
 
 
-    // SECTION - 3D Text Effect 
-    text3DEffect: (element, opts = { para: {} },) => {
-      document.querySelectorAll(element).forEach(function (elem) {
-        var parent = elem.parentNode
-        var div = document.createElement("div")
-        div.classList.add(elem.classList[0])
-        div.id = elem.id
-        const aspect = elem.offsetWidth / elem.offsetHeight
-        parent.replaceChild(div, elem)
-        div.appendChild(elem)
-        const scene = new THREE.Scene()
-        const camera = new THREE.PerspectiveCamera(1, elem.offsetWidth / elem.offsetHeight, 0.1, 100)
-        camera.position.z = 3
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-        renderer.setSize(elem.offsetWidth, elem.offsetHeight)
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        elem.style.display = "none"
-        elem.parentElement.appendChild(renderer.domElement)
-        const { size, height, curveSegments, bevelEnabled, bevelThickness, bevelSize, bevelOffset, bevelSegments } = opts['para']
-        const fontLoader = new THREE.FontLoader()
-        const text = elem.textContent
-        if (!font)
-          var font = 'https://gist.githubusercontent.com/aayushchouhan24/d13b1402b75d5dad25de027a89627fcc/raw/c3823eac9d61c6b749785826327180aeca36b402/font.json'
-        fontLoader.load(font, function (font) {
-          const textGeometry = new THREE.TextGeometry(text.replace('  ', '\n'), {
-            font: font,
-            size: size ? size / (text.split('\n').length + 1) : 0.03 / (text.split('\n').length + 1),
-            height: height ? height : 0.02,
-            curveSegments: curveSegments ? curveSegments : 12,
-            bevelEnabled: bevelEnabled ? bevelEnabled : true,
-            bevelThickness: bevelThickness ? bevelThickness : 0,
-            bevelSize: bevelSize ? bevelSize : 0,
-            bevelOffset: bevelOffset ? bevelOffset : 0,
-            bevelSegments: bevelSegments ? bevelSegments : 0
+    // // SECTION - 3D Text Effect 
+    // text3DEffect: (element, opts = { para: {} },) => {
+    //   document.querySelectorAll(element).forEach(function (elem) {
+    //     var parent = elem.parentNode
+    //     var div = document.createElement("div")
+    //     div.classList.add(elem.classList[0])
+    //     div.id = elem.id
+    //     const aspect = elem.offsetWidth / elem.offsetHeight
+    //     parent.replaceChild(div, elem)
+    //     div.appendChild(elem)
+    //     const scene = new THREE.Scene()
+    //     const camera = new THREE.PerspectiveCamera(1, elem.offsetWidth / elem.offsetHeight, 0.1, 100)
+    //     camera.position.z = 3
+    //     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    //     renderer.setSize(elem.offsetWidth, elem.offsetHeight)
+    //     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    //     elem.style.display = "none"
+    //     elem.parentElement.appendChild(renderer.domElement)
+    //     const { size, height, curveSegments, bevelEnabled, bevelThickness, bevelSize, bevelOffset, bevelSegments } = opts['para']
+    //     const fontLoader = new THREE.FontLoader()
+    //     const text = elem.textContent
+    //     if (!font)
+    //       var font = 'https://gist.githubusercontent.com/aayushchouhan24/d13b1402b75d5dad25de027a89627fcc/raw/c3823eac9d61c6b749785826327180aeca36b402/font.json'
+    //     fontLoader.load(font, function (font) {
+    //       const textGeometry = new THREE.TextGeometry(text.replace('  ', '\n'), {
+    //         font: font,
+    //         size: size ? size / (text.split('\n').length + 1) : 0.03 / (text.split('\n').length + 1),
+    //         height: height ? height : 0.02,
+    //         curveSegments: curveSegments ? curveSegments : 12,
+    //         bevelEnabled: bevelEnabled ? bevelEnabled : true,
+    //         bevelThickness: bevelThickness ? bevelThickness : 0,
+    //         bevelSize: bevelSize ? bevelSize : 0,
+    //         bevelOffset: bevelOffset ? bevelOffset : 0,
+    //         bevelSegments: bevelSegments ? bevelSegments : 0
 
-          })
-          const material = opts.color || opts.matcap ? new THREE.MeshMatcapMaterial({ color: new THREE.Color(color) }) : new THREE.MeshNormalMaterial()
-          if (opts.matcap) material.matcap = new THREE.TextureLoader().load(matcap)
-          const textMesh = new THREE.Mesh(textGeometry, material)
-          textGeometry.center()
-          scene.add(textMesh)
+    //       })
+    //       const material = opts.color || opts.matcap ? new THREE.MeshMatcapMaterial({ color: new THREE.Color(color) }) : new THREE.MeshNormalMaterial()
+    //       if (opts.matcap) material.matcap = new THREE.TextureLoader().load(matcap)
+    //       const textMesh = new THREE.Mesh(textGeometry, material)
+    //       textGeometry.center()
+    //       scene.add(textMesh)
 
-          const clock = new THREE.Clock()
+    //       const clock = new THREE.Clock()
 
-          function animate() {
-            if (typeof opts.animation === 'function')
-              opts.animation(textMesh, clock.getElapsedTime()) // Call the user-defined animate function and pass textMesh as an argument
-            renderer.render(scene, camera)
-          }
+    //       function animate() {
+    //         if (typeof opts.animation === 'function')
+    //           opts.animation(textMesh, clock.getElapsedTime()) // Call the user-defined animate function and pass textMesh as an argument
+    //         renderer.render(scene, camera)
+    //       }
 
 
-          window.addEventListener('resize', () => {
-            renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-          })
+    //       window.addEventListener('resize', () => {
+    //         renderer.setSize(div.getBoundingClientRect().width, div.getBoundingClientRect().width / aspect)
+    //         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    //       })
 
-          function renderLoop() {
-            if (!opts.animation || isAnimated) {
-              textMesh.rotation.y = Math.cos(clock.getElapsedTime()) / 6
-              textMesh.rotation.x = Math.sin(clock.getElapsedTime()) / 4
-            }
-            requestAnimationFrame(renderLoop)
-            animate()
-          }
-          renderLoop()
-        })
+    //       function renderLoop() {
+    //         if (!opts.animation || isAnimated) {
+    //           textMesh.rotation.y = Math.cos(clock.getElapsedTime()) / 6
+    //           textMesh.rotation.x = Math.sin(clock.getElapsedTime()) / 4
+    //         }
+    //         requestAnimationFrame(renderLoop)
+    //         animate()
+    //       }
+    //       renderLoop()
+    //     })
 
-      })
-    },//!SECTION 
+    //   })
+    // },//!SECTION 
   }
 }

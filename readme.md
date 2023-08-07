@@ -9,6 +9,7 @@ Shery.js is a powerful and versatile JavaScript library that provides a collecti
 1. [Introduction](#introduction)
 2. [Installation](#installation)
 3. [Getting Started](#getting-started)
+   - Required Libraries
 4. [Cool Effects](#cool-effects)
    - Mouse Follower
    - Mask Zoomer or Image Masker
@@ -50,8 +51,23 @@ Once you have included Shery.js in your project, you can start using its effects
 const Shery = new Shery();
 Shery.mouseFollower();
 ```
+###Required Libraries
+To successfully run this project, you'll need some libraries.
+
+```javascript
+// Gsap is needed for Basic Effects
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+// Three.js is needed for 3d Effects
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+// ControlKit is needed for Debug Panel
+    <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
+
+```
 
 ## Cool Effects
+These are effects are implemented with the help of Gsap and Css to offer a unique experience with single function.
 
 ### Mouse Follower
 
