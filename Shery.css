@@ -48,3 +48,14 @@
 .parent{
     display: inline-block;
 }
+
+.opener{
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    transform: translate(-50%,-50%);
+}
+
+.opener img{
+    width: 200px;
+}
