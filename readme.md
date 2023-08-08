@@ -1,6 +1,6 @@
 # Shery.js - Cool Effects Library
 
-<img src="logo.png" width="80"/>
+[![](./media/logonospace.png)]()
 
 Shery.js is a powerful and versatile JavaScript library that provides a collection of cool effects and 3d functionalities to enhance the user experience on web applications. With Shery.js, you can easily implement eye-catching and interactive effects, adding a touch of creativity to your projects. This Markdown document serves as the documentation and guide for using Shery.js in your web development projects.
 
@@ -21,7 +21,7 @@ Shery.js is a powerful and versatile JavaScript library that provides a collecti
    - Dynamic 3D Wave/Wobble Effect
    - Dynamic 3D Wind Effect
    - 3D Text Effect
-6. [Usage](#usage)
+6. [Debug Usage](#usage)
 7. [Examples](#examples)
 8. [Contributing](#contributing)
 9. [License](#license)
@@ -51,6 +51,7 @@ Once you have included Shery.js in your project, you can start using its effects
 const Shery = new Shery();
 Shery.mouseFollower();
 ```
+
 ###Required Libraries
 To successfully run this project, you'll need some libraries.
 
@@ -67,6 +68,7 @@ To successfully run this project, you'll need some libraries.
 ```
 
 ## Cool Effects
+
 These are effects are implemented with the help of Gsap and Css to offer a unique experience with single function.
 
 ### Mouse Follower
@@ -90,7 +92,8 @@ The mask zoomer effect enables zooming into an image on mouse hover with a smoot
 ```javascript
 const Shery = new Shery();
 //Parameters are optional.
-Shery.imageMasker("img", {  // Element to target.
+Shery.imageMasker("img", {
+  // Element to target.
   //Parameters are optional.
   mouseFollower: true,
   text: "Shery",
@@ -106,7 +109,8 @@ The magnet mouse attractor effect draws elements towards the cursor, as if they 
 ```javascript
 const Shery = new Shery();
 //Parameters are optional.
-Shery.makeMagnet("img", {  // Element to target.
+Shery.makeMagnet("img", {
+  // Element to target.
   //Parameters are optional.
   ease: Expo.easeOut,
   duration: 1,
@@ -120,7 +124,8 @@ The text animate effect animates text with cool animation , with many preset ani
 ```javascript
 const Shery = new Shery();
 //Parameters are optional.
-Shery.textAnimate("text", {  // Element to target.
+Shery.textAnimate("text", {
+  // Element to target.
   //Parameters are optional.
   style: 1,
   y: 10,
@@ -140,65 +145,83 @@ These are effects are implemented with the help of Three.js to offer a unique ex
 ```javascript
 <img class="img" src="example.img">//Must provide a class to image.
 
-var Shery = new Shery()
-Shery.imageEffect('img', {style:1,})
+var Shery = new Shery();
 
+Shery.imageEffect("img", {
+  style: 2, //Select Style
+  debug: true, // Debug Panel
+  config: { /* Confid made from debug panel */}
+});
 ```
 
 ### Simple Liquid Distortion Effect
+
+[![img](./media/effect1.gif)]()
 
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
 ```javascript
 var Shery = new Shery();
-Shery.imageEffect("img", { style: 1 });
+Shery.imageEffect(".img");
 ```
 
 ### Dynamic Distortion Effect
+
+[![img](./media/effect2.gif)]()
 
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
 ```javascript
 var Shery = new Shery();
-Shery.imageEffect("img", {
-  style: 1,
-});
+Shery.imageEffect("img", { style: 2 });
 ```
 
 ### Dynamic 3D Wave/Wobble Effect
 
+[![img](./media/effect3.gif)]()
+
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
 ```javascript
-const dynamicWaveWobble = new Shery.Dynamic3DWaveWobble();
-dynamicWaveWobble.init();
+var Shery = new Shery();
+Shery.imageEffect("img", { style: 3 });
 ```
 
 ### Dynamic 3D Wind Effect
 
+[![img](./media/effect4.gif)]()
+
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
 ```javascript
-const dynamicWind = new Shery.Dynamic3DWind();
-dynamicWind.init();
+var Shery = new Shery();
+Shery.imageEffect("img", { style: 4 });
 ```
 
-### 3D Text Effect
+## Debug Usage
 
-With the 3D text effect, you can create captivating and interactive 3D text elements that respond to user interactions.
+[![img](./media/debug.png)]()
 
-```javascript
-const text3D = new Shery.ThreeDTextEffect();
-text3D.init();
-```
+To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameater `{debug:true}` for effects which supports it.
 
-## Usage
 
-To use any of the effects or Three.js functionalities provided by Shery.js, simply create an instance of the corresponding class and call the `init()` method. You can customize the effects further by passing configuration options during initialization.
+To save/use the tweek from your debug you need to click on `SAVE TO CLIPBOARD` and the paste that config in config parameter.
 
 ```javascript
-const myEffect = new Shery.SomeCoolEffect();
-myEffect.init(options);
+<img class="img" src="example.img">
+
+var Shery = new Shery()
+Shery.imageEffect('.img',
+    {
+        style: 3,
+        debug: true,
+        config: {
+            "uFrequencyX": { "value": 100, "range": [0, 100] },
+            "uFrequencyY": { "value": 44.86, "range": [0, 100] },
+            "uFrequencyZ": { "value": 100, "range": [0, 100] },
+            "uTime": { "value": 37.14299999999965 }
+        }
+    })
 ```
 
 ## Examples
@@ -212,7 +235,3 @@ We welcome contributions from the community to enhance and expand Shery.js. If y
 ## License
 
 Shery.js is released under the [MIT License](link-to-license). Feel free to use it in both personal and commercial projects.
-
----
-
-Congratulations! You now have the GitHub Markdown documentation for your Shery.js library. You can further customize and expand this document based on the specifics of your library and add more detailed instructions and explanations for each effect and Three.js functionality provided by Shery.js. Good luck with your project!
