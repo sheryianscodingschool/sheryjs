@@ -632,7 +632,7 @@ function Shery() {
               const uniform = mesh.material.uniforms
               if (opts.config) Object.keys(opts.config).forEach((key) => {
                 uniform[key].value = opts.config[key].value
-                camera.fov = 1 + uniform.uFrequency.value.z / 400
+                camera.fov = 1 + uniform.uFrequencyZ.value / 400
                 camera.updateProjectionMatrix()
               })
               if ((opts.debug && !isdebug[2]) || false) {
