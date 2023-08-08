@@ -1,6 +1,6 @@
 # Shery.js - Cool Effects Library
 
-[![](./media/logonospace.png)]()
+![Shery.js Logo](./media/logonospace.png)
 
 Shery.js is a powerful and versatile JavaScript library that provides a collection of cool effects and 3d functionalities to enhance the user experience on web applications. With Shery.js, you can easily implement eye-catching and interactive effects, adding a touch of creativity to your projects. This Markdown document serves as the documentation and guide for using Shery.js in your web development projects.
 
@@ -156,7 +156,7 @@ Shery.imageEffect("img", {
 
 ### Simple Liquid Distortion Effect
 
-[![img](./media/effect1.gif)]()
+![Simple Liquid Distortion Effect](./media/effect1.gif)
 
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
@@ -167,7 +167,7 @@ Shery.imageEffect(".img");
 
 ### Dynamic Distortion Effect
 
-[![img](./media/effect2.gif)]()
+![Dynamic Distortion Effect](./media/effect2.gif)
 
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
@@ -178,7 +178,7 @@ Shery.imageEffect("img", { style: 2 });
 
 ### Dynamic 3D Wave/Wobble Effect
 
-[![img](./media/effect3.gif)]()
+![Dynamic 3D Wave/Wobble Effect](./media/effect3.gif)
 
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
@@ -189,7 +189,7 @@ Shery.imageEffect("img", { style: 3 });
 
 ### Dynamic 3D Wind Effect
 
-[![img](./media/effect4.gif)]()
+![Dynamic 3D Wind Effect](./media/effect4.gif)
 
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
@@ -200,7 +200,7 @@ Shery.imageEffect("img", { style: 4 });
 
 ## Debug Usage
 
-[![img](./media/debug.png)]()
+![Debug](./media/debug.png)
 
 To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameater `{debug:true}` for effects which supports it.
 
