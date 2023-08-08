@@ -1,6 +1,119 @@
 function Shery() {
   var globalMouseFollower = null
+  var isdebug = []
   const lerp = (x, y, a) => x * (1 - a) + y * a
+
+  function redraw(plane, v) {
+    let newGeometry = new THREE.PlaneGeometry(plane.geometry.parameters.width, plane.geometry.parameters.height, v, v)
+    plane.geometry.dispose()
+    plane.geometry = newGeometry
+  }
+  function fix() {
+    if (document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap'))
+      document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = '30%')
+
+    if (document.querySelector('#controlKit .panel .button, #controlKit .picker .button')) {
+      document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
+      document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
+    }
+    if (document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color'))
+      document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color').parentElement.style.width = '60%'
+  }
+  function init(elem, vertex, fragment, uniforms, { debug = false, effect = 0, aspect = 1, size = .01744, geoVertex = 1, fov = 1, dposition = 1 } = {}) {
+    let intersect = 0
+    const mouse = new THREE.Vector2()
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 2)
+    camera.position.z = 1
+
+    uniforms.time = { value: 0 }
+    uniforms.uTexture = { value: new THREE.TextureLoader().load(elem.getAttribute("src")) }
+    uniforms.mouse = { value: new THREE.Vector2(mouse.x, mouse.y) }
+    uniforms.uIntercept = { value: 0 }
+    uniforms.onMouse = { value: 0 }
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(elem.width, elem.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    elem.style.visibility = "hidden"
+    elem.parentElement.appendChild(renderer.domElement)
+    const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(size, size, geoVertex, geoVertex),
+      new THREE.ShaderMaterial({
+        vertexShader: vertex,
+        fragmentShader: fragment,
+        uniforms,
+      }))
+    scene.add(plane)
+
+    var geoVertex = { value: 32, range: [1, 64] }
+    var debugObj = {
+      "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
+      "Mode Active": "Soft Light",
+      "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+      "Trig A": "Cos",
+      "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+      "Trig A": "Cos",
+      "Trig N": "Sin",
+      "Mouse": ["Off", "Mode 1", " Mode 2", " Mode 3"],
+      "onMouse": ["Always Active", "Active On Hover", "Deactive On Hover"],
+      "Active": "Always Active",
+      "Mouse Active": "Off",
+      "Color": "#54A8FF",
+      "speed": { "precise": 1, "normal": 1, "range": [-500, 500], "rangep": [-10, 10] },
+      "frequency": { "precise": 1, "normal": 50, "range": [-800, 800], "rangep": [-50, 50] },
+      "pixelStrength": { "precise": 1, "normal": 3, range: [-20, 100], "rangep": [-20, 20] },
+      "strength": { "precise": 1, "normal": 0.2, "range": [-40, 40], "rangep": [-5, 5] },
+      "s": .6, range: [.1, 1],
+      "f": .6, rangef: [1, 10]
+    }
+    var controlKit = null;
+    var panel = null;
+    if ((debug && !isdebug[effect]) || false) {
+      isdebug[2] = true
+      controlKit = new ControlKit({ loadAndSave: true })
+      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
+        .addButton('Save To Clipboard', () => {
+          const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms
+          navigator.clipboard.writeText(JSON.stringify(rest))
+        })
+    }
+    renderer.domElement.addEventListener("mousemove", (event) => {
+      mouse.x = (event.offsetX / elem.width) * 2 - 1
+      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+    })
+    renderer.domElement.addEventListener("mouseleave", (event) => {
+      intersect = 0
+      mouse.x = (event.offsetX / elem.width) * 2 - 1
+      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+    })
+    renderer.domElement.addEventListener("mouseenter", (event) => {
+      intersect = 1
+      mouse.x = (event.offsetX / elem.width) * 2 - 1
+      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+    })
+
+    window.addEventListener('resize', (x) => {
+      renderer.setSize(elem.width, elem.height)
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    })
+
+    const clock = new THREE.Clock()
+    function animate() {
+      if (renderer.domElement.width == 0 || renderer.domElement.height   == 0)
+        renderer.setSize(elem.width, elem.height)
+      if (document.querySelector('#controlKit .options'))
+        if (parseInt(document.querySelector('#controlKit .options').style.top) < 0)
+          document.querySelector('#controlKit .options').style.top = '0px'
+      uniforms.uIntercept.value = THREE.Math.lerp(uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.07)
+      uniforms.time.value = clock.getElapsedTime()
+      uniforms.mouse.value.set(mouse.x, mouse.y)
+      requestAnimationFrame(animate)
+      renderer.render(scene, camera)
+    }
+    return { debugObj, controlKit, panel, geoVertex, animate, plane, uniforms: plane.material.uniforms }
+  }
+
   return {
     // SECTION - Mouse Followerv
     mouseFollower: function (opts = {}) {
@@ -210,7 +323,6 @@ function Shery() {
 
     // SECTION - Image Effects 
     imageEffect: function (element = "img", opts = {}) {
-      var isdebug = []
       document.querySelectorAll(element).forEach(function (elem) {
         // parent setter
         var parent = elem.parentNode
@@ -219,14 +331,14 @@ function Shery() {
         div.classList.add(elem.classList[0])
         div.id = elem.id
         div.style.display = "inline-block"
-        frame.style.position="relative"
-        elem.style.position="absolute"
+        frame.style.position = "relative"
+        elem.style.position = "absolute"
         parent.replaceChild(frame, elem)
         frame.appendChild(elem)
         parent.replaceChild(div, frame)
         div.appendChild(frame)
 
-        
+
         // parent setter done
         // image effects
         switch (opts.style || 1) {
@@ -242,114 +354,88 @@ function Shery() {
             const fragment = /*glsl*/ `
             #define PI 3.141592653589793238462643383279502884197
             uniform sampler2D uTexture;
-            uniform float uIntercept,uTime;
-            uniform vec2 uMouse;
+            uniform float uIntercept,time,a;
+             
+            uniform int onMouse;
+            uniform vec2 mouse;
             varying vec2 vuv;
-                
-            vec2 fade(vec2 t){return t*t*t*(t*(t*6.-15.)+10.);}
-            float cnoise(vec2 P){
-                  vec4 Pi=floor(P.xyxy)+vec4(0.,0.,1.,1.);
-                  vec4 Pf=fract(P.xyxy)-vec4(0.,0.,1.,1.);
-                  Pi=mod(Pi,289.);
-                  vec4 ix=Pi.xzxz;
-                  vec4 iy=Pi.yyww;
-                  vec4 fx=Pf.xzxz;
-                  vec4 fy=Pf.yyww;
-                  vec4 i=mod(((mod(((ix*34.)+1.)*ix,289.)+iy*34.)+1.)*mod(((ix*34.)+1.)*ix,289.)+iy,289.);
-                  vec4 gx=vec4(2.)*fract(i*.0243902439)-1.;
-                  vec4 gy=abs(gx)-.5;
-                  vec4 tx=floor(gx+.5);
-                  gx=gx-tx;
-                  vec2 g00=vec2(gx.x,gy.x);
-                  vec2 g10=vec2(gx.y,gy.y);
-                  vec2 g01=vec2(gx.z,gy.z);
-                  vec2 g11=vec2(gx.w,gy.w);
-                  vec4 norm=vec4(1.79284291400159)-.85373472095314*
-                  vec4(dot(g00,g00),dot(g01,g01),dot(g10,g10),dot(g11,g11));
-                  g00*=norm.x;
-                  g01*=norm.y;
-                  g10*=norm.z;
-                  g11*=norm.w;
-                  float n00=dot(g00,vec2(fx.x,fy.x));
-                  float n10=dot(g10,vec2(fx.y,fy.y));
-                  float n01=dot(g01,vec2(fx.z,fy.z));
-                  float n11=dot(g11,vec2(fx.w,fy.w));
-                  vec2 fade_xy=fade(Pf.xy);
-                  vec2 n_x=mix(vec2(n00,n01),vec2(n10,n11),fade_xy.x);
-                  float n_xy=mix(n_x.x,n_x.y,fade_xy.y);
-                  return 2.3*n_xy;
+
+            vec3 mod289(vec3 x){	return x-floor(x*(1./289.))*289.;}
+            vec4 mod289(vec4 x){	return x-floor(x*(1./289.))*289.;}
+            vec4 permute(vec4 x){	return mod289(((x*34.)+1.)*x);}
+            vec4 taylorInvSqrt(vec4 r){	return 1.79284291400159-.85373472095314*r;}
+            float snoise(vec3 v){
+              const vec2 C=vec2(1./6.,1./3.);
+              const vec4 D=vec4(0.,.5,1.,2.);
+              vec3 i=floor(v+dot(v,C.yyy));
+              vec3 x0=v-i+dot(i,C.xxx);
+              vec3 g=step(x0.yzx,x0.xyz);
+              vec3 l=1.-g;
+              vec3 i1=min(g.xyz,l.zxy);
+              vec3 i2=max(g.xyz,l.zxy);
+              vec3 x1=x0-i1+C.xxx;
+              vec3 x2=x0-i2+C.yyy;
+              vec3 x3=x0-D.yyy;
+              i=mod289(i);
+              vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+              float n_=.142857142857;// 1.0/7.0
+              vec3 ns=n_*D.wyz-D.xzx;
+              vec4 j=p-49.*floor(p*ns.z*ns.z);
+              vec4 x_=floor(j*ns.z);
+              vec4 y_=floor(j-7.*x_);
+              vec4 x=x_*ns.x+ns.yyyy;
+              vec4 y=y_*ns.x+ns.yyyy;
+              vec4 h=1.-abs(x)-abs(y);
+              vec4 b0=vec4(x.xy,y.xy);
+              vec4 b1=vec4(x.zw,y.zw);
+              vec4 s0=floor(b0)*2.+1.;
+              vec4 s1=floor(b1)*2.+1.;
+              vec4 sh=-step(h,vec4(0.));
+              vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+              vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+              vec3 p0=vec3(a0.xy,h.x);
+              vec3 p1=vec3(a0.zw,h.y);
+              vec3 p2=vec3(a1.xy,h.z);
+              vec3 p3=vec3(a1.zw,h.w);
+              vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+              p0*=norm.x;
+              p1*=norm.y;
+              p2*=norm.z;
+              p3*=norm.w;
+              vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
+              m=m*m;
+              return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
+              dot(p2,x2),dot(p3,x3)));
             }
+
             void main(){
                   vec2 uv=vuv;
-                  vec2 surface=vec2(cnoise(uv-uMouse/7.+.2*uTime)*.08,cnoise(uv-uMouse/7.+.2*uTime)*.08);
-                  uv+=refract(vec2(uMouse.x/600.,uMouse.y/600.),mix(vec2(0.,0.),surface,uIntercept),1./1.333);
+                  vec3 v = vec3(vuv.x*1.0+time*a/10.0,vuv.y,time);
+                  vec2 val=uv-mouse/10.;
+                  vec2 surface=vec2(snoise(v)*.08,snoise(v)*.01);
+                  surface = onMouse == 0 ? surface : onMouse == 1 ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
+                  uv +=refract(vec2(.0,.0),surface,0.7);
                   gl_FragColor=texture2D(uTexture,uv);
             }`
-            let intersect = 0
-            const mouse = new THREE.Vector2()
-            const scene = new THREE.Scene()
-            const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
-            camera.position.z = 1
-            const sizes = {
-            }
-            const renderer = new THREE.WebGLRenderer()
-            renderer.setSize(elem.width, elem.height)
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-            elem.style.visibility = "hidden"
-            elem.parentElement.appendChild(renderer.domElement)
 
+            var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
+              a: { value: 2, range: [0, 30] },
+              b: { value: 25, range: [0, 100] },
+              c: { value: 15, range: [0, 100] },
+            }, { effect: 1, debug: true })
 
-            const plane = new THREE.Mesh(
-              new THREE.PlaneGeometry(.01744, .01744),
-              new THREE.ShaderMaterial({
-                vertexShader: vertex,
-                fragmentShader: fragment,
-                uniforms: {
-                  uTime: { value: 0, },
-                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute("src")), },
-                  uMouse: { value: new THREE.Vector2(mouse.x, mouse.y), },
-                  uIntercept: { value: 0, },
-                },
-              }))
-            scene.add(plane)
-
-            renderer.domElement.addEventListener("mousemove", (event) => {
-              mouse.x = (event.offsetX / elem.width) * 2 - 1
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+            if (opts.config) Object.keys(opts.config).forEach((key) => {
+              uniforms[key].value = opts.config[key].value
+              camera.fov = 1 + uniforms.uFrequencyZ.value / 400
+              camera.updateProjectionMatrix()
             })
-            renderer.domElement.addEventListener("mouseleave", (event) => {
-              intersect = 0
-              mouse.x = (event.offsetX / elem.width) * 2 - 1
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-            })
-            renderer.domElement.addEventListener("mouseenter", (event) => {
-              intersect = 1
-              mouse.x = (event.offsetX / elem.width) * 2 - 1
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-            })
-
-            window.addEventListener('resize', (x) => {
-              renderer.setSize(elem.width, elem.height)
-              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-            })
-
-            const clock = new THREE.Clock()
-            function animate() {
-              if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-                renderer.setSize(elem.width, elem.height)
-              plane.material.uniforms.uIntercept.value = THREE.Math.lerp(plane.material.uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.1)
-              plane.material.uniforms.uTime.value = clock.getElapsedTime()
-              plane.material.uniforms.uMouse.value.set(mouse.x, mouse.y)
-              requestAnimationFrame(animate)
-              renderer.render(scene, camera)
+            if (panel) {
+              panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
+              .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })
+              fix()
             }
             animate()
-            return {
-              updateTexture: (newTexture) => {
-                texture.image = newTexture
-                texture.needsUpdate = true
-              },
-            }
+
           }
             break//!STUB 
 
@@ -363,7 +449,7 @@ function Shery() {
             uniform vec2 resolution,mouse;
             uniform float uIntercept,time,frequency, angle, speed, waveFactor,contrast,pixelStrength, quality, brightness, colorExposer, strength, exposer;
             uniform int onMouse, mousemove, mode, modeA, modeN;
-            uniform bool distortion,onMouseExit;
+            uniform bool distortion;
             uniform vec3 color;
             varying vec2 vuv;
             uniform sampler2D uTexture;
@@ -440,167 +526,71 @@ function Shery() {
                 final = onMouse == 0 ? final : onMouse == 1 ? mix( base , final ,uIntercept) : mix( final , base ,uIntercept) ;
                 gl_FragColor=final;          
             }`
-            let intersect = 0
-            const mouse = new THREE.Vector2()
-            const scene = new THREE.Scene()
-            const camera = new THREE.PerspectiveCamera(1, 1, 0.1, 100)
-            camera.position.z = 1
-            const renderer = new THREE.WebGLRenderer()
-            renderer.setSize(elem.width, elem.height)
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-            elem.style.visibility = "hidden"
-            elem.parentElement.appendChild(renderer.domElement)
-            const plane = new THREE.Mesh(
-              new THREE.PlaneGeometry(.01744, .01744),
-              new THREE.ShaderMaterial({
-                vertexShader: vertex,
-                fragmentShader: fragment,
-                uniforms: {
-                  time: { value: 0 },
-                  resolution: { value: new THREE.Vector2(elem.width, elem.height) },
-                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute("src")) },
-                  mouse: { value: new THREE.Vector2(mouse.x, mouse.y) },
-                  uIntercept: { value: 0 },
-                  onMouse: { value: 0 },
-                  onMouseExit: { value: false },
-                  distortion: { value: true },
-                  mode: { value: -3 },
-                  mousemove: { value: 0 },
-                  modeA: { value: 1 },
-                  modeN: { value: 0 },
-                  speed: { value: 1, range: [-500, 500], rangep: [-10, 10] },
-                  frequency: { value: 50, range: [-800, 800], rangep: [-50, 50] },
-                  angle: { value: 0.5, range: [0, Math.PI] },
-                  waveFactor: { value: 1.4, range: [-3, 3] },
-                  color: { value: new THREE.Color(0.33, 0.66, 1) },
-                  pixelStrength: { value: 3, range: [-20, 100], rangep: [-20, 20] },
-                  quality: { value: 5, range: [0, 10] },
-                  contrast: { value: 1, range: [-25, 25] },
-                  brightness: { value: 1, range: [-1, 25] },
-                  colorExposer: { value: 0.182, range: [-5, 5] },
-                  strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
-                  exposer: { value: 8, range: [-100, 100] },
-                },
-              }))
-            scene.add(plane)
-            const uniform = plane.material.uniforms
-            if (opts.config) Object.keys(opts.config).forEach((key) => { uniform[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
-
-            if ((opts.debug && !isdebug[1]) || false) {
-              var controlKit = new ControlKit({ loadAndSave: true })
-              var debugObj = {
-                "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
-                "Mode Active": "Soft Light",
-                "Trigo": ["Sin", "Cos", "Tan", "Atan"],
-                "Trig A": "Cos",
-                "Trigo": ["Sin", "Cos", "Tan", "Atan"],
-                "Trig A": "Cos",
-                "Trig N": "Sin",
-                "Mouse": ["Off", "Mode 1", " Mode 2", " Mode 3"],
-                "onMouse": ["Always Active", "Deactive On Hover", "Active On Hover"],
-                "Active": "Always Active",
-                "Mouse Active": "Off",
-                "Color": "#54A8FF",
-                'speed': { 'precise': 1, 'normal': 1, 'range': [-500, 500], 'rangep': [-10, 10] },
-                'frequency': { 'precise': 1, 'normal': 50, 'range': [-800, 800], 'rangep': [-50, 50] },
-                'pixelStrength': { 'precise': 1, 'normal': 3, range: [-20, 100], 'rangep': [-20, 20] },
-                'strength': { 'precise': 1, 'normal': 0.2, 'range': [-40, 40], 'rangep': [-5, 5] },
-
-              }
-              controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [350, 0], width: 300 })
-                .addButton('Save To Clipboard', () => {
-                  const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
-                  navigator.clipboard.writeText(JSON.stringify(rest))
-                })
-                .addCheckbox(uniform.distortion, "value", { label: "Distortion Effect" })
-                .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniform.onMouse.value = x })
-                .addSelect(debugObj, 'Mode', { target: "Mode Active", label: 'Blend/Overlay Mode', onChange: x => uniform.mode.value = x - 10 })
-                .addSelect(debugObj, 'Mouse', { target: "Mouse Active", label: 'Mousemove Effect', onChange: x => uniform.mousemove.value = x })
-                .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniform.modeA.value = x })
-                .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniform.modeN.value = x })
-                .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniform.modeN.value = x })
-                .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniform.color.value.set(x) })
+            var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
+              resolution: { value: new THREE.Vector2(elem.width, elem.height) },
+              distortion: { value: true },
+              mode: { value: -3 },
+              mousemove: { value: 0 },
+              modeA: { value: 1 },
+              modeN: { value: 0 },
+              speed: { value: 1, range: [-500, 500], rangep: [-10, 10] },
+              frequency: { value: 50, range: [-800, 800], rangep: [-50, 50] },
+              angle: { value: 0.5, range: [0, Math.PI] },
+              waveFactor: { value: 1.4, range: [-3, 3] },
+              color: { value: new THREE.Color(0.33, 0.66, 1) },
+              pixelStrength: { value: 3, range: [-20, 100], rangep: [-20, 20] },
+              quality: { value: 5, range: [0, 10] },
+              contrast: { value: 1, range: [-25, 25] },
+              brightness: { value: 1, range: [-1, 25] },
+              colorExposer: { value: 0.182, range: [-5, 5] },
+              strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
+              exposer: { value: 8, range: [-100, 100] },
+            }, { effect: 2, debug: true, dposition: 350 })
+            if (opts.config) Object.keys(opts.config).forEach((key) => { uniforms[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
+            if (panel) {
+              panel.addCheckbox(uniforms.distortion, "value", { label: "Distortion Effect" })
+                .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
+                .addSelect(debugObj, 'Mode', { target: "Mode Active", label: 'Blend/Overlay Mode', onChange: x => uniforms.mode.value = x - 10 })
+                .addSelect(debugObj, 'Mouse', { target: "Mouse Active", label: 'Mousemove Effect', onChange: x => uniforms.mousemove.value = x })
+                .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniforms.modeA.value = x })
+                .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
+                .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
+                .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniforms.color.value.set(x) })
               controlKit.addPanel({ label: "Debug Panel", width: 350, fixed: false, position: [0, 0], })
-                .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniform.speed.value = debugObj.speed.normal })
-                .addSlider(debugObj.speed, "precise", "rangep", { label: "Speed Precise", step: 0.00001, onChange: () => uniform.speed.value = debugObj.speed.precise })
-                .addSlider(debugObj.frequency, "normal", "range", { label: "Frequency", step: 0.00001, onChange: () => uniform.frequency.value = debugObj.frequency.normal })
-                .addSlider(debugObj.frequency, "precise", "rangep", { label: "Frequency Precise", step: 0.00001, onChange: () => uniform.frequency.value = debugObj.frequency.precise })
-                .addSlider(uniform.angle, "value", "range", { label: "Angle", step: 0.00001 })
-                .addSlider(uniform.waveFactor, "value", "range", { label: "Wave Factor", step: 0.00001 })
-                .addSlider(debugObj.pixelStrength, "normal", "range", { label: "Pixel Strength", step: 0.00001, onChange: () => uniform.pixelStrength.value = debugObj.pixelStrength.normal })
-                .addSlider(debugObj.pixelStrength, "precise", "rangep", { label: "Precise Pixel", step: 0.00001, onChange: () => uniform.pixelStrength.value = debugObj.pixelStrength.normal })
-                .addSlider(uniform.quality, "value", "range", { label: "Quality", step: 0.00001 })
-                .addSlider(uniform.contrast, "value", "range", { label: "Contrast", step: 0.00001 })
-                .addSlider(uniform.brightness, "value", "range", { label: "Brightness", step: 0.00001 })
-                .addSlider(uniform.colorExposer, "value", "range", { label: "Color Exposer", step: 0.00001 })
-                .addSlider(debugObj.strength, "normal", "range", { label: "Strength", step: 0.00001, onChange: x => uniform.strength.value = debugObj.strength.normal })
-                .addSlider(debugObj.strength, "precise", "rangep", { label: "Strength Precise", step: 0.00001, onChange: x => uniform.strength.value = debugObj.strength.precise })
-                .addSlider(uniform.exposer, "value", "range", { label: "Exposer", step: 0.00001 })
-              document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = '30%')
-              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
-              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
-              document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color').parentElement.style.width = '60%'
-
-            }
-
-            renderer.domElement.addEventListener("mousemove", (event) => {
-              mouse.x = (event.offsetX / elem.width) * 2 - 1
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-            })
-            renderer.domElement.addEventListener("mouseleave", (event) => {
-              intersect = 0
-              mouse.x = (event.offsetX / elem.width) * 2 - 1
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-            })
-            renderer.domElement.addEventListener("mouseenter", (event) => {
-              intersect = 1
-              mouse.x = (event.offsetX / elem.width) * 2 - 1
-              mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-            })
-            window.addEventListener('resize', () => {
-              renderer.setSize(elem.width, elem.height)
-              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-            })
-
-            const clock = new THREE.Clock()
-            function animate() {
-              const elapsedTime = clock.getElapsedTime()
-              if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-                renderer.setSize(elem.width, elem.height)
-
-              if (document.querySelector('#controlKit .options'))
-                if (parseInt(document.querySelector('#controlKit .options').style.top) < 0)
-                  document.querySelector('#controlKit .options').style.top = '0px'
-              uniform.uIntercept.value = THREE.Math.lerp(uniform.uIntercept.value, intersect === 1 ? 1 : 0, 0.1)
-              uniform.time.value = elapsedTime
-              uniform.mouse.value.set(mouse.x, mouse.y)
-              requestAnimationFrame(animate)
-              renderer.render(scene, camera)
+                .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.normal })
+                .addSlider(debugObj.speed, "precise", "rangep", { label: "Speed Precise", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.precise })
+                .addSlider(debugObj.frequency, "normal", "range", { label: "Frequency", step: 0.00001, onChange: () => uniforms.frequency.value = debugObj.frequency.normal })
+                .addSlider(debugObj.frequency, "precise", "rangep", { label: "Frequency Precise", step: 0.00001, onChange: () => uniforms.frequency.value = debugObj.frequency.precise })
+                .addSlider(uniforms.angle, "value", "range", { label: "Angle", step: 0.00001 })
+                .addSlider(uniforms.waveFactor, "value", "range", { label: "Wave Factor", step: 0.00001 })
+                .addSlider(debugObj.pixelStrength, "normal", "range", { label: "Pixel Strength", step: 0.00001, onChange: () => uniforms.pixelStrength.value = debugObj.pixelStrength.normal })
+                .addSlider(debugObj.pixelStrength, "precise", "rangep", { label: "Precise Pixel", step: 0.00001, onChange: () => uniforms.pixelStrength.value = debugObj.pixelStrength.normal })
+                .addSlider(uniforms.quality, "value", "range", { label: "Quality", step: 0.00001 })
+                .addSlider(uniforms.contrast, "value", "range", { label: "Contrast", step: 0.00001 })
+                .addSlider(uniforms.brightness, "value", "range", { label: "Brightness", step: 0.00001 })
+                .addSlider(uniforms.colorExposer, "value", "range", { label: "Color Exposer", step: 0.00001 })
+                .addSlider(debugObj.strength, "normal", "range", { label: "Strength", step: 0.00001, onChange: x => uniforms.strength.value = debugObj.strength.normal })
+                .addSlider(debugObj.strength, "precise", "rangep", { label: "Strength Precise", step: 0.00001, onChange: x => uniforms.strength.value = debugObj.strength.precise })
+                .addSlider(uniforms.exposer, "value", "range", { label: "Exposer", step: 0.00001 })
+              fix()
             }
             animate()
-            return {
-              updateTexture: (newTexture) => {
-                texture.image = newTexture
-                texture.needsUpdate = true
-              },
-            }
           }
             break//!STUB 
 
           // STUB - Dynamic 3d Wave/Wobble Effect 
           case 3: {
             const vertex = /*glsl*/ `
-            uniform float uFrequencyX;
-            uniform float uFrequencyY;
-            uniform float uFrequencyZ;
-            uniform float uTime;
+            uniform float uFrequencyX,uFrequencyY,uFrequencyZ,time,uIntercept;
+            uniform int onMouse;
             varying vec2 vUv;
             void main(){
                 vec3 uFrequency=vec3(uFrequencyX/.01744,uFrequencyY/.01744,uFrequencyZ);
                 vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-                float elevation = sin(modelPosition.x * uFrequency.x - uTime) *uFrequency.z/1000.0;
-                elevation += sin(modelPosition.y * uFrequency.y - uTime) *uFrequency.z/1000.0;
+                float elevation = sin(modelPosition.x * uFrequency.x - time) *uFrequency.z/1000.0;
+                elevation += sin(modelPosition.y * uFrequency.y - time) *uFrequency.z/1000.0;
                 modelPosition.z += elevation;
+                modelPosition = onMouse == 0 ? modelPosition : onMouse == 1 ? mix( modelMatrix * vec4(position, 1.0) , modelPosition ,uIntercept) : mix( modelPosition , modelMatrix * vec4(position, 1.0) ,uIntercept) ;
                 vec4 viewPosition = viewMatrix * modelPosition;
                 vec4 projectedPosition = projectionMatrix * viewPosition;
                 gl_Position = projectedPosition;
@@ -609,78 +599,28 @@ function Shery() {
             const fragment = /*glsl*/ `
             uniform sampler2D uTexture;
             varying vec2 vUv;
-            void main(){vec4 textureColor = texture2D(uTexture, vUv);gl_FragColor = textureColor;}`
+            void main(){gl_FragColor = texture2D(uTexture, vUv);}`
 
-            const scene = new THREE.Scene()
-            new THREE.TextureLoader().load(elem.getAttribute('src'), texture => {
-              const mesh = new THREE.Mesh(new THREE.PlaneGeometry(.01744, .01744, 150, 150), new THREE.ShaderMaterial({
-                vertexShader: vertex,
-                fragmentShader: fragment,
-                uniforms: {
-                  uFrequencyX: { value: 25, range: [0, 100] },
-                  uFrequencyY: { value: 25, range: [0, 100] },
-                  uFrequencyZ: { value: 15, range: [0, 100] },
-                  uTime: { value: 0 },
-                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
-                }
-              }))
-              scene.add(mesh)
+            var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
+              uFrequencyX: { value: 25, range: [0, 100] },
+              uFrequencyY: { value: 25, range: [0, 100] },
+              uFrequencyZ: { value: 15, range: [0, 100] },
+            }, { effect: 3, debug: true, geoVertex: 32, fov: 1.0375, size: .01744 })
 
-              const camera = new THREE.PerspectiveCamera(1 + .0375, 1, 0.1, 100)
-              camera.position.z = 1
-              scene.add(camera)
-              const uniform = mesh.material.uniforms
-              if (opts.config) Object.keys(opts.config).forEach((key) => {
-                uniform[key].value = opts.config[key].value
-                camera.fov = 1 + uniform.uFrequencyZ.value / 400
-                camera.updateProjectionMatrix()
-              })
-              if ((opts.debug && !isdebug[2]) || false) {
-                isdebug[2] = true
-                var controlKit = new ControlKit({ loadAndSave: true })
-                controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [5, 5], width: 250 })
-                  .addButton('Save To Clipboard', () => {
-                    const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
-                    navigator.clipboard.writeText(JSON.stringify(rest))
-                  })
-                  .addSlider(uniform.uFrequencyX, "value", "range", { label: "FrequencyX", step: 0.01 })
-                  .addSlider(uniform.uFrequencyY, "value", "range", { label: "FrequencyY", step: 0.01 })
-                  .addSlider(uniform.uFrequencyZ, "value", "range", {
-                    label: "FrequencyZ", onChange: x => {
-                      camera.fov = 1 + uniform.uFrequencyZ.value / 400
-                      camera.updateProjectionMatrix()
-                    }, step: 0.01
-                  })
-                document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = 'auto')
-                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
-                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
-
-
-              }
-
-              const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-              renderer.setSize(elem.width, elem.height)
-              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-              elem.style.visibility = "hidden"
-
-              elem.parentElement.appendChild(renderer.domElement)
-
-              window.addEventListener('resize', () => {
-                renderer.setSize(elem.width, elem.height)
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-              })
-
-              const clock = new THREE.Clock()
-              const tick = () => {
-                if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-                  renderer.setSize(elem.width, elem.height)
-                uniform.uTime.value = clock.getElapsedTime()
-                renderer.render(scene, camera)
-                window.requestAnimationFrame(tick)
-              }
-              tick()
+            if (opts.config) Object.keys(opts.config).forEach((key) => {
+              uniforms[key].value = opts.config[key].value
+              camera.fov = 1 + uniforms.uFrequencyZ.value / 400
+              camera.updateProjectionMatrix()
             })
-
+            if (panel) {
+              panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
+                .addSlider(geoVertex, "value", "range", { label: "VertexCount", step: 1, onChange: () => { redraw(plane, geoVertex.value) } })
+                .addSlider(uniforms.uFrequencyX, "value", "range", { label: "FrequencyX", step: 0.01 })
+                .addSlider(uniforms.uFrequencyY, "value", "range", { label: "FrequencyY", step: 0.01 })
+                .addSlider(uniforms.uFrequencyZ, "value", "range", { label: "FrequencyZ", onChange: () => { camera.fov = 1 + uniforms.uFrequencyZ.value / 400; camera.updateProjectionMatrix() }, step: 0.01 })
+              fix()
+            }
+            animate()
           }
             break//!STUB 
 
@@ -690,17 +630,13 @@ function Shery() {
             precision mediump float;
             varying vec2 vUv;
             varying float vWave;
-            uniform float uTime;
-            uniform float uFrequency;
-            uniform float uAmplitude;
-            uniform float uSpeed;
+            uniform float time,uFrequency,uAmplitude,uSpeed,uIntercept;
+            uniform int onMouse;
                       
             vec3 mod289(vec3 x){	return x-floor(x*(1./289.))*289.;}
             vec4 mod289(vec4 x){	return x-floor(x*(1./289.))*289.;}
             vec4 permute(vec4 x){	return mod289(((x*34.)+1.)*x);}
-                      
             vec4 taylorInvSqrt(vec4 r){	return 1.79284291400159-.85373472095314*r;}
-                      
             float snoise(vec3 v){
               const vec2 C=vec2(1./6.,1./3.);
               const vec4 D=vec4(0.,.5,1.,2.);
@@ -713,49 +649,49 @@ function Shery() {
               vec3 x1=x0-i1+C.xxx;
               vec3 x2=x0-i2+C.yyy;
               vec3 x3=x0-D.yyy;
-              
               i=mod289(i);
               vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
-                    float n_=.142857142857;// 1.0/7.0
-                    vec3 ns=n_*D.wyz-D.xzx;
-                    vec4 j=p-49.*floor(p*ns.z*ns.z);
-                    vec4 x_=floor(j*ns.z);
-                    vec4 y_=floor(j-7.*x_);
-                    vec4 x=x_*ns.x+ns.yyyy;
-                    vec4 y=y_*ns.x+ns.yyyy;
-                    vec4 h=1.-abs(x)-abs(y);
-                    vec4 b0=vec4(x.xy,y.xy);
-                    vec4 b1=vec4(x.zw,y.zw);
-                    vec4 s0=floor(b0)*2.+1.;
-                    vec4 s1=floor(b1)*2.+1.;
-                    vec4 sh=-step(h,vec4(0.));
-                    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
-                    vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
-                    vec3 p0=vec3(a0.xy,h.x);
-                    vec3 p1=vec3(a0.zw,h.y);
-                    vec3 p2=vec3(a1.xy,h.z);
-                    vec3 p3=vec3(a1.zw,h.w);
-                    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
-                    p0*=norm.x;
-                    p1*=norm.y;
-                    p2*=norm.z;
-                    p3*=norm.w;
-                    vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
-                    m=m*m;
-                    return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
-                    dot(p2,x2),dot(p3,x3)));
-                  }
-                  
-                  void main(){
-                    vUv=uv;
-                    vec3 pos=position;
-                    float noiseFreq=uFrequency;
-                    float noiseAmp=uAmplitude/10.0;
-                    vec3 noisePos=vec3(pos.x*noiseFreq+uTime*uSpeed,pos.y,pos.z);
-                    pos.z+=snoise(noisePos)*noiseAmp;
-                    vWave=pos.z;
-                    gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.);
-                  }
+              float n_=.142857142857;// 1.0/7.0
+              vec3 ns=n_*D.wyz-D.xzx;
+              vec4 j=p-49.*floor(p*ns.z*ns.z);
+              vec4 x_=floor(j*ns.z);
+              vec4 y_=floor(j-7.*x_);
+              vec4 x=x_*ns.x+ns.yyyy;
+              vec4 y=y_*ns.x+ns.yyyy;
+              vec4 h=1.-abs(x)-abs(y);
+              vec4 b0=vec4(x.xy,y.xy);
+              vec4 b1=vec4(x.zw,y.zw);
+              vec4 s0=floor(b0)*2.+1.;
+              vec4 s1=floor(b1)*2.+1.;
+              vec4 sh=-step(h,vec4(0.));
+              vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+              vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+              vec3 p0=vec3(a0.xy,h.x);
+              vec3 p1=vec3(a0.zw,h.y);
+              vec3 p2=vec3(a1.xy,h.z);
+              vec3 p3=vec3(a1.zw,h.w);
+              vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+              p0*=norm.x;
+              p1*=norm.y;
+              p2*=norm.z;
+              p3*=norm.w;
+              vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
+              m=m*m;
+              return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
+              dot(p2,x2),dot(p3,x3)));
+            }
+            
+            void main(){
+              vUv=uv;
+              vec3 pos=position;
+              float noiseFreq=uFrequency;
+              float noiseAmp=uAmplitude/10.0;
+              vec3 noisePos=vec3(pos.x*noiseFreq+time*uSpeed,pos.y,pos.z);
+              pos.z+=snoise(noisePos)*noiseAmp;
+              pos = onMouse == 0 ? pos : onMouse == 1 ? mix( position , pos ,uIntercept) : mix( pos , position ,uIntercept) ;
+              vWave=pos.z;
+              gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.);
+            }
             `
             const fragment = /*glsl*/ `
             uniform bool uColor;
@@ -764,148 +700,29 @@ function Shery() {
             varying float vWave;
             void main() {gl_FragColor =uColor? mix(texture2D(uTexture, vUv ),vec4(1.0),vWave):texture2D(uTexture, vUv );}`
 
-            const scene = new THREE.Scene()
-            new THREE.TextureLoader().load(elem.getAttribute('src'), texture => {
-              const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4 / (elem.width / elem.height), 100, 100), new THREE.ShaderMaterial({
-                vertexShader: vertex,
-                fragmentShader: fragment,
-                uniforms: {
-                  uTime: { value: 0 },
-                  uColor: { value: false },
-                  uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
-                  uAmplitude: { value: 1.5, range: [0, 5] },
-                  uFrequency: { value: 3.5, range: [0, 10] },
-                  uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute('src')) }
-                }
-              }))
-              scene.add(mesh)
-              const uniform = mesh.material.uniforms
-              if (opts.config) Object.keys(opts.config).forEach((key) => uniform[key].value = opts.config[key].value)
-              if ((opts.debug && !isdebug[3]) || false) {
-                isdebug[3] = true
-                var controlKit = new ControlKit({ loadAndSave: true })
-                var obj = {
-                  s: .6, range: [.1, 1],
-                  f: .6, rangef: [1, 10]
-                }
-                controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [5, 5], width: 250 })
-                  .addButton('Save To Clipboard', () => {
-                    const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniform
-                    navigator.clipboard.writeText(JSON.stringify(rest))
-                  })
-                  .addCheckbox(uniform.uColor, "value", { label: "Color Depth" })
-                  .addSlider(obj, "s", "range", { label: "Speed", onChange: () => uniform.uSpeed.value = obj.s, step: 0.01 })
-                  .addSlider(obj, "f", "rangef", { label: "FastForward", onChange: () => uniform.uSpeed.value = obj.f, step: 0.01 })
-                  .addSlider(uniform.uAmplitude, "value", "range", { label: "Amplitude", step: 0.01 })
-                  .addSlider(uniform.uFrequency, "value", "range", { label: "Frequency", step: 0.01 })
-                document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = 'auto')
-                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
-                document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
-              }
+            var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
+              uColor: { value: false },
+              uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
+              uAmplitude: { value: 1.5, range: [0, 5] },
+              uFrequency: { value: 3.5, range: [0, 10] },
+            }, { effect: 4, debug: true, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height })
 
-              const camera = new THREE.PerspectiveCamera(25, elem.width / elem.height, 0.1, 100)
-              camera.position.set(0, 0, 1)
-              scene.add(camera)
-
-              const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-              renderer.setSize(elem.width, elem.height)
-              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-              elem.style.visibility = "hidden"
-
-
-              elem.parentElement.appendChild(renderer.domElement)
-
-              window.addEventListener('resize', () => {
-                renderer.setSize(elem.width, elem.height)
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-              })
-              const clock = new THREE.Clock()
-              const tick = () => {
-                if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-                  renderer.setSize(elem.width, elem.height)
-
-                uniform.uTime.value = clock.getElapsedTime()
-                renderer.render(scene, camera)
-                window.requestAnimationFrame(tick)
-              }
-              tick()
-            })
+            if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
+            if (panel) {
+              panel.addCheckbox(uniforms.uColor, "value", { label: "Color Depth" })
+                .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
+                .addSlider(geoVertex, "value", "range", { label: "VertexCount", step: 1, onChange: () => redraw(plane, geoVertex.value) })
+                .addSlider(debugObj, "s", "range", { label: "Speed", onChange: () => uniforms.uSpeed.value = obj.s, step: 0.01 })
+                .addSlider(debugObj, "f", "rangef", { label: "FastForward", onChange: () => uniforms.uSpeed.value = obj.f, step: 0.01 })
+                .addSlider(uniforms.uAmplitude, "value", "range", { label: "Amplitude", step: 0.01 })
+                .addSlider(uniforms.uFrequency, "value", "range", { label: "Frequency", step: 0.01 })
+              fix()
+            }
+            animate()
           }
             break //!STUB 
         }
       })
     }, //!SECTION 
-
-
-    // // SECTION - 3D Text Effect 
-    // text3DEffect: (element, opts = { para: {} },) => {
-    //   document.querySelectorAll(element).forEach(function (elem) {
-    //     var parent = elem.parentNode
-    //     var div = document.createElement("div")
-    //     div.classList.add(elem.classList[0])
-    //     div.id = elem.id
-    //     const aspect = elem.offsetWidth / elem.offsetHeight
-    //     parent.replaceChild(div, elem)
-    //     div.appendChild(elem)
-    //     const scene = new THREE.Scene()
-    //     const camera = new THREE.PerspectiveCamera(1, elem.offsetWidth / elem.offsetHeight, 0.1, 100)
-    //     camera.position.z = 3
-    //     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    //     renderer.setSize(elem.offsetWidth, elem.offsetHeight)
-    //     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    //     elem.style.display = "none"
-    //     elem.parentElement.appendChild(renderer.domElement)
-    //     const { size, height, curveSegments, bevelEnabled, bevelThickness, bevelSize, bevelOffset, bevelSegments } = opts['para']
-    //     const fontLoader = new THREE.FontLoader()
-    //     const text = elem.textContent
-    //     if (!font)
-    //       var font = 'https://gist.githubusercontent.com/aayushchouhan24/d13b1402b75d5dad25de027a89627fcc/raw/c3823eac9d61c6b749785826327180aeca36b402/font.json'
-    //     fontLoader.load(font, function (font) {
-    //       const textGeometry = new THREE.TextGeometry(text.replace('  ', '\n'), {
-    //         font: font,
-    //         size: size ? size / (text.split('\n').length + 1) : 0.03 / (text.split('\n').length + 1),
-    //         height: height ? height : 0.02,
-    //         curveSegments: curveSegments ? curveSegments : 12,
-    //         bevelEnabled: bevelEnabled ? bevelEnabled : true,
-    //         bevelThickness: bevelThickness ? bevelThickness : 0,
-    //         bevelSize: bevelSize ? bevelSize : 0,
-    //         bevelOffset: bevelOffset ? bevelOffset : 0,
-    //         bevelSegments: bevelSegments ? bevelSegments : 0
-
-    //       })
-    //       const material = opts.color || opts.matcap ? new THREE.MeshMatcapMaterial({ color: new THREE.Color(color) }) : new THREE.MeshNormalMaterial()
-    //       if (opts.matcap) material.matcap = new THREE.TextureLoader().load(matcap)
-    //       const textMesh = new THREE.Mesh(textGeometry, material)
-    //       textGeometry.center()
-    //       scene.add(textMesh)
-
-    //       const clock = new THREE.Clock()
-
-    //       function animate() {
-    //         if (typeof opts.animation === 'function')
-    //           opts.animation(textMesh, clock.getElapsedTime()) // Call the user-defined animate function and pass textMesh as an argument
-    //         renderer.render(scene, camera)
-    //       }
-
-
-    //       window.addEventListener('resize', () => {
-    //         renderer.setSize(elem.width, elem.width / aspect)
-    //         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    //       })
-
-    //       function renderLoop() {
-    //         if (!opts.animation || isAnimated) {
-    //           textMesh.rotation.y = Math.cos(clock.getElapsedTime()) / 6
-    //           textMesh.rotation.x = Math.sin(clock.getElapsedTime()) / 4
-    //         }
-    //         requestAnimationFrame(renderLoop)
-    //         animate()
-    //       }
-    //       renderLoop()
-    //     })
-
-    //   })
-    // },//!SECTION 
   }
 }
