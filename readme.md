@@ -204,7 +204,6 @@ Shery.imageEffect("img", { style: 4 });
 
 To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameater `{debug:true}` for effects which supports it.
 
-
 To save/use the tweek from your debug you need to click on `SAVE TO CLIPBOARD` and the paste that config in config parameter.
 
 ```javascript
