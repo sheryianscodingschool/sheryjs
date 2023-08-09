@@ -68,12 +68,15 @@ function Shery() {
     }
     var controlKit = null;
     var panel = null;
-    if (opts.config) {
-      Object.assign(uniforms, opts.config)
-      if (uniforms.uFrequencyZ) {
-        camera.fov = 1 + uniforms.uFrequencyZ.value / 400
-        camera.updateProjectionMatrix()
-      }
+    const config = c => {
+      if (c.color) c.color.value = new THREE.Color(c.color.value)
+      Object.assign(uniforms, c)
+    }
+    if (opts.preset) fetch(opts.preset).then(response => response.json()).then(json => config(json));
+    if (opts.config) config(opts.config)
+    if (uniforms.uFrequencyZ) {
+      camera.fov = 1 + uniforms.uFrequencyZ.value / 400
+      camera.updateProjectionMatrix()
     }
     if ((opts.debug && !isdebug[effect]) || false) {
       isdebug[2] = true
@@ -346,8 +349,6 @@ function Shery() {
               b: { value: .7, range: [-1, 1] },
             }, { effect: 1, opts })
 
-            if (opts.config) Object.keys(opts.config).forEach((key) => { uniforms[key].value = opts.config[key].value })
-
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
                 .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })
@@ -461,7 +462,6 @@ function Shery() {
               strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
               exposer: { value: 8, range: [-100, 100] },
             }, { effect: 2, opts, dposition: 350 })
-            if (opts.config) Object.keys(opts.config).forEach((key) => { uniforms[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
             if (panel) {
               panel.addCheckbox(uniforms.distortion, "value", { label: "Distortion Effect" })
                 .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
