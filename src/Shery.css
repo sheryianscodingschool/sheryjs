@@ -132,10 +132,10 @@ canvas{
     width: auto !important;
 }
 
-
 #controlKit .panel .menu input[type=button],
+#controlKit .panel .menu input[type=button]:hover,
 #controlKit .panel .menu-active input[type=button],
 #controlKit .picker .menu input[type=button] {
     box-shadow: none !important;
-    background: #00000000 !important;
+    background-color: #00000000;
 }

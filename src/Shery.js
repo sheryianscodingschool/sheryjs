@@ -80,7 +80,7 @@ function Shery() {
     }
     if ((opts.debug && !isdebug[effect]) || false) {
       isdebug[2] = true
-      controlKit = new ControlKit({ loadAndSave: true })
+      controlKit = new ControlKit()
       panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 }).addButton('Save To Clipboard', () => {
         const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms
         navigator.clipboard.writeText(JSON.stringify(rest))
