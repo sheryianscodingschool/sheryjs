@@ -3,49 +3,48 @@ function Shery() {
   var isdebug = []
   const lerp = (x, y, a) => x * (1 - a) + y * a
 
+  //ANCHOR - Geometry Redraw 
   function redraw(plane, v) {
     let newGeometry = new THREE.PlaneGeometry(plane.geometry.parameters.width, plane.geometry.parameters.height, v, v)
     plane.geometry.dispose()
     plane.geometry = newGeometry
   }
+  //ANCHOR - DubugUi Fix 
   function fix() {
-    if (document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap'))
-      document.querySelectorAll('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap').forEach(e => e.style.width = '30%')
-
-    if (document.querySelector('#controlKit .panel .button, #controlKit .picker .button')) {
-      document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.float = 'none'
-      document.querySelector('#controlKit .panel .button, #controlKit .picker .button').parentElement.style.width = '100% '
+    const s = '#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap'
+    const c = '#controlKit .panel .button, #controlKit .picker .button'
+    if (document.querySelector(s))
+      document.querySelectorAll(s).forEach(e => e.style.width = '30%')
+    if (document.querySelector(c)) {
+      document.querySelector(c).parentElement.style.float = 'none'
+      document.querySelector(c).parentElement.style.width = '100% '
     }
-    if (document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color'))
-      document.querySelector('#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap .color').parentElement.style.width = '60%'
+    if (document.querySelector(s + '.color'))
+      document.querySelector(s + '.color').parentElement.style.width = '60%'
   }
-  function init(elem, vertex, fragment, uniforms, { debug = false, effect = 0, aspect = 1, size = .01744, geoVertex = 1, fov = 1, dposition = 1 } = {}) {
+  //SECTION Three.js Effect Init 
+  function init(elem, vertex, fragment, uniforms, { opts, effect = 0, aspect = 1, size = .01744, geoVertex = 1, fov = 1, dposition = 1 } = {}) {
     let intersect = 0
+    const o = '#controlKit .options'
     const mouse = new THREE.Vector2()
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 2)
     camera.position.z = 1
-
-    uniforms.time = { value: 0 }
-    uniforms.uTexture = { value: new THREE.TextureLoader().load(elem.getAttribute("src")) }
-    uniforms.mouse = { value: new THREE.Vector2(mouse.x, mouse.y) }
-    uniforms.uIntercept = { value: 0 }
-    uniforms.onMouse = { value: 0 }
-
+    Object.assign(uniforms, {
+      time: { value: 0 },
+      uTexture: { value: new THREE.TextureLoader().load(elem.getAttribute("src")) },
+      mouse: { value: mouse },
+      uIntercept: { value: 0 },
+      onMouse: { value: 0 }
+    });
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setSize(elem.width, elem.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     elem.style.visibility = "hidden"
     elem.parentElement.appendChild(renderer.domElement)
-    const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(size, size, geoVertex, geoVertex),
-      new THREE.ShaderMaterial({
-        vertexShader: vertex,
-        fragmentShader: fragment,
-        uniforms,
-      }))
+    const snoise = `vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size, geoVertex, geoVertex), new THREE.ShaderMaterial({ vertexShader: vertex.replace('₹snoise', snoise), fragmentShader: fragment.replace('₹snoise', snoise), uniforms, }))
     scene.add(plane)
-
     var geoVertex = { value: 32, range: [1, 64] }
     var debugObj = {
       "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
@@ -69,14 +68,20 @@ function Shery() {
     }
     var controlKit = null;
     var panel = null;
-    if ((debug && !isdebug[effect]) || false) {
+    if (opts.config) {
+      Object.assign(uniforms, opts.config)
+      if (uniforms.uFrequencyZ) {
+        camera.fov = 1 + uniforms.uFrequencyZ.value / 400
+        camera.updateProjectionMatrix()
+      }
+    }
+    if ((opts.debug && !isdebug[effect]) || false) {
       isdebug[2] = true
       controlKit = new ControlKit({ loadAndSave: true })
-      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
-        .addButton('Save To Clipboard', () => {
-          const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms
-          navigator.clipboard.writeText(JSON.stringify(rest))
-        })
+      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 }).addButton('Save To Clipboard', () => {
+        const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms
+        navigator.clipboard.writeText(JSON.stringify(rest))
+      })
     }
     renderer.domElement.addEventListener("mousemove", (event) => {
       mouse.x = (event.offsetX / elem.width) * 2 - 1
@@ -92,7 +97,6 @@ function Shery() {
       mouse.x = (event.offsetX / elem.width) * 2 - 1
       mouse.y = -((event.offsetY / elem.height) * 2 - 1)
     })
-
     window.addEventListener('resize', (x) => {
       renderer.setSize(elem.width, elem.height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -100,19 +104,22 @@ function Shery() {
 
     const clock = new THREE.Clock()
     function animate() {
-      if (renderer.domElement.width == 0 || renderer.domElement.height   == 0)
+      if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
         renderer.setSize(elem.width, elem.height)
-      if (document.querySelector('#controlKit .options'))
-        if (parseInt(document.querySelector('#controlKit .options').style.top) < 0)
-          document.querySelector('#controlKit .options').style.top = '0px'
-      uniforms.uIntercept.value = THREE.Math.lerp(uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.07)
-      uniforms.time.value = clock.getElapsedTime()
-      uniforms.mouse.value.set(mouse.x, mouse.y)
+      if (document.querySelector(o))
+        if (parseInt(document.querySelector(o).style.top) < 0)
+          document.querySelector(o).style.top = '0px'
+      Object.assign(uniforms, {
+        time: { value: clock.getElapsedTime() },
+        mouse: { value: mouse },
+        uIntercept: { value: THREE.Math.lerp(uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.07) },
+      });
       requestAnimationFrame(animate)
       renderer.render(scene, camera)
     }
     return { debugObj, controlKit, panel, geoVertex, animate, plane, uniforms: plane.material.uniforms }
   }
+  //!SECTION
 
   return {
     // SECTION - Mouse Followerv
@@ -158,12 +165,8 @@ function Shery() {
         if (opts.mouseFollower) {
           var circle = document.createElement("div")
 
-          circle.style.width =
-            gsap.utils.clamp(50, 70, elem.getBoundingClientRect().width * 0.3) +
-            "px"
-          circle.style.height =
-            gsap.utils.clamp(50, 70, elem.getBoundingClientRect().width * 0.3) +
-            "px"
+          circle.style.width = gsap.utils.clamp(50, 70, elem.getBoundingClientRect().width * 0.3) + "px"
+          circle.style.height = gsap.utils.clamp(50, 70, elem.getBoundingClientRect().width * 0.3) + "px"
 
           circle.textContent = opts.text || "View More"
 
@@ -231,20 +234,8 @@ function Shery() {
       document.querySelectorAll(element).forEach(function (elem) {
         elem.addEventListener("mousemove", function (dets) {
           var bcr = elem.getBoundingClientRect()
-          var zeroonex = gsap.utils.mapRange(
-            0,
-            bcr.width,
-            0,
-            1,
-            dets.clientX - bcr.left
-          )
-          var zerooney = gsap.utils.mapRange(
-            0,
-            bcr.height,
-            0,
-            1,
-            dets.clientY - bcr.top
-          )
+          var zeroonex = gsap.utils.mapRange(0, bcr.width, 0, 1, dets.clientX - bcr.left)
+          var zerooney = gsap.utils.mapRange(0, bcr.height, 0, 1, dets.clientY - bcr.top)
           gsap.to(elem, {
             x: lerp(-50, 50, zeroonex),
             y: lerp(-50, 50, zerooney),
@@ -252,14 +243,8 @@ function Shery() {
             ease: opts.ease || Expo.easeOut,
           })
         })
-
         elem.addEventListener("mouseleave", function (dets) {
-          gsap.to(elem, {
-            x: 0,
-            y: 0,
-            duration: opts.duration || 1,
-            ease: opts.ease || Expo.easeOut,
-          })
+          gsap.to(elem, { x: 0, y: 0, duration: opts.duration || 1, ease: opts.ease || Expo.easeOut, })
         })
       })
     }, //!SECTION 
@@ -324,7 +309,6 @@ function Shery() {
     // SECTION - Image Effects 
     imageEffect: function (element = "img", opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
-        // parent setter
         var parent = elem.parentNode
         var div = document.createElement("div")
         var frame = document.createElement("div")
@@ -338,100 +322,36 @@ function Shery() {
         parent.replaceChild(div, frame)
         div.appendChild(frame)
 
-
-        // parent setter done
-        // image effects
         switch (opts.style || 1) {
-
           // STUB - Simple Liquid Distortion Effect 
           case 1: {
-            const vertex = /*glsl*/ `
-            varying vec2 vuv;
-                  void main(){
-                    gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);
-                    vuv = uv;
-                  }`
+            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`
             const fragment = /*glsl*/ `
-            #define PI 3.141592653589793238462643383279502884197
             uniform sampler2D uTexture;
-            uniform float uIntercept,time,a;
-             
-            uniform int onMouse;
+            uniform float uIntercept,time,a,b,onMouse;
             uniform vec2 mouse;
             varying vec2 vuv;
-
-            vec3 mod289(vec3 x){	return x-floor(x*(1./289.))*289.;}
-            vec4 mod289(vec4 x){	return x-floor(x*(1./289.))*289.;}
-            vec4 permute(vec4 x){	return mod289(((x*34.)+1.)*x);}
-            vec4 taylorInvSqrt(vec4 r){	return 1.79284291400159-.85373472095314*r;}
-            float snoise(vec3 v){
-              const vec2 C=vec2(1./6.,1./3.);
-              const vec4 D=vec4(0.,.5,1.,2.);
-              vec3 i=floor(v+dot(v,C.yyy));
-              vec3 x0=v-i+dot(i,C.xxx);
-              vec3 g=step(x0.yzx,x0.xyz);
-              vec3 l=1.-g;
-              vec3 i1=min(g.xyz,l.zxy);
-              vec3 i2=max(g.xyz,l.zxy);
-              vec3 x1=x0-i1+C.xxx;
-              vec3 x2=x0-i2+C.yyy;
-              vec3 x3=x0-D.yyy;
-              i=mod289(i);
-              vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
-              float n_=.142857142857;// 1.0/7.0
-              vec3 ns=n_*D.wyz-D.xzx;
-              vec4 j=p-49.*floor(p*ns.z*ns.z);
-              vec4 x_=floor(j*ns.z);
-              vec4 y_=floor(j-7.*x_);
-              vec4 x=x_*ns.x+ns.yyyy;
-              vec4 y=y_*ns.x+ns.yyyy;
-              vec4 h=1.-abs(x)-abs(y);
-              vec4 b0=vec4(x.xy,y.xy);
-              vec4 b1=vec4(x.zw,y.zw);
-              vec4 s0=floor(b0)*2.+1.;
-              vec4 s1=floor(b1)*2.+1.;
-              vec4 sh=-step(h,vec4(0.));
-              vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
-              vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
-              vec3 p0=vec3(a0.xy,h.x);
-              vec3 p1=vec3(a0.zw,h.y);
-              vec3 p2=vec3(a1.xy,h.z);
-              vec3 p3=vec3(a1.zw,h.w);
-              vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
-              p0*=norm.x;
-              p1*=norm.y;
-              p2*=norm.z;
-              p3*=norm.w;
-              vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
-              m=m*m;
-              return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
-              dot(p2,x2),dot(p3,x3)));
-            }
-
+            ₹snoise
             void main(){
-                  vec2 uv=vuv;
-                  vec3 v = vec3(vuv.x*1.0+time*a/10.0,vuv.y,time);
-                  vec2 val=uv-mouse/10.;
-                  vec2 surface=vec2(snoise(v)*.08,snoise(v)*.01);
-                  surface = onMouse == 0 ? surface : onMouse == 1 ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
-                  uv +=refract(vec2(.0,.0),surface,0.7);
-                  gl_FragColor=texture2D(uTexture,uv);
+            vec2 uv=vuv;
+            vec3 v = vec3(vuv.x*1.0+time*a/10.0,vuv.y,time);
+            vec2 surface=vec2(snoise(v)*.08,snoise(v)*.01);
+            surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.3) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
+            uv +=refract(vec2(.0,.0),surface,b);
+            gl_FragColor=texture2D(uTexture,uv);
             }`
 
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
               a: { value: 2, range: [0, 30] },
-              b: { value: 25, range: [0, 100] },
-              c: { value: 15, range: [0, 100] },
-            }, { effect: 1, debug: true })
+              b: { value: .7, range: [-1, 1] },
+            }, { effect: 1, opts })
 
-            if (opts.config) Object.keys(opts.config).forEach((key) => {
-              uniforms[key].value = opts.config[key].value
-              camera.fov = 1 + uniforms.uFrequencyZ.value / 400
-              camera.updateProjectionMatrix()
-            })
+            if (opts.config) Object.keys(opts.config).forEach((key) => { uniforms[key].value = opts.config[key].value })
+
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
-              .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })
+                .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })
+                .addSlider(uniforms.b, "value", "range", { label: "Wobbleness", step: .001 })
               fix()
             }
             animate()
@@ -441,10 +361,7 @@ function Shery() {
 
           // STUB - Dynamic Distortion Effect 
           case 2: {
-            const vertex = /*glsl*/ `
-            varying vec2 vuv;
-            void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`
-
+            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`
             const fragment = /*glsl*/ `
             uniform vec2 resolution,mouse;
             uniform float uIntercept,time,frequency, angle, speed, waveFactor,contrast,pixelStrength, quality, brightness, colorExposer, strength, exposer;
@@ -453,78 +370,76 @@ function Shery() {
             uniform vec3 color;
             varying vec2 vuv;
             uniform sampler2D uTexture;
-
             float mina(vec4 a){return min(min(a.r, a.g),a.b);}
             float maxa(vec4 a){return max(max(a.r, a.g),a.b);}
             vec4 minn(vec4 a , vec4 b){return vec4(min(a.r,b.r),min(a.g,b.g),min(a.b,b.b),1.0);}
             vec4 maxx(vec4 a , vec4 b){return vec4(max(a.r,b.r),max(a.g,b.g),max(a.b,b.b),1.0);}
             mat2 rotate2D(float r) {return mat2(cos(r), sin(r), -sin(r), cos(r));}
-            
             void main() {
-                float brightness = clamp(brightness, -1.0,25.0);
-                float frequency=clamp(frequency,-999.0,999.0);
-                float contrast=clamp(contrast,-50.,50.0);
-                float pixelStrength=clamp(pixelStrength,-20.0,999.0); 
-                float strength=clamp(strength,-100.,100.);
-                float colorExposer=clamp(colorExposer,-5.,5.);
+            float brightness = clamp(brightness, -1.0,25.0);
+            float frequency=clamp(frequency,-999.0,999.0);
+            float contrast=clamp(contrast,-50.,50.0);
+            float pixelStrength=clamp(pixelStrength,-20.0,999.0); 
+            float strength=clamp(strength,-100.,100.);
+            float colorExposer=clamp(colorExposer,-5.,5.);
             
-                vec2 uv = .5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
-                uv=mousemove!=0 ? mix(uv,.5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y+mouse.xy/300.,uIntercept):uv;
-                vec3 col = vec3(0);
-                vec2 n,q = vec2(0);
-                vec2 p = (uv + brightness/10.0);
-                float d = dot(p, p);
-                float a = -(contrast/100.0);
-                mat2 angle = rotate2D(angle);
-                
-                for(float i = 1.; i <= 10.0; i++) {
-                  if(i>quality) break;  
-                  p,n *= angle;              
-                  if(mousemove==0) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength * n ;
-                  if(mousemove==1) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength * n ;
-                  if(mousemove==2) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength + mouse * n ;
-                  if(mousemove==3) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength + mouse * n ;
-                  if(modeA==0)   a += dot(sin(q) / frequency, vec2(strength));
-                  else if(modeA==1)   a += dot(cos(q) / frequency, vec2(strength));
-                  else if(modeA==2)   a += dot(tan(q) / frequency , vec2(strength));
-                  else if(modeA==3)   a += dot(atan(q) / frequency , vec2(strength));
-                  if(modeN==0)   n -= sin(q);
-                  else if(modeN==1)   n -= cos(q);
-                  else if(modeN==2)   n -= tan(q);
-                  else if(modeN==3)   n -= atan(q);
-                  n =mousemove !=0 ? mix(n+mouse,n,uIntercept):n;
-                  frequency *= waveFactor;
-                }
-                col = (color*4.5) * (a + colorExposer) +exposer* a + a + d;
-                vec4 base = distortion? texture2D(uTexture,vuv+a+contrast/100.0):texture2D(uTexture,vuv);
-                base = onMouse == 0 ? base : onMouse == 1 ? mix( texture2D(uTexture,vuv),base,uIntercept) : mix( base,texture2D(uTexture,vuv),uIntercept);
-                vec4 blend = vec4(col, 1.0);
-                vec4 final = mix( base,gl_FragColor,uIntercept);
-                if (mode == -10) final = base;
-                else if (mode == -1) final =	minn(base,blend)-maxx(base,blend)+vec4(1.0);
-                else if (mode == -9) final =	(maxa(blend)==1.0)?blend:minn(base*base/(1.0-blend),vec4(1.0));
-                else if (mode == -8) final =	base+blend-2.0*base*blend;
-                else if (mode == -7) final =	abs(base-blend);
-                else if (mode == -6) final =	minn(base,blend);
-                else if (mode == -5) final =	(mina(blend)==0.0)?blend:maxx((1.0-((1.0-base)/blend)),vec4(0.0));
-                else if (mode == -4) final =	maxa(base)==1.0? blend : minn(base/(1.0-blend),vec4(1.0));
-                else if (mode == -3) final = (1.0-2.0*blend)*base*base+2.0*base*blend;
-                else if (mode == -2) final = maxa(base) < 0.5? 2.0 * base * blend : 1.0 - 2.0* (1.0 - base)*(1.0 - blend);
-                else if(mode==0) final = base + blend ;
-                else if(mode==1) final = base * blend ;
-                else if(mode==2) final = 1.0 - (1.0 - base)*(1.0 - blend);
-                else if(mode==3) final = blend - base ;
-                else if(mode==4) final = base / blend ;
-                else if(mode==5) final =	maxx(base+blend-1.0,vec4(0.0));
-                else if(mode==6) final = (base + blend / base)-.55;
-                else if(mode==7) final = base + blend *base;
-                else if(mode==8) final = mod(base , blend);
-                else if(mode==9) final = 1.0-(base + blend / base)+.5;
-                else if(mode==10) final = blend - base * blend;
-                else if(mode==11) final = (base +  blend/2.0);
-                final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
-                final = onMouse == 0 ? final : onMouse == 1 ? mix( base , final ,uIntercept) : mix( final , base ,uIntercept) ;
-                gl_FragColor=final;          
+            vec2 uv = .5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
+            uv=mousemove!=0 ? mix(uv,.5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y+mouse.xy/300.,uIntercept):uv;
+            vec3 col = vec3(0);
+            vec2 n,q = vec2(0);
+            vec2 p = (uv + brightness/10.0);
+            float d = dot(p, p);
+            float a = -(contrast/100.0);
+            mat2 angle = rotate2D(angle);
+            
+            for(float i = 1.; i <= 10.0; i++) {
+            if(i>quality) break;
+            p,n *= angle;
+            if(mousemove==0) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength * n ;
+            if(mousemove==1) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength * n ;
+            if(mousemove==2) q = p * frequency + time * speed + sin(time) * .0018 * i - pixelStrength + mouse * n ;
+            if(mousemove==3) q = p * frequency + time * speed + sin(time) * .0018 * i + mouse - pixelStrength + mouse * n ;
+            if(modeA==0) a += dot(sin(q) / frequency, vec2(strength));
+            else if(modeA==1) a += dot(cos(q) / frequency, vec2(strength));
+            else if(modeA==2) a += dot(tan(q) / frequency , vec2(strength));
+            else if(modeA==3) a += dot(atan(q) / frequency , vec2(strength));
+            if(modeN==0) n -= sin(q);
+            else if(modeN==1) n -= cos(q);
+            else if(modeN==2) n -= tan(q);
+            else if(modeN==3) n -= atan(q);
+            n =mousemove !=0 ? mix(n+mouse,n,uIntercept):n;
+            frequency *= waveFactor;
+            }
+            col = (color*4.5) * (a + colorExposer) +exposer* a + a + d;
+            vec4 base = distortion? texture2D(uTexture,vuv+a+contrast/100.0):texture2D(uTexture,vuv);
+            base = onMouse == 0 ? base : onMouse == 1 ? mix( texture2D(uTexture,vuv),base,uIntercept) : mix( base,texture2D(uTexture,vuv),uIntercept);
+            vec4 blend = vec4(col, 1.0);
+            vec4 final = mix( base,gl_FragColor,uIntercept);
+            if (mode == -10) final = base;
+            else if (mode == -1) final =	minn(base,blend)-maxx(base,blend)+vec4(1.0);
+            else if (mode == -9) final =	(maxa(blend)==1.0)?blend:minn(base*base/(1.0-blend),vec4(1.0));
+            else if (mode == -8) final =	base+blend-2.0*base*blend;
+            else if (mode == -7) final =	abs(base-blend);
+            else if (mode == -6) final =	minn(base,blend);
+            else if (mode == -5) final =	(mina(blend)==0.0)?blend:maxx((1.0-((1.0-base)/blend)),vec4(0.0));
+            else if (mode == -4) final =	maxa(base)==1.0? blend : minn(base/(1.0-blend),vec4(1.0));
+            else if (mode == -3) final = (1.0-2.0*blend)*base*base+2.0*base*blend;
+            else if (mode == -2) final = maxa(base) < 0.5? 2.0 * base * blend : 1.0 - 2.0* (1.0 - base)*(1.0 - blend);
+            else if(mode==0) final = base + blend ;
+            else if(mode==1) final = base * blend ;
+            else if(mode==2) final = 1.0 - (1.0 - base)*(1.0 - blend);
+            else if(mode==3) final = blend - base ;
+            else if(mode==4) final = base / blend ;
+            else if(mode==5) final =	maxx(base+blend-1.0,vec4(0.0));
+            else if(mode==6) final = (base + blend / base)-.55;
+            else if(mode==7) final = base + blend *base;
+            else if(mode==8) final = mod(base , blend);
+            else if(mode==9) final = 1.0-(base + blend / base)+.5;
+            else if(mode==10) final = blend - base * blend;
+            else if(mode==11) final = (base +blend/2.0);
+            final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
+            final = onMouse == 0 ? final : onMouse == 1 ? mix( base , final ,uIntercept) : mix( final , base ,uIntercept) ;
+            gl_FragColor=final;
             }`
             var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
               resolution: { value: new THREE.Vector2(elem.width, elem.height) },
@@ -545,7 +460,7 @@ function Shery() {
               colorExposer: { value: 0.182, range: [-5, 5] },
               strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
               exposer: { value: 8, range: [-100, 100] },
-            }, { effect: 2, debug: true, dposition: 350 })
+            }, { effect: 2, opts, dposition: 350 })
             if (opts.config) Object.keys(opts.config).forEach((key) => { uniforms[key].value = key == "color" ? new THREE.Color(opts.config[key].value) : opts.config[key].value })
             if (panel) {
               panel.addCheckbox(uniforms.distortion, "value", { label: "Distortion Effect" })
@@ -585,33 +500,20 @@ function Shery() {
             uniform int onMouse;
             varying vec2 vUv;
             void main(){
-                vec3 uFrequency=vec3(uFrequencyX/.01744,uFrequencyY/.01744,uFrequencyZ);
-                vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-                float elevation = sin(modelPosition.x * uFrequency.x - time) *uFrequency.z/1000.0;
-                elevation += sin(modelPosition.y * uFrequency.y - time) *uFrequency.z/1000.0;
-                modelPosition.z += elevation;
-                modelPosition = onMouse == 0 ? modelPosition : onMouse == 1 ? mix( modelMatrix * vec4(position, 1.0) , modelPosition ,uIntercept) : mix( modelPosition , modelMatrix * vec4(position, 1.0) ,uIntercept) ;
-                vec4 viewPosition = viewMatrix * modelPosition;
-                vec4 projectedPosition = projectionMatrix * viewPosition;
-                gl_Position = projectedPosition;
-                vUv = uv;
-            }`
-            const fragment = /*glsl*/ `
-            uniform sampler2D uTexture;
-            varying vec2 vUv;
-            void main(){gl_FragColor = texture2D(uTexture, vUv);}`
-
+            vec3 uFrequency=vec3(uFrequencyX/.01744,uFrequencyY/.01744,uFrequencyZ);
+            vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+            float elevation = sin(modelPosition.x * uFrequency.x - time) *uFrequency.z/1000.0;
+            elevation += sin(modelPosition.y * uFrequency.y - time) *uFrequency.z/1000.0;
+            modelPosition.z += elevation;
+            modelPosition = onMouse == 0 ? modelPosition : onMouse == 1 ? mix( modelMatrix * vec4(position, 1.0) , modelPosition ,uIntercept) : mix( modelPosition , modelMatrix * vec4(position, 1.0) ,uIntercept) ;
+            gl_Position = projectionMatrix * viewMatrix * modelPosition;
+            vUv = uv;}`
+            const fragment = /*glsl*/ `uniform sampler2D uTexture;varying vec2 vUv;void main(){gl_FragColor = texture2D(uTexture, vUv);}`
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
               uFrequencyX: { value: 25, range: [0, 100] },
               uFrequencyY: { value: 25, range: [0, 100] },
               uFrequencyZ: { value: 15, range: [0, 100] },
-            }, { effect: 3, debug: true, geoVertex: 32, fov: 1.0375, size: .01744 })
-
-            if (opts.config) Object.keys(opts.config).forEach((key) => {
-              uniforms[key].value = opts.config[key].value
-              camera.fov = 1 + uniforms.uFrequencyZ.value / 400
-              camera.updateProjectionMatrix()
-            })
+            }, { effect: 3, opts, geoVertex: 32, fov: 1.0375, size: .01744 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
                 .addSlider(geoVertex, "value", "range", { label: "VertexCount", step: 1, onChange: () => { redraw(plane, geoVertex.value) } })
@@ -630,69 +532,19 @@ function Shery() {
             precision mediump float;
             varying vec2 vUv;
             varying float vWave;
-            uniform float time,uFrequency,uAmplitude,uSpeed,uIntercept;
-            uniform int onMouse;
-                      
-            vec3 mod289(vec3 x){	return x-floor(x*(1./289.))*289.;}
-            vec4 mod289(vec4 x){	return x-floor(x*(1./289.))*289.;}
-            vec4 permute(vec4 x){	return mod289(((x*34.)+1.)*x);}
-            vec4 taylorInvSqrt(vec4 r){	return 1.79284291400159-.85373472095314*r;}
-            float snoise(vec3 v){
-              const vec2 C=vec2(1./6.,1./3.);
-              const vec4 D=vec4(0.,.5,1.,2.);
-              vec3 i=floor(v+dot(v,C.yyy));
-              vec3 x0=v-i+dot(i,C.xxx);
-              vec3 g=step(x0.yzx,x0.xyz);
-              vec3 l=1.-g;
-              vec3 i1=min(g.xyz,l.zxy);
-              vec3 i2=max(g.xyz,l.zxy);
-              vec3 x1=x0-i1+C.xxx;
-              vec3 x2=x0-i2+C.yyy;
-              vec3 x3=x0-D.yyy;
-              i=mod289(i);
-              vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
-              float n_=.142857142857;// 1.0/7.0
-              vec3 ns=n_*D.wyz-D.xzx;
-              vec4 j=p-49.*floor(p*ns.z*ns.z);
-              vec4 x_=floor(j*ns.z);
-              vec4 y_=floor(j-7.*x_);
-              vec4 x=x_*ns.x+ns.yyyy;
-              vec4 y=y_*ns.x+ns.yyyy;
-              vec4 h=1.-abs(x)-abs(y);
-              vec4 b0=vec4(x.xy,y.xy);
-              vec4 b1=vec4(x.zw,y.zw);
-              vec4 s0=floor(b0)*2.+1.;
-              vec4 s1=floor(b1)*2.+1.;
-              vec4 sh=-step(h,vec4(0.));
-              vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
-              vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
-              vec3 p0=vec3(a0.xy,h.x);
-              vec3 p1=vec3(a0.zw,h.y);
-              vec3 p2=vec3(a1.xy,h.z);
-              vec3 p3=vec3(a1.zw,h.w);
-              vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
-              p0*=norm.x;
-              p1*=norm.y;
-              p2*=norm.z;
-              p3*=norm.w;
-              vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
-              m=m*m;
-              return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
-              dot(p2,x2),dot(p3,x3)));
-            }
-            
+            uniform float time,uFrequency,uAmplitude,uSpeed,uIntercept,onMouse;
+            ₹snoise
             void main(){
-              vUv=uv;
-              vec3 pos=position;
-              float noiseFreq=uFrequency;
-              float noiseAmp=uAmplitude/10.0;
-              vec3 noisePos=vec3(pos.x*noiseFreq+time*uSpeed,pos.y,pos.z);
-              pos.z+=snoise(noisePos)*noiseAmp;
-              pos = onMouse == 0 ? pos : onMouse == 1 ? mix( position , pos ,uIntercept) : mix( pos , position ,uIntercept) ;
-              vWave=pos.z;
-              gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.);
-            }
-            `
+            vUv=uv;
+            vec3 pos=position;
+            float noiseFreq=uFrequency;
+            float noiseAmp=uAmplitude/10.0;
+            vec3 noisePos=vec3(pos.x*noiseFreq+time*uSpeed,pos.y,pos.z);
+            pos.z+=snoise(noisePos)*noiseAmp;
+            pos = onMouse == 0. ? pos : onMouse == 1. ? mix( position , pos ,uIntercept) : mix( pos , position ,uIntercept) ;
+            vWave=pos.z;
+            gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.);
+            }`
             const fragment = /*glsl*/ `
             uniform bool uColor;
             uniform sampler2D uTexture;
@@ -705,7 +557,7 @@ function Shery() {
               uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
               uAmplitude: { value: 1.5, range: [0, 5] },
               uFrequency: { value: 3.5, range: [0, 10] },
-            }, { effect: 4, debug: true, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height })
+            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height })
 
             if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
             if (panel) {
