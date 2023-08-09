@@ -92,8 +92,7 @@ The mask zoomer effect enables zooming into an image on mouse hover with a smoot
 ```javascript
 const Shery = new Shery();
 //Parameters are optional.
-Shery.imageMasker("img", {
-  // Element to target.
+Shery.imageMasker("img", {  // Element to target.
   //Parameters are optional.
   mouseFollower: true,
   text: "Shery",
@@ -109,8 +108,7 @@ The magnet mouse attractor effect draws elements towards the cursor, as if they 
 ```javascript
 const Shery = new Shery();
 //Parameters are optional.
-Shery.makeMagnet("img", {
-  // Element to target.
+Shery.makeMagnet("img", {  // Element to target.
   //Parameters are optional.
   ease: Expo.easeOut,
   duration: 1,
@@ -124,8 +122,7 @@ The text animate effect animates text with cool animation , with many preset ani
 ```javascript
 const Shery = new Shery();
 //Parameters are optional.
-Shery.textAnimate("text", {
-  // Element to target.
+Shery.textAnimate("text", {  // Element to target.
   //Parameters are optional.
   style: 1,
   y: 10,
@@ -151,6 +148,7 @@ Shery.imageEffect("img", {
   style: 2, //Select Style
   debug: true, // Debug Panel
   config: { /* Confid made from debug panel */}
+  preset:'./presets/wigglewobble.json'
 });
 ```
 
