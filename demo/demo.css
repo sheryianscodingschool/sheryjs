@@ -5,23 +5,45 @@
     box-sizing: border-box;
 }
 
-html,
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: 'white';
-}
 
-.bg {
+section {
+    height: 100vh;
     width: 100vw;
 }
 
-.img {
-    height:  100vh;
-    position: absolute;
-    right: 0;
+#S1 {
+    background-color: #fe754e;
+}
+
+#S2 {
+    background-color: #4c00ff;
+}
+
+#S3 {
+    background-color: #ff0f00;
+}
+
+#S4 {
+    background-color: #ff0090;
+}
+
+#S5 {
+    background-color: #0f908e;
+}
+
+#S6 {
+    background-color: #cf6631;
+}
+#S7 {
+    background-color: #d2f3f1;
+}
+#S8 {
+    background-color: #330343;
+}
+
+.box {
+    height:  50vh;
+    position: fixed;
+    left: 10%;
+    top:10%
 }

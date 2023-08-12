@@ -6,24 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./demo.css">
-    <link rel="stylesheet" href="../src/minify/Shery-min.css">
+    <link rel="stylesheet" href="../src/Shery.css">
 </head>
 
 <body>
-    <img class="bg" src="./ss.png">
     <img class="img" src="https://ik.imagekit.io/sheryians/photed_MVice1qZE.png">
+    <section id="S1"></section>
+    <section id="S2"></section>
+    <section id="S3"></section>
+    <section id="S4"></section>
+    <section id="S5"></section>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
-    <script src="../src/minify/Shery-min.js"></script>
+    <script src="../src/Shery.js"></script>
     <script>
         var Shery = new Shery()
         Shery.imageEffect('.img',
             {
-                style: 2,
-                debug: true,
-                preset: '../presets/wigglewobble.json'
+                style: 4
             })
     </script>
 </body>
