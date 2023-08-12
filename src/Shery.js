@@ -88,6 +88,7 @@ function Shery() {
       "onMouse": ["Always Active", "Active On Hover", "Deactive On Hover"],
       "Active": "Always Active",
       "Mouse Active": "Off",
+      "Offset": {"value": offset * 3 , "range": [-1, 1]},
       "Color": "#54A8FF",
       "speed": { "precise": 1, "normal": 1, "range": [-500, 500], "rangep": [-10, 10] },
       "frequency": { "precise": 1, "normal": 50, "range": [-800, 800], "rangep": [-50, 50] },
@@ -111,10 +112,9 @@ function Shery() {
     if ((opts.debug && !isdebug[effect]) || false) {
       isdebug[2] = true
       controlKit = new ControlKit()
-      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 }).addButton('Save To Clipboard', () => {
-        const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms
-        navigator.clipboard.writeText(JSON.stringify(rest))
-      })
+      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
+        .addButton('Save To Clipboard', () => { const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)); })
+        .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => uniforms.uScroll.value = debugObj.Offset.value })
     }
     if (onDoc)
       document.addEventListener("mousemove", (event) => {
@@ -518,7 +518,6 @@ function Shery() {
                 .addSelect(debugObj, 'Mouse', { target: "Mouse Active", label: 'Mousemove Effect', onChange: x => uniforms.mousemove.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniforms.modeA.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
-                .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
                 .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniforms.color.value.set(x) })
               controlKit.addPanel({ label: "Debug Panel", width: 350, fixed: false, position: [0, 0], })
                 .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.normal })
@@ -613,7 +612,7 @@ function Shery() {
               uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
               uAmplitude: { value: 1.5, range: [0, 5] },
               uFrequency: { value: 3.5, range: [0, 10] },
-            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height,offset:-.04 })
+            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height, offset: -.04 })
 
             if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
             if (panel) {
@@ -659,7 +658,7 @@ function Shery() {
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
               a: { value: 2, range: [0, 30] },
               b: { value: .7, range: [-1, 1] },
-            }, { effect: 5, opts, fov: .9, onDoc: true,offset:-.04 })
+            }, { effect: 5, opts, fov: .9, onDoc: true, offset: -.04 })
 
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
