@@ -23,21 +23,24 @@ function Shery() {
       document.querySelector(s + '.color').parentElement.style.width = '60%'
   }
   //SECTION Three.js Effect Init 
-  function init(elem, vertex, fragment, uniforms, { opts, effect = 0, aspect = 1, onDoc = false, size = .01744, geoVertex = 1, fov = 1, dposition = 1 } = {}) {
+  function init(elem, vertex, fragment, uniforms, { opts, effect = 0, aspect = 1, onDoc = false, size = .01744, geoVertex = 1, fov = 1, dposition = 1, offset = 0 } = {}) {
     let intersect = 0
     const o = '#controlKit .options'
     const mouse = new THREE.Vector2()
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 2)
     camera.position.z = 1
-
     const t = []
-
+    const target = opts.target ? document.querySelector(opts.target) : elem
+    const targettop = target.getBoundingClientRect().top
     if (!(elem.nodeName.toLowerCase() === 'img')) {
-      fragment = fragment.replace('isMulti ;', `float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 15.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);gl_FragColor =mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));`)
+      fragment = fragment.replace('isMulti ;', `
+      float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 15.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
+      gl_FragColor =mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));`)
       window.addEventListener('scroll', () => {
-        uniforms.uScroll.value = ((window.scrollY / (window.innerHeight)) - .1) - (window.scrollY / opts.target ? document.querySelector(opts.target).getBoundingClientRect().top : elem.getBoundingClientRect().top);
-        const newSection = Math.floor((scrollY / window.innerHeight))
+        const scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight))
+        uniforms.uScroll.value = scroll
+        const newSection = Math.floor(scroll)
         if (newSection != uniforms.uSection.value) {
           if (t.length > newSection + 1) {
             uniforms.uSection.value = newSection
@@ -61,9 +64,7 @@ function Shery() {
       onMouse: { value: 0 },
       uSection: { value: 0 },
       isMulti: { value: (!(elem.nodeName.toLowerCase() === 'img')) },
-      uScroll: {
-        value: (window.scrollY / window.innerHeight) - .1
-      },
+      uScroll: { value: offset * 3 },
       uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [new THREE.TextureLoader().load(elem.getAttribute("src"))] : [t[0], t[1]] },
     });
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -388,7 +389,7 @@ function Shery() {
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
               a: { value: 2, range: [0, 30] },
               b: { value: .7, range: [-1, 1] },
-            }, { effect: 1, opts })
+            }, { effect: 1, opts, offset: -.04 })
 
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
@@ -420,7 +421,7 @@ function Shery() {
             ₹snoise
 
             vec4 img (vec2 uv,float c){
-              return mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));
+              return mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, c + uv.y));
             }
             
             void main() {
@@ -432,7 +433,8 @@ function Shery() {
             float colorExposer=clamp(colorExposer,-5.,5.);
             vec2 uv = .5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
             uv=mousemove!=0 ? mix(uv,.5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y+mouse.xy/300.,uIntercept):uv;
-            float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 15.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
+            float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 15.0 + (snoise(vec3(uv,1.0))/10.)))+.1;
+            c = (sin((uv.x*7.0)+(time))/30.0)+.01;
             vec3 col = vec3(0);
             vec2 n,q = vec2(0);
             vec2 p = (uv + brightness/10.0);
@@ -459,7 +461,7 @@ function Shery() {
             frequency *= waveFactor;
             }
             col = (color*4.5) * (a + colorExposer) +exposer* a + a + d;
-            vec4 base = distortion? texture2D(uTexture[0],vuv+a+contrast/100.0):img(vuv,c);
+            vec4 base = distortion? img((vuv+a+contrast/100.0),c):img(vuv,c);
             base = onMouse == 0 ? base : onMouse == 1 ? mix( img(vuv,c),base,uIntercept) : mix( base,img(vuv,c),uIntercept);
             vec4 blend = vec4(col, 1.0);
             vec4 final = mix( base,gl_FragColor,uIntercept);
@@ -487,9 +489,7 @@ function Shery() {
             else if(mode==11) final = (base +blend/2.0);
             final = mix(final * brightness,mix(maxx(final,vec4(1.0)), final, contrast), 0.5);
             final = onMouse == 0 ? final : onMouse == 1 ? mix( base , final ,uIntercept) : mix( final , base ,uIntercept) ;
-            gl_FragColor=final;
-
-            
+            gl_FragColor=final;          
             }`
             var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
               resolution: { value: new THREE.Vector2(elem.width, elem.height) },
@@ -559,14 +559,16 @@ function Shery() {
             vUv = uv;}`
             const fragment = /*glsl*/ `
             uniform sampler2D uTexture[16];
-            uniform float uScroll,uSection;
+            uniform float uScroll,uSection,time;
             uniform bool isMulti;
-            varying vec2 vUv;void main(){gl_FragColor = texture2D(uTexture[0], vUv);}`
+            ₹snoise
+            varying vec2 vUv;void main(){vec2 uv=vUv;gl_FragColor = texture2D(uTexture[0], vUv); isMulti ;
+            }`
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
               uFrequencyX: { value: 25, range: [0, 100] },
               uFrequencyY: { value: 25, range: [0, 100] },
               uFrequencyZ: { value: 15, range: [0, 100] },
-            }, { effect: 3, opts, geoVertex: 32, fov: 1.0375, size: .01744 })
+            }, { effect: 3, opts, geoVertex: 32, fov: 1.0375, size: .01744, offset: -.04 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
                 .addSlider(geoVertex, "value", "range", { label: "VertexCount", step: 1, onChange: () => { redraw(plane, geoVertex.value) } })
@@ -582,7 +584,6 @@ function Shery() {
           // STUB - Wind Distortion Effect 
           case 4: {
             const vertex = /*glsl*/ `
-            precision mediump float;
             varying vec2 vUv;
             varying float vWave;
             uniform float time,uFrequency,uAmplitude,uSpeed,uIntercept,onMouse;
@@ -602,15 +603,17 @@ function Shery() {
             uniform bool uColor,isMulti;
             uniform sampler2D uTexture[16];
             varying vec2 vUv;
-            varying float vWave,uScroll,uSection;
-            void main() {gl_FragColor =uColor? mix(texture2D(uTexture[0], vUv ),vec4(1.0),vWave):texture2D(uTexture[0], vUv );}`
+            varying float vWave;
+            uniform float uScroll,uSection,time;
+            ₹snoise
+            void main() {vec2 uv = vUv; gl_FragColor =uColor? mix(texture2D(uTexture[0], vUv ),vec4(1.0),vWave):texture2D(uTexture[0], vUv ); isMulti ;}`
 
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
               uColor: { value: false },
               uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
               uAmplitude: { value: 1.5, range: [0, 5] },
               uFrequency: { value: 3.5, range: [0, 10] },
-            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height })
+            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height,offset:-.04 })
 
             if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
             if (panel) {
@@ -656,7 +659,7 @@ function Shery() {
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
               a: { value: 2, range: [0, 30] },
               b: { value: .7, range: [-1, 1] },
-            }, { effect: 5, opts, fov: .9, onDoc: true })
+            }, { effect: 5, opts, fov: .9, onDoc: true,offset:-.04 })
 
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })

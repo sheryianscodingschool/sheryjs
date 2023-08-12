@@ -21,7 +21,7 @@ html,body{
 }
 
 .section{
-    width: 100%;
+    width: 100vh;
     height: 100%;
     background-color: green;
 }
@@ -49,6 +49,8 @@ html,body{
 }
 
 .image{
+    position: fixed;
+    top: 10%;
     overflow: hidden;
     width: 30vw;
     height: 45vw;
