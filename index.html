@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="frst"></div>
+    <div id="main">
+        <div id="left">
+            <div class="section"></div>
+            <div class="section"></div>
+            <div class="section"></div>
+        </div>
+        <div id="right">
+            <div class="image">
+                <img src="https://plus.unsplash.com/premium_photo-1691009758120-9b3a2e0d688d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="">
+                <img src="https://images.unsplash.com/photo-1691308475439-8523d6a0dc15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="">
+                <img src="https://images.unsplash.com/photo-1689019587412-00999d1d08bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="">
+            </div>
+        </div>
+    </div>   
+    <div class="frst"></div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" integrity="sha512-Ic9xkERjyZ1xgJ5svx3y0u3xrvfT/uPkV99LBwe68xjy/mGtO+4eURHZBW2xW4SZbFrF1Tf090XqB+EVgXnVjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="./sheryjs/src/Shery.js"></script>
+    <script>
+        var shery = new Shery();
+        shery.imageEffect(".image", {target: ".main", style: 5})
+        gsap.to('.section', {
+            scrollTrigger: {
+                trigger: "#main",
+                start: "top top",
+                pin: true,
+                scrub: 1
+            },
+            y: "-200%"
+        })
+    </script>
+</body>
+</html>
