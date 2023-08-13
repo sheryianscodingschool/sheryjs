@@ -131,6 +131,9 @@ canvas{
 #controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .label {
     width: auto !important;
 }
+#controlKit{
+    position: fixed !important;
+}
 
 #controlKit .panel .menu input[type=button],
 #controlKit .panel .menu input[type=button]:hover,

@@ -49,8 +49,8 @@ html,body{
 }
 
 .image{
-    position: fixed;
-    top: 10%;
+    /* position: fixed;
+    top: 10%; */
     overflow: hidden;
     width: 30vw;
     height: 45vw;

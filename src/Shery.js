@@ -33,29 +33,38 @@ function Shery() {
     const t = []
     const target = opts.target ? document.querySelector(opts.target) : elem
     const targettop = target.getBoundingClientRect().top
-    if (!(elem.nodeName.toLowerCase() === 'img')) {
-      fragment = fragment.replace('isMulti ;', `
-      float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 15.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
-      gl_FragColor =mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));`)
-      window.addEventListener('scroll', () => {
-        const scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight))
-        uniforms.uScroll.value = scroll
-        const newSection = Math.floor(scroll)
-        if (newSection != uniforms.uSection.value) {
-          if (t.length > newSection + 1) {
-            uniforms.uSection.value = newSection
-            if (t.length > newSection)
-              uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
-            else
-              uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
-          }
-        }
-      })
-      for (let i = 0; i < elem.children.length; i++) {
-        t[i] = new THREE.TextureLoader().load(elem.children[i].getAttribute("src"))
+    const doAction = (newSection) => {
+      uniforms.uSection.value = newSection
+      if (t.length > newSection) {
+        if (t.length > newSection)
+          uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
+        else
+          uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
       }
 
     }
+    if (!(elem.nodeName.toLowerCase() === 'img')) {
+      fragment = fragment.replace('isMulti ;', `
+      float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 30.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
+      gl_FragColor =mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));`)
+      if (!opts.slideStyle) {
+        window.addEventListener('scroll', () => {
+          const scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset
+          uniforms.uScroll.value = scroll
+          const newSection = Math.floor(scroll)
+          if (newSection != uniforms.uSection.value) {
+            if (t.length > newSection + 1) doAction(newSection)
+          }
+          console.log();
+        })
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        t[i] = new THREE.TextureLoader().load(elem.children[i].getAttribute("src"))
+
+      }
+
+    }
+
 
     Object.assign(uniforms, {
       time: { value: 0 },
@@ -67,6 +76,13 @@ function Shery() {
       uScroll: { value: offset * 3 },
       uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [new THREE.TextureLoader().load(elem.getAttribute("src"))] : [t[0], t[1]] },
     });
+
+    const setScroll = (x) => uniforms.uScroll.value = x
+
+
+    if (opts.slideStyle && typeof opts.slideStyle === 'function')
+      opts.slideStyle(setScroll, doAction)
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setSize(elem.width, elem.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -88,7 +104,7 @@ function Shery() {
       "onMouse": ["Always Active", "Active On Hover", "Deactive On Hover"],
       "Active": "Always Active",
       "Mouse Active": "Off",
-      "Offset": {"value": offset * 3 , "range": [-1, 1]},
+      "Offset": { "value": offset * 3, "range": [-1, 1] },
       "Color": "#54A8FF",
       "speed": { "precise": 1, "normal": 1, "range": [-500, 500], "rangep": [-10, 10] },
       "frequency": { "precise": 1, "normal": 50, "range": [-800, 800], "rangep": [-50, 50] },
@@ -114,7 +130,7 @@ function Shery() {
       controlKit = new ControlKit()
       panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
         .addButton('Save To Clipboard', () => { const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)); })
-        .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => uniforms.uScroll.value = debugObj.Offset.value })
+        .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
     }
     if (onDoc)
       document.addEventListener("mousemove", (event) => {
