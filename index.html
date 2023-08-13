@@ -39,12 +39,10 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./src/Shery.js"></script>
     <script>
-        var shery = new Shery();
-
+        var shery = new Shery()
         const targettop = document.querySelector('#main').getBoundingClientRect().top
         shery.imageEffect(".image", {
-            target: "#main", style: 5, preset: './presets/wigglewobble.json', slideStyle: (uScroll, doAction) => {
-
+            target: "#main", style: 5, debug: true, config: { "onMouse": { "value": 1 } }, slideStyle: (uScroll, doAction) => {
                 gsap.to(".image", {
                     scrollTrigger: {
                         trigger: ".image",
@@ -52,29 +50,29 @@
                         start: "top 20%",
                         endTrigger: '#lastSection',
                         end: 'bottom bottom',
-                        scrub:true,
+                        scrub: true,
                     },
                 })
 
                 let sections = document.querySelectorAll('.section')
-                sections.forEach((section,index)=>{
+                sections.forEach((section, index) => {
                     gsap.to(section, {
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top top",
-                        markers: true,
-                        scrub:true,
-                        onEnter:()=>{
-                            doAction(index)
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top top",
+                            markers: true,
+                            scrub: true,
+                            onEnter: () => {
+                                doAction(index)
+                            },
+                            onEnterBack: () => {
+                                doAction(index)
+                            },
+                            onUpdate: (prog) => {
+                                uScroll(prog.progress + index)
+                            }
                         },
-                        onEnterBack:()=>{
-                            doAction(index)
-                        },
-                        onUpdate: (prog) => {
-                            uScroll(prog.progress + index)
-                        }
-                    },
-                })
+                    })
                 })
             }
         })

@@ -55,7 +55,7 @@ function Shery() {
           if (newSection != uniforms.uSection.value) {
             if (t.length > newSection + 1) doAction(newSection)
           }
-          console.log();
+          console.log()
         })
       }
       for (let i = 0; i < elem.children.length; i++) {
@@ -75,7 +75,7 @@ function Shery() {
       isMulti: { value: (!(elem.nodeName.toLowerCase() === 'img')) },
       uScroll: { value: offset * 3 },
       uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [new THREE.TextureLoader().load(elem.getAttribute("src"))] : [t[0], t[1]] },
-    });
+    })
 
     const setScroll = (x) => uniforms.uScroll.value = x
 
@@ -113,13 +113,13 @@ function Shery() {
       "s": .6, range: [.1, 1],
       "f": .6, rangef: [1, 10]
     }
-    var controlKit = null;
-    var panel = null;
+    var controlKit = null
+    var panel = null
     const config = c => {
       if (c.color) c.color.value = new THREE.Color(c.color.value)
       Object.assign(uniforms, c)
     }
-    if (opts.preset) fetch(opts.preset).then(response => response.json()).then(json => config(json));
+    if (opts.preset) fetch(opts.preset).then(response => response.json()).then(json => config(json))
     if (opts.config) config(opts.config)
     if (uniforms.uFrequencyZ) {
       camera.fov = 1 + uniforms.uFrequencyZ.value / 400
@@ -129,7 +129,7 @@ function Shery() {
       isdebug[2] = true
       controlKit = new ControlKit()
       panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
-        .addButton('Save To Clipboard', () => { const { time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)); })
+        .addButton('Save To Clipboard', () => { const { uScroll, isMulti, uSection, time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)) })
         .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
     }
     if (onDoc)
@@ -169,7 +169,7 @@ function Shery() {
         time: { value: clock.getElapsedTime() },
         mouse: { value: mouse },
         uIntercept: { value: THREE.Math.lerp(uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.07) },
-      });
+      })
       requestAnimationFrame(animate)
       renderer.render(scene, camera)
     }
@@ -388,7 +388,6 @@ function Shery() {
             const fragment = /*glsl*/ `
             uniform sampler2D uTexture[16];
             uniform float uIntercept,time,a,b,onMouse,uScroll,uSection;
-            uniform vec2 mouse;
             uniform bool isMulti;
             varying vec2 vuv;
             ₹snoise
@@ -396,7 +395,7 @@ function Shery() {
             vec2 uv=vuv;
             vec3 v = vec3(vuv.x*1.0+time*a/10.0,vuv.y,time);
             vec2 surface=vec2(snoise(v)*.08,snoise(v)*.01);
-            surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.3) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
+            surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
             uv +=refract(vec2(.0,.0),surface,b);
             gl_FragColor=texture2D(uTexture[0],uv);
             isMulti ;
@@ -647,35 +646,29 @@ function Shery() {
 
           // STUB - MultiImage Effect 
           case 5: {
-            const vertex = /*glsl*/ `
-            varying vec2 vuv;
-            void main(){
-              vec4 modelPosition = modelMatrix * vec4(position, 1.);
-              vec4 viewPosition = viewMatrix * modelPosition;
-              vec4 projectionPosition = projectionMatrix * viewPosition;
-              gl_Position = projectionPosition;
-              vuv = uv;
-            }`
+            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position = projectionMatrix *  viewMatrix * modelMatrix * vec4(position, 1.);vuv = uv;}`
             const fragment = /*glsl*/ `
             uniform sampler2D uTexture[16];
-            uniform float uIntercept,time,uScroll,uSection;
+            uniform float a,b, uIntercept,time,uScroll,uSection,onMouse;
             uniform vec2 mouse;
             uniform bool isMulti;
             varying vec2 vuv;
             ₹snoise
             float cnoise(vec2 P){return snoise(vec3(P,1.0));}    
-            void main() {
-                  vec2 uv = vuv;
+            void main() {                  
+              vec2 uv = vuv;
+              float time = time* a/10.0;
                   vec2 surface = vec2(cnoise(uv - mouse / 7. + .2 * time) * .08, cnoise(uv - mouse / 7. + .2 * time) * .08);
-                  uv += refract(vec2(mouse.x / 300., mouse.y / 300.), mix(vec2(0.0, 0.0), surface, uIntercept), 1. / 1.333);
+                  surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
+                  uv += refract(vec2(mouse.x / 300., mouse.y / 300.),surface,b);
                   gl_FragColor=texture2D(uTexture[0], uv);
                   isMulti ;
+                  
             }`
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              a: { value: 2, range: [0, 30] },
-              b: { value: .7, range: [-1, 1] },
+              a: { value: 10, range: [0, 30] },
+              b: { value: 1. / 1.333, range: [-1, 1] },
             }, { effect: 5, opts, fov: .9, onDoc: true, offset: -.04 })
-
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
                 .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })
