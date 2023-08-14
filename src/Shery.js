@@ -45,7 +45,7 @@ function Shery() {
     }
     if (!(elem.nodeName.toLowerCase() === 'img')) {
       fragment = fragment.replace('isMulti ;', `
-      float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 30.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
+      float c = sin((sin((uv.x+(time+uScroll*10.0+snoise(vec3(uv,1.0)))*0.1 )* (10.0+uv.y) + snoise(vec3(uv,uScroll*10.0)) ) / 30.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
       gl_FragColor =mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));`)
       if (!opts.slideStyle) {
         window.addEventListener('scroll', () => {
@@ -378,7 +378,7 @@ function Shery() {
         parent.replaceChild(div, frame)
         div.appendChild(frame)
         if (!(elem.nodeName.toLowerCase() === 'img')) {
-          elem.width = elem.offsetHeight
+          elem.width = elem.offsetWidth
           elem.height = elem.offsetHeight
         }
         switch (opts.style || 1) {

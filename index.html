@@ -41,39 +41,74 @@
     <script>
         var shery = new Shery()
         const targettop = document.querySelector('#main').getBoundingClientRect().top
+        // shery.imageEffect(".image", {
+        //     target: "#main", style: 5, debug: true, config: { "onMouse": { "value": 1 } }, slideStyle: (uScroll, doAction) => {
+        //         gsap.to("#right", {
+        //             scrollTrigger: {
+        //                 trigger: "#right",
+        //                 pin: true,
+        //                 start: "top top",
+        //                 endTrigger: '#lastSection',
+        //                 end: 'bottom bottom',
+        //                 scrub: true,
+        //             },
+        //         })
+
+        //         let sections = document.querySelectorAll('.section')
+        //         sections.forEach((section, index) => {
+        //             gsap.to(section, {
+        //                 scrollTrigger: {
+        //                     trigger: section,
+        //                     start: "top top",
+        //                     markers: true,
+        //                     scrub: true,
+        //                     onEnter: () => {
+        //                         doAction(index)
+        //                     },
+        //                     onEnterBack: () => {
+        //                         doAction(index)
+        //                     },
+        //                     onUpdate: (prog) => {
+        //                         uScroll(prog.progress + index)
+        //                     }
+        //                 },
+        //             })
+        //         })
+        //     }
+        // })
         shery.imageEffect(".image", {
-            target: "#main", style: 5, debug: true, config: { "onMouse": { "value": 1 } }, slideStyle: (uScroll, doAction) => {
-                gsap.to(".image", {
-                    scrollTrigger: {
-                        trigger: ".image",
-                        pin: true,
-                        start: "top 20%",
-                        endTrigger: '#lastSection',
-                        end: 'bottom bottom',
-                        scrub: true,
-                    },
+            style: 5,
+            config: { "onMouse": { "value": 1 } },
+            slideStyle: function (uScroll, doAction) {
+                ScrollTrigger.create({
+                    trigger: "#right",
+                    pin: true,
+                    start: "top top",
+                    markers: true,
+                    end: "bottom bottom",
+                    endTrigger: "#lastSection",
+                    scrub: true
                 })
 
                 let sections = document.querySelectorAll('.section')
-                sections.forEach((section, index) => {
-                    gsap.to(section, {
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top top",
-                            markers: true,
-                            scrub: true,
-                            onEnter: () => {
-                                doAction(index)
-                            },
-                            onEnterBack: () => {
-                                doAction(index)
-                            },
-                            onUpdate: (prog) => {
-                                uScroll(prog.progress + index)
-                            }
+                sections.forEach(function (elem, index) {
+                    ScrollTrigger.create({
+                        trigger: elem,
+                        start: "top top",
+                        markers: true,
+                        scrub: true,
+                        onEnter: () => {
+                            doAction(index)
                         },
+                        onEnterBack: () => {
+                            doAction(index)
+                        },
+                        onUpdate: (prog) => {
+                            uScroll(prog.progress + index)
+                        }
                     })
                 })
+
             }
         })
     </script>
