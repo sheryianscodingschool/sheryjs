@@ -45,8 +45,8 @@ function Shery() {
     }
     if (!(elem.nodeName.toLowerCase() === 'img')) {
       fragment = fragment.replace('isMulti ;', `
-      float c = sin((sin((uv.x+(time+uScroll*10.0+snoise(vec3(uv,1.0)))*0.1 )* (10.0+uv.y) + snoise(vec3(uv,uScroll*10.0)) ) / 30.0 + (snoise(vec3(uv,1.0))/10.)) + uv.y);
-      gl_FragColor =mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll-.04 )-uSection, c + uv.y*(uv.y/100.0)));`)
+      float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
+      gl_FragColor = mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y));`)
       if (!opts.slideStyle) {
         window.addEventListener('scroll', () => {
           const scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset
@@ -166,7 +166,7 @@ function Shery() {
         if (parseInt(document.querySelector(o).style.top) < 0)
           document.querySelector(o).style.top = '0px'
       Object.assign(uniforms, {
-        time: { value: clock.getElapsedTime() },
+        time: { value: clock.getElapsedTime()},
         mouse: { value: mouse },
         uIntercept: { value: THREE.Math.lerp(uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.07) },
       })
@@ -657,8 +657,8 @@ function Shery() {
             float cnoise(vec2 P){return snoise(vec3(P,1.0));}    
             void main() {                  
               vec2 uv = vuv;
-              float time = time* a/10.0;
-                  vec2 surface = vec2(cnoise(uv - mouse / 7. + .2 * time) * .08, cnoise(uv - mouse / 7. + .2 * time) * .08);
+              float time = time* a;
+                  vec2 surface = vec2(cnoise(uv - mouse / 7. + .2) * .08, cnoise(uv - mouse / 7. + .2) * .08);
                   surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
                   uv += refract(vec2(mouse.x / 300., mouse.y / 300.),surface,b);
                   gl_FragColor=texture2D(uTexture[0], uv);
@@ -666,7 +666,7 @@ function Shery() {
                   
             }`
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              a: { value: 10, range: [0, 30] },
+              a: { value: 2, range: [0, 30] },
               b: { value: 1. / 1.333, range: [-1, 1] },
             }, { effect: 5, opts, fov: .9, onDoc: true, offset: -.04 })
             if (panel) {

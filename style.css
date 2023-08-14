@@ -26,12 +26,12 @@ html,body{
     background-color: green;
 }
 
-.section:nth-child(2){
+.section:nth-child(2n){
     background-color: yellow;
 }
 
 
-.section:nth-child(3){
+.section:nth-child(3n){
     background-color: purple;
 }
 

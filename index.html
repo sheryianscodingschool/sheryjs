@@ -15,10 +15,20 @@
         <div id="left">
             <div class="section"></div>
             <div class="section"></div>
+            <div class="section"></div>
+            <div class="section"></div>
+            <div class="section"></div>
+            <div class="section"></div>
             <div class="section" id="lastSection"></div>
         </div>
         <div id="right">
             <div class="image">
+                <img src="https://plus.unsplash.com/premium_photo-1691009758120-9b3a2e0d688d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                    alt="">
+                <img src="https://images.unsplash.com/photo-1691308475439-8523d6a0dc15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                    alt="">
+                <img src="https://images.unsplash.com/photo-1689019587412-00999d1d08bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                    alt="">
                 <img src="https://plus.unsplash.com/premium_photo-1691009758120-9b3a2e0d688d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
                     alt="">
                 <img src="https://images.unsplash.com/photo-1691308475439-8523d6a0dc15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
@@ -41,43 +51,11 @@
     <script>
         var shery = new Shery()
         const targettop = document.querySelector('#main').getBoundingClientRect().top
-        // shery.imageEffect(".image", {
-        //     target: "#main", style: 5, debug: true, config: { "onMouse": { "value": 1 } }, slideStyle: (uScroll, doAction) => {
-        //         gsap.to("#right", {
-        //             scrollTrigger: {
-        //                 trigger: "#right",
-        //                 pin: true,
-        //                 start: "top top",
-        //                 endTrigger: '#lastSection',
-        //                 end: 'bottom bottom',
-        //                 scrub: true,
-        //             },
-        //         })
+        let sections = document.querySelectorAll('.section')
 
-        //         let sections = document.querySelectorAll('.section')
-        //         sections.forEach((section, index) => {
-        //             gsap.to(section, {
-        //                 scrollTrigger: {
-        //                     trigger: section,
-        //                     start: "top top",
-        //                     markers: true,
-        //                     scrub: true,
-        //                     onEnter: () => {
-        //                         doAction(index)
-        //                     },
-        //                     onEnterBack: () => {
-        //                         doAction(index)
-        //                     },
-        //                     onUpdate: (prog) => {
-        //                         uScroll(prog.progress + index)
-        //                     }
-        //                 },
-        //             })
-        //         })
-        //     }
-        // })
         shery.imageEffect(".image", {
             style: 5,
+            debug: true,
             config: { "onMouse": { "value": 1 } },
             slideStyle: function (uScroll, doAction) {
                 ScrollTrigger.create({
@@ -86,11 +64,10 @@
                     start: "top top",
                     markers: true,
                     end: "bottom bottom",
-                    endTrigger: "#lastSection",
+                    endTrigger: sections[sections.length-1],
                     scrub: true
                 })
 
-                let sections = document.querySelectorAll('.section')
                 sections.forEach(function (elem, index) {
                     ScrollTrigger.create({
                         trigger: elem,
