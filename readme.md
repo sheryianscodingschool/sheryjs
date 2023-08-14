@@ -206,6 +206,7 @@ Shery.imageEffect('img', { style: 4 })
 ```
 
 ## Multiple Image (Scroll Effect)
+
 All 3D effects in this library supports multi image with wave scroll effect 
 
 ## Debug Usage
