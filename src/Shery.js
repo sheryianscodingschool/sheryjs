@@ -36,7 +36,7 @@ function Shery() {
     const doAction = (newSection) => {
       uniforms.uSection.value = newSection
       if (t.length > newSection) {
-        if (t.length > newSection)
+        if (t.length > newSection + 1)
           uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
         else
           uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
@@ -378,8 +378,8 @@ function Shery() {
         parent.replaceChild(div, frame)
         div.appendChild(frame)
         if (!(elem.nodeName.toLowerCase() === 'img')) {
-          elem.width = elem.offsetWidth
-          elem.height = elem.offsetHeight
+          elem.width = parent.children[0].offsetWidth
+          elem.height = parent.children[0].offsetHeight
         }
         switch (opts.style || 1) {
           // STUB - Simple Liquid Distortion Effect 
