@@ -47,25 +47,55 @@ function Shery() {
       fragment = fragment.replace('isMulti ;', `
       float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       gl_FragColor = mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y));`)
+      const scrollProps = { value: 0 };
       if (!opts.slideStyle) {
-        window.addEventListener('scroll', () => {
-          const scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset
-          uniforms.uScroll.value = scroll
-          const newSection = Math.floor(scroll)
-          if (newSection != uniforms.uSection.value) {
-            if (t.length > newSection + 1) doAction(newSection)
+        if (opts.staticScroll) {
+          function handleScroll(deltaY) {
+            gsap.to(scrollProps, {
+              value: scrollProps.value + deltaY / innerHeight,
+              duration: 0.5, // Adjust the duration as needed
+              onUpdate: () => {
+                if (scrollProps.value < 0) scrollProps.value = offset
+                uniforms.uScroll.value = scrollProps.value;
+                const newSection = Math.floor(scrollProps.value);
+                if (newSection !== uniforms.uSection.value) {
+                  if (t.length > newSection + 1) doAction(newSection);
+                }
+              },
+            });
           }
-          console.log()
-        })
+
+          window.addEventListener('wheel', e => {
+            const deltaY = e.deltaY;
+            handleScroll(deltaY);
+          });
+          let touchStartY = 0;
+          window.addEventListener('touchstart', e => {
+            touchStartY = e.touches[0].clientY;
+          });
+          window.addEventListener('touchmove', e => {
+            const deltaY = (touchStartY - e.touches[0].clientY) * 2; // Adjust the multiplier as needed
+            touchStartY = e.touches[0].clientY;
+            handleScroll(deltaY * 3);
+            e.preventDefault();
+          }, { passive: false });
+        }
+        else
+          window.addEventListener('scroll', () => {
+            let scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset
+            if (scroll < 0) scroll = offset
+            uniforms.uScroll.value = scroll
+            const newSection = Math.floor(scroll)
+            if (newSection != uniforms.uSection.value) {
+              if (t.length > newSection + 1) doAction(newSection)
+            }
+            console.log()
+          })
       }
       for (let i = 0; i < elem.children.length; i++) {
         t[i] = new THREE.TextureLoader().load(elem.children[i].getAttribute("src"))
-
       }
-
     }
-
-
     Object.assign(uniforms, {
       time: { value: 0 },
       mouse: { value: mouse },
@@ -166,7 +196,7 @@ function Shery() {
         if (parseInt(document.querySelector(o).style.top) < 0)
           document.querySelector(o).style.top = '0px'
       Object.assign(uniforms, {
-        time: { value: clock.getElapsedTime()},
+        time: { value: clock.getElapsedTime() },
         mouse: { value: mouse },
         uIntercept: { value: THREE.Math.lerp(uniforms.uIntercept.value, intersect === 1 ? 1 : 0, 0.07) },
       })
@@ -228,13 +258,14 @@ function Shery() {
 
           circle.classList.add("circle")
 
-          mask.addEventListener("mouseenter", function () {
+            .addEventListener("mouseenter", function () {
             gsap.to(circle, {
               opacity: 1,
               ease: Expo.easeOut,
               duration: 1,
             })
           })
+          
 
           mask.addEventListener("mousemove", function (dets) {
             mask.appendChild(circle)

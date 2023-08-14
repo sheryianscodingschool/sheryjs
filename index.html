@@ -10,6 +10,9 @@
 </head>
 
 <body>
+    <div class="mes">
+        <img src="./media/face/MES.png">
+    </div>
     <div class="frst"></div>
     <div id="main">
         <div id="left">
@@ -23,18 +26,13 @@
         </div>
         <div id="right">
             <div class="image">
-                <img src="https://plus.unsplash.com/premium_photo-1691009758120-9b3a2e0d688d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="">
-                <img src="https://images.unsplash.com/photo-1691308475439-8523d6a0dc15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="">
-                <img src="https://images.unsplash.com/photo-1689019587412-00999d1d08bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="">
-                <img src="https://plus.unsplash.com/premium_photo-1691009758120-9b3a2e0d688d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="">
-                <img src="https://images.unsplash.com/photo-1691308475439-8523d6a0dc15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="">
-                <img src="https://images.unsplash.com/photo-1689019587412-00999d1d08bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="">
+                <img src="./media/face/face.jpg">
+                <img src="./media/face/face2.jpg">
+                <img src="./media/face/face3.jpg">
+                <img src="./media/face/face4.jpg">
+                <img src="./media/face/face5.jpg">
+                <img src="./media/face/face6.jpg">
+
             </div>
         </div>
     </div>
@@ -44,16 +42,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
         integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"
+        integrity="sha512-Ic9xkERjyZ1xgJ5svx3y0u3xrvfT/uPkV99LBwe68xjy/mGtO+4eURHZBW2xW4SZbFrF1Tf090XqB+EVgXnVjw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./src/Shery.js"></script>
     <script>
         var shery = new Shery()
-        const targettop = document.querySelector('#main').getBoundingClientRect().top
+        shery.mouseFollower()
+            const targettop = document.querySelector('#main').getBoundingClientRect().top
         let sections = document.querySelectorAll('.section')
 
         shery.imageEffect(".image", {
             style: 5,
-            debug: true,
             config: { "onMouse": { "value": 1 } },
             slideStyle: function (uScroll, doAction) {
                 ScrollTrigger.create({
@@ -62,7 +62,7 @@
                     start: "top top",
                     markers: true,
                     end: "bottom bottom",
-                    endTrigger: sections[sections.length-1],
+                    endTrigger: sections[sections.length - 1],
                     scrub: true
                 })
 
@@ -70,7 +70,6 @@
                     ScrollTrigger.create({
                         trigger: elem,
                         start: "top top",
-                        markers: true,
                         scrub: true,
                         onEnter: () => {
                             doAction(index)
