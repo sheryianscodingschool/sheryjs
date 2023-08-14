@@ -82,9 +82,9 @@ body {
 .image {
     /* position: fixed;
     top: 10%; */
-    overflow: hidden;
-    height: 951px;
-    width: 580px;
+        overflow: hidden;
+        height: 951px;
+        width: 580px;
 }
 
 img {

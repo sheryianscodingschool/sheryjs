@@ -184,7 +184,7 @@ function Shery() {
       mouse.y = -((event.offsetY / elem.height) * 2 - 1)
     })
     window.addEventListener('resize', () => {
-      renderer.setSize(elem.width, elem.height)
+      renderer.setSize(document.querySelector('.'+elem.classList[0]).getBoundingClientRect().width, document.querySelector('.'+elem.classList[0]).getBoundingClientRect().height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     })
 
@@ -409,8 +409,8 @@ function Shery() {
         parent.replaceChild(div, frame)
         div.appendChild(frame)
         if (!(elem.nodeName.toLowerCase() === 'img')) {
-          elem.width = parent.children[0].offsetWidth
-          elem.height = parent.children[0].offsetHeight
+          elem.width = document.querySelector('.'+elem.classList[0]).getBoundingClientRect().width
+          elem.height = document.querySelector('.'+elem.classList[0]).getBoundingClientRect().height
         }
         switch (opts.style || 1) {
           // STUB - Simple Liquid Distortion Effect 

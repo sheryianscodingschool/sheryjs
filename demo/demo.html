@@ -10,11 +10,14 @@
 </head>
 
 <body>
-    <section id="S1"></section>
-    <section id="S2"></section>
-    <section id="S3"></section>
-    <section id="S4"></section>
-    <section id="S5"></section>
+    <div class="box">
+        <img src="../media/face/face.jpg">
+        <img src="../media/face/face2.jpg">
+        <img src="../media/face/face3.jpg">
+        <img src="../media/face/face4.jpg">
+        <img src="../media/face/face5.jpg">
+        <img src="../media/face/face6.jpg">
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -23,10 +26,7 @@
     <script src="../src/Shery.js"></script>
     <script>
         var Shery = new Shery()
-        Shery.imageEffect('.img',
-            {
-                style: 5
-            })
+        Shery.imageEffect('.box', { style: 2 ,staticScroll:true   })
     </script>
 </body>
 

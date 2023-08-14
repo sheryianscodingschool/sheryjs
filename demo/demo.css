@@ -34,16 +34,19 @@ section {
 #S6 {
     background-color: #cf6631;
 }
-#S7 {
+
+#S7 {   
     background-color: #d2f3f1;
 }
+
 #S8 {
     background-color: #330343;
 }
 
 .box {
-    height:  50vh;
-    position: fixed;
-    left: 10%;
-    top:10%
+    position: fixed;    
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    left: 0%;
 }
