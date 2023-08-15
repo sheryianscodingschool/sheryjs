@@ -393,6 +393,79 @@ function Shery() {
       }
     }, //!SECTION 
 
+    // SECTION - Hover With Media 
+    hoverWithMediaCircle: function (element, opts) {
+
+
+      function calculateMedia(indexofelem) {
+        var lengthofres = opts.images ? opts.images.length : opts.videos.length;
+        return (indexofelem % lengthofres);
+      }
+
+      var parent = document.body;
+      var parentDiv = document.createElement("div");
+      parentDiv.classList.add("just-a-white-blend-screen");
+      parentDiv.classList.add("movercirc");
+
+      var circle = document.createElement("div");
+
+
+      // <video preload="auto" muted="" loop="" autoplay="" src="blob:https://cuberto.com/e9ebb315-eef6-42b5-982d-53eb983c272f"></video>
+      var media = null;
+      document.body.click();
+      if (opts.images) {
+        var img = document.createElement("img");
+        media = img;
+      }
+      else if (opts.videos) {
+        var vid = document.createElement("video");
+        vid.preload = true;
+        vid.autoplay = true;
+        vid.muted = true;
+        media = vid;
+      }
+
+
+      circle.appendChild(media);
+      parent.appendChild(parentDiv);
+      parent.appendChild(circle);
+
+      circle.classList.add("movercirc");
+
+      document.querySelectorAll(element)
+        .forEach(function (elem, index) {
+          elem.classList.add("hovercircle");
+          elem.addEventListener("mouseenter", function (dets) {
+            media.setAttribute("src", opts.images ? opts.images[calculateMedia(index)] : opts.videos[calculateMedia(index)]);
+          })
+
+          elem.addEventListener("mousemove", function (dets) {
+
+            gsap.to(".movercirc", {
+              left: dets.clientX,
+              top: dets.clientY,
+              width: "15vw",
+              height: "15vw",
+              ease: Power2,
+              duration: 0.4,
+              opacity: 1
+            })
+            circle.classList.add('blend')
+          })
+
+          elem.addEventListener("mouseleave", function (dets) {
+            gsap.to(".movercirc", {
+              width: "0",
+              height: "0",
+              ease: Power2,
+              duration: .4,
+              opacity: 0
+            })
+            circle.classList.remove('blend')
+          })
+        });
+    }, //!SECTION 
+    
     // SECTION - Image Effects 
     imageEffect: function (element = "img", opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
