@@ -10,6 +10,7 @@ body {
     height: 100%;
 }
 
+<<<<<<< HEAD
 #main {
     display: flex;
     width: 100%;
@@ -91,4 +92,13 @@ img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+=======
+h1{
+    font-family: "Gilroy";
+    font-size: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+>>>>>>> 955a2ed7f8c410417917ef8711df32590a1a596a
 }

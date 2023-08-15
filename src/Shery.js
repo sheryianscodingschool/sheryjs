@@ -393,8 +393,21 @@ function Shery() {
       }
     }, //!SECTION 
 
+    hoverWithCircle: function(element, opts){
+      document.querySelectorAll(element)
+      .forEach(function(elem){
+        var circle = document.createElement("div");
+        circle.classList.add("circlebig");
+        var span = document.createElement("span");
+        span.appendChild()
+        elem.appendChild(circle);
+        elem.addEventListener("mousemove", function(dets){
+
+        })
+      });
+    },
     // SECTION - Image Effects 
-    imageEffect: function (element = "img", opts = {}) {
+    imageEffect: function (element = "img", opts={}) {
       document.querySelectorAll(element).forEach(function (elem) {
         var parent = elem.parentNode
         var div = document.createElement("div")
@@ -479,8 +492,7 @@ function Shery() {
             float colorExposer=clamp(colorExposer,-5.,5.);
             vec2 uv = .5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
             uv=mousemove!=0 ? mix(uv,.5*(gl_FragCoord.xy-.5*resolution.xy)/resolution.y+mouse.xy/300.,uIntercept):uv;
-            float c = sin((sin((uv.x+(time+snoise(vec3(uv,1.0)))*0.1 )* (20.0+uv.y) + snoise(vec3(uv,1.0)) ) / 15.0 + (snoise(vec3(uv,1.0))/10.)))+.1;
-            c = (sin((uv.x*7.0)+(time))/30.0)+.01;
+            float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
             vec3 col = vec3(0);
             vec2 n,q = vec2(0);
             vec2 p = (uv + brightness/10.0);

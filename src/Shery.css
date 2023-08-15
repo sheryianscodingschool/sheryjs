@@ -142,3 +142,16 @@ canvas{
     box-shadow: none !important;
     background-color: #00000000;
 }
+
+.circlebig{
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background-color: red;
+    width: 15vw;
+    height: 15vw;
+    max-width: 200px;
+    max-height: 200px;
+}
