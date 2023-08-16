@@ -395,8 +395,6 @@ function Shery() {
 
     // SECTION - Hover With Media 
     hoverWithMediaCircle: function (element, opts) {
-
-
       function calculateMedia(indexofelem) {
         var lengthofres = opts.images ? opts.images.length : opts.videos.length;
         return (indexofelem % lengthofres);
@@ -434,20 +432,43 @@ function Shery() {
 
       document.querySelectorAll(element)
         .forEach(function (elem, index) {
+
+          var prevx = 0;
+          var prevy = 0;
+
+
           elem.classList.add("hovercircle");
           elem.addEventListener("mouseenter", function (dets) {
             media.setAttribute("src", opts.images ? opts.images[calculateMedia(index)] : opts.videos[calculateMedia(index)]);
           })
 
+          var timer;
           elem.addEventListener("mousemove", function (dets) {
+
+            var trans = gsap.utils.pipe(
+              gsap.utils.clamp(-1, 1),
+              gsap.utils.mapRange(-1, 1, .8, 1.2)
+            )
+            var diffx = trans(dets.clientX-prevx);
+            var diffy = trans(dets.clientY-prevy);
+            prevx = dets.clientX;
+            prevy = dets.clientY;
+
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+              gsap.to(".movercirc", {
+                transform: `translate(-50%,-50%)`,
+              })
+            }, 500);
 
             gsap.to(".movercirc", {
               left: dets.clientX,
               top: dets.clientY,
               width: "15vw",
               height: "15vw",
-              ease: Power2,
-              duration: 0.4,
+              transform: `translate(-50%,-50%) scale(${diffx, diffy})`,
+              ease: Circ,
+              duration: .4,
               opacity: 1
             })
             circle.classList.add('blend')
