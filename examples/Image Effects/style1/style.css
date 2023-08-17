@@ -120,6 +120,7 @@ img {
 }
 
 #page-1-main h1 {
+
   padding-bottom: 2vh;
   font-family: "Gilroy";
   font-weight: 600;
@@ -156,9 +157,12 @@ img {
 }
 
 #page-1-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
   height: 100vh;
   width: 50vw;
-  background-image: url(https://ik.imagekit.io/sheryians/photed_MVice1qZE.png);
   background-size: cover;
   background-position: center;
 }

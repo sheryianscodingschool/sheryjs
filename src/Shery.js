@@ -8,6 +8,13 @@ function Shery() {
     let newGeometry = new THREE.PlaneGeometry(plane.geometry.parameters.width, plane.geometry.parameters.height, v, v)
     plane.geometry.dispose()
     plane.geometry = newGeometry
+  } 
+  let oldDisplay = null;
+  const getSize = e => {
+    e.style.display = oldDisplay
+    const sizes = { width: e.getBoundingClientRect().width, height: e.getBoundingClientRect().height }
+    e.style.display = 'none'
+    return sizes;
   }
 
   //ANCHOR - DubugUi Fix 
@@ -115,10 +122,9 @@ function Shery() {
       opts.slideStyle(setScroll, doAction)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-
     const styles = window.getComputedStyle(elem);
     renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => `${css}${propertyName}:${styles.getPropertyValue(propertyName)};`);
-    renderer.setSize(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height)
+    renderer.setSize(getSize(elem).width, getSize(elem).height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     elem.style.visibility = "hidden"
     elem.parentElement.appendChild(renderer.domElement)
@@ -180,11 +186,11 @@ function Shery() {
 
     function setMouseCord(e, i = false) {
       if (i) {
-        mouse.x = (e.x / elem.getBoundingClientRect().width) * 2 - 1
-        mouse.y = -((e.y / elem.getBoundingClientRect().height) * 2 - 1)
+        mouse.x = (e.x / getSize(elem).width) * 2 - 1
+        mouse.y = -((e.y / getSize(elem).height) * 2 - 1)
       } else {
-        mouse.x = (e.offsetX / elem.getBoundingClientRect().width) * 2 - 1
-        mouse.y = -((e.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
+        mouse.x = (e.offsetX / getSize(elem).width) * 2 - 1
+        mouse.y = -((e.offsetY / getSize(elem).height) * 2 - 1)
       }
     }
 
@@ -201,15 +207,17 @@ function Shery() {
     })
 
     window.addEventListener('resize', () => {
-      renderer.setSize(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height)
+      renderer.setSize(getSize(elem).width, getSize(elem).height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     })
 
     const clock = new THREE.Clock()
     function animate() {
       renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => propertyName != 'visibility' ? `${css}${propertyName}:${styles.getPropertyValue(propertyName)};` : `${css}visibility:'visible';`);
+      renderer.domElement.style.display = oldDisplay
+
       if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-        renderer.setSize(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height)
+        renderer.setSize(getSize(elem).width, getSize(elem).height)
       if (document.querySelector(o))
         if (parseInt(document.querySelector(o).style.top) < 0)
           document.querySelector(o).style.top = '0px'
@@ -467,13 +475,13 @@ function Shery() {
               gsap.utils.clamp(-1, 1),
               gsap.utils.mapRange(-1, 1, .8, 1.2)
             )
-            var diffx = trans(dets.clientX-prevx);
-            var diffy = trans(dets.clientY-prevy);
+            var diffx = trans(dets.clientX - prevx);
+            var diffy = trans(dets.clientY - prevy);
             prevx = dets.clientX;
             prevy = dets.clientY;
 
             clearTimeout(timer);
-            timer = setTimeout(function(){
+            timer = setTimeout(function () {
               gsap.to(".movercirc", {
                 transform: `translate(-50%,-50%)`,
               })
@@ -512,6 +520,10 @@ function Shery() {
           Array.from(elem.children).forEach((e, i) => {
             if (i != 0) e.style.display = 'none'
           })
+        } else {
+          oldDisplay=window.getComputedStyle(elem).display
+          elem.style.visibility = 'hidden'
+          // elem.style.display = 'none'
         }
 
         switch (opts.style || 1) {
@@ -639,7 +651,7 @@ function Shery() {
             gl_FragColor=final;          
             }`
             var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              resolution: { value: new THREE.Vector2(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height) },
+              resolution: { value: new THREE.Vector2(getSize(elem).width,getSize(elem).height) },
               distortion: { value: true },
               mode: { value: -3 },
               mousemove: { value: 0 },
