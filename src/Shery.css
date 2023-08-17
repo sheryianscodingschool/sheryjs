@@ -78,6 +78,10 @@ canvas{
     font-weight: 800 !important;
 }
 
+#controlKit .picker canvas{
+    position: relative;
+}
+
 #controlKit .panel .button:hover{
     background-color: #007bff !important;
     color: #fff !important;
@@ -133,6 +137,7 @@ canvas{
     width: auto !important;
 }
 #controlKit{
+    z-index: 999999999999999999;
     position: fixed !important;
 }
 

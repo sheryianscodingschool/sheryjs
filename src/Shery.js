@@ -8,13 +8,13 @@ function Shery() {
     let newGeometry = new THREE.PlaneGeometry(plane.geometry.parameters.width, plane.geometry.parameters.height, v, v)
     plane.geometry.dispose()
     plane.geometry = newGeometry
-  } 
-  let oldDisplay = null;
+  }
+  let oldDisplay = null
   const getSize = e => {
     e.style.display = oldDisplay
     const sizes = { width: e.getBoundingClientRect().width, height: e.getBoundingClientRect().height }
     e.style.display = 'none'
-    return sizes;
+    return sizes
   }
 
   //ANCHOR - DubugUi Fix 
@@ -55,7 +55,7 @@ function Shery() {
       fragment = fragment.replace('isMulti ;', `
       float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       gl_FragColor = mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y));`)
-      const scrollProps = { value: 0 };
+      const scrollProps = { value: 0 }
       if (!opts.slideStyle) {
         if (opts.staticScroll) {
           function handleScroll(deltaY) {
@@ -64,29 +64,29 @@ function Shery() {
               duration: 0.5, // Adjust the duration as needed
               onUpdate: () => {
                 if (scrollProps.value < 0) scrollProps.value = offset
-                uniforms.uScroll.value = scrollProps.value;
-                const newSection = Math.floor(scrollProps.value);
+                uniforms.uScroll.value = scrollProps.value
+                const newSection = Math.floor(scrollProps.value)
                 if (newSection !== uniforms.uSection.value) {
-                  if (t.length > newSection + 1) doAction(newSection);
+                  if (t.length > newSection + 1) doAction(newSection)
                 }
               },
-            });
+            })
           }
 
           window.addEventListener('wheel', e => {
-            const deltaY = e.deltaY;
-            handleScroll(deltaY);
-          });
-          let touchStartY = 0;
+            const deltaY = e.deltaY
+            handleScroll(deltaY)
+          })
+          let touchStartY = 0
           window.addEventListener('touchstart', e => {
-            touchStartY = e.touches[0].clientY;
-          });
+            touchStartY = e.touches[0].clientY
+          })
           window.addEventListener('touchmove', e => {
-            const deltaY = (touchStartY - e.touches[0].clientY) * 2; // Adjust the multiplier as needed
-            touchStartY = e.touches[0].clientY;
-            handleScroll(deltaY * 3);
-            e.preventDefault();
-          }, { passive: false });
+            const deltaY = (touchStartY - e.touches[0].clientY) * 2 // Adjust the multiplier as needed
+            touchStartY = e.touches[0].clientY
+            handleScroll(deltaY * 3)
+            e.preventDefault()
+          }, { passive: false })
         }
         else
           window.addEventListener('scroll', () => {
@@ -122,15 +122,15 @@ function Shery() {
       opts.slideStyle(setScroll, doAction)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    const styles = window.getComputedStyle(elem);
-    renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => `${css}${propertyName}:${styles.getPropertyValue(propertyName)};`);
+    const styles = window.getComputedStyle(elem)
+    renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => `${css}${propertyName}:${styles.getPropertyValue(propertyName)};`)
     renderer.setSize(getSize(elem).width, getSize(elem).height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     elem.style.visibility = "hidden"
     elem.parentElement.appendChild(renderer.domElement)
 
-    const parent = elem.parentElement;
-    elem.remove();
+    const parent = elem.parentElement
+    elem.remove()
     parent.appendChild(elem)
 
 
@@ -179,9 +179,11 @@ function Shery() {
     if ((opts.debug && !isdebug[effect]) || false) {
       isdebug[2] = true
       controlKit = new ControlKit()
-      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
+      
+      panel = controlKit.addPanel({enable: false,label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
         .addButton('Save To Clipboard', () => { const { uScroll, isMulti, uSection, time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)) })
-        .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
+      if ((!(elem.nodeName.toLowerCase() === 'img')))
+        panel.addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
     }
 
     function setMouseCord(e, i = false) {
@@ -194,7 +196,7 @@ function Shery() {
       }
     }
 
-    (onDoc ? document : renderer).domElement.addEventListener("mousemove", (e) => setMouseCord(e, onDoc))
+    (onDoc ? document : renderer.domElement).addEventListener("mousemove", (e) => setMouseCord(e, onDoc))
 
     renderer.domElement.addEventListener("mouseleave", e => {
       intersect = 0
@@ -213,7 +215,7 @@ function Shery() {
 
     const clock = new THREE.Clock()
     function animate() {
-      renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => propertyName != 'visibility' ? `${css}${propertyName}:${styles.getPropertyValue(propertyName)};` : `${css}visibility:'visible';`);
+      renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => propertyName != 'visibility' ? `${css}${propertyName}:${styles.getPropertyValue(propertyName)};` : `${css}visibility:'visible';`)
       renderer.domElement.style.display = oldDisplay
 
       if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
@@ -422,70 +424,70 @@ function Shery() {
     // SECTION - Hover With Media 
     hoverWithMediaCircle: function (element, opts) {
       function calculateMedia(indexofelem) {
-        var lengthofres = opts.images ? opts.images.length : opts.videos.length;
-        return (indexofelem % lengthofres);
+        var lengthofres = opts.images ? opts.images.length : opts.videos.length
+        return (indexofelem % lengthofres)
       }
 
-      var parent = document.body;
-      var parentDiv = document.createElement("div");
-      parentDiv.classList.add("just-a-white-blend-screen");
-      parentDiv.classList.add("movercirc");
+      var parent = document.body
+      var parentDiv = document.createElement("div")
+      parentDiv.classList.add("just-a-white-blend-screen")
+      parentDiv.classList.add("movercirc")
 
-      var circle = document.createElement("div");
+      var circle = document.createElement("div")
 
 
       // <video preload="auto" muted="" loop="" autoplay="" src="blob:https://cuberto.com/e9ebb315-eef6-42b5-982d-53eb983c272f"></video>
-      var media = null;
-      document.body.click();
+      var media = null
+      document.body.click()
       if (opts.images) {
-        var img = document.createElement("img");
-        media = img;
+        var img = document.createElement("img")
+        media = img
       }
       else if (opts.videos) {
-        var vid = document.createElement("video");
-        vid.preload = true;
-        vid.autoplay = true;
-        vid.muted = true;
-        media = vid;
+        var vid = document.createElement("video")
+        vid.preload = true
+        vid.autoplay = true
+        vid.muted = true
+        media = vid
       }
 
 
-      circle.appendChild(media);
-      parent.appendChild(parentDiv);
-      parent.appendChild(circle);
+      circle.appendChild(media)
+      parent.appendChild(parentDiv)
+      parent.appendChild(circle)
 
-      circle.classList.add("movercirc");
+      circle.classList.add("movercirc")
 
       document.querySelectorAll(element)
         .forEach(function (elem, index) {
 
-          var prevx = 0;
-          var prevy = 0;
+          var prevx = 0
+          var prevy = 0
 
 
-          elem.classList.add("hovercircle");
+          elem.classList.add("hovercircle")
           elem.addEventListener("mouseenter", function (dets) {
-            media.setAttribute("src", opts.images ? opts.images[calculateMedia(index)] : opts.videos[calculateMedia(index)]);
+            media.setAttribute("src", opts.images ? opts.images[calculateMedia(index)] : opts.videos[calculateMedia(index)])
           })
 
-          var timer;
+          var timer
           elem.addEventListener("mousemove", function (dets) {
 
             var trans = gsap.utils.pipe(
               gsap.utils.clamp(-1, 1),
               gsap.utils.mapRange(-1, 1, .8, 1.2)
             )
-            var diffx = trans(dets.clientX - prevx);
-            var diffy = trans(dets.clientY - prevy);
-            prevx = dets.clientX;
-            prevy = dets.clientY;
+            var diffx = trans(dets.clientX - prevx)
+            var diffy = trans(dets.clientY - prevy)
+            prevx = dets.clientX
+            prevy = dets.clientY
 
-            clearTimeout(timer);
+            clearTimeout(timer)
             timer = setTimeout(function () {
               gsap.to(".movercirc", {
                 transform: `translate(-50%,-50%)`,
               })
-            }, 500);
+            }, 500)
 
             gsap.to(".movercirc", {
               left: dets.clientX,
@@ -510,7 +512,7 @@ function Shery() {
             })
             circle.classList.remove('blend')
           })
-        });
+        })
     }, //!SECTION 
 
     // SECTION - Image Effects 
@@ -521,7 +523,7 @@ function Shery() {
             if (i != 0) e.style.display = 'none'
           })
         } else {
-          oldDisplay=window.getComputedStyle(elem).display
+          oldDisplay = window.getComputedStyle(elem).display
           elem.style.visibility = 'hidden'
           // elem.style.display = 'none'
         }
@@ -651,7 +653,7 @@ function Shery() {
             gl_FragColor=final;          
             }`
             var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              resolution: { value: new THREE.Vector2(getSize(elem).width,getSize(elem).height) },
+              resolution: { value: new THREE.Vector2(getSize(elem).width, getSize(elem).height) },
               distortion: { value: true },
               mode: { value: -3 },
               mousemove: { value: 0 },
@@ -678,7 +680,7 @@ function Shery() {
                 .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniforms.modeA.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
                 .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniforms.color.value.set(x) })
-              controlKit.addPanel({ label: "Debug Panel", width: 350, fixed: false, position: [0, 0], })
+              controlKit.addPanel({ enable: false,label: "Debug Panel", width: 350, fixed: false, position: [0, 0], })
                 .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.normal })
                 .addSlider(debugObj.speed, "precise", "rangep", { label: "Speed Precise", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.precise })
                 .addSlider(debugObj.frequency, "normal", "range", { label: "Frequency", step: 0.00001, onChange: () => uniforms.frequency.value = debugObj.frequency.normal })
