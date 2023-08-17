@@ -9,6 +9,7 @@ function Shery() {
     plane.geometry.dispose()
     plane.geometry = newGeometry
   }
+
   //ANCHOR - DubugUi Fix 
   function fix() {
     const s = '#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap'
@@ -89,13 +90,13 @@ function Shery() {
             if (newSection != uniforms.uSection.value) {
               if (t.length > newSection + 1) doAction(newSection)
             }
-            console.log()
           })
       }
       for (let i = 0; i < elem.children.length; i++) {
         t[i] = new THREE.TextureLoader().load(elem.children[i].getAttribute("src"))
       }
     }
+
     Object.assign(uniforms, {
       time: { value: 0 },
       mouse: { value: mouse },
@@ -114,13 +115,23 @@ function Shery() {
       opts.slideStyle(setScroll, doAction)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(elem.width, elem.height)
+
+    const styles = window.getComputedStyle(elem);
+    renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => `${css}${propertyName}:${styles.getPropertyValue(propertyName)};`);
+    renderer.setSize(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     elem.style.visibility = "hidden"
     elem.parentElement.appendChild(renderer.domElement)
+
+    const parent = elem.parentElement;
+    elem.remove();
+    parent.appendChild(elem)
+
+
     const snoise = `vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size, geoVertex, geoVertex), new THREE.ShaderMaterial({ vertexShader: vertex.replace('₹snoise', snoise), fragmentShader: fragment.replace('₹snoise', snoise), uniforms, }))
     scene.add(plane)
+
     var geoVertex = { value: 32, range: [1, 64] }
     var debugObj = {
       "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
@@ -143,18 +154,22 @@ function Shery() {
       "s": .6, range: [.1, 1],
       "f": .6, rangef: [1, 10]
     }
+
     var controlKit = null
     var panel = null
+
     const config = c => {
       if (c.color) c.color.value = new THREE.Color(c.color.value)
       Object.assign(uniforms, c)
     }
+
     if (opts.preset) fetch(opts.preset).then(response => response.json()).then(json => config(json))
     if (opts.config) config(opts.config)
     if (uniforms.uFrequencyZ) {
       camera.fov = 1 + uniforms.uFrequencyZ.value / 400
       camera.updateProjectionMatrix()
     }
+
     if ((opts.debug && !isdebug[effect]) || false) {
       isdebug[2] = true
       controlKit = new ControlKit()
@@ -162,36 +177,39 @@ function Shery() {
         .addButton('Save To Clipboard', () => { const { uScroll, isMulti, uSection, time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)) })
         .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
     }
-    if (onDoc)
-      document.addEventListener("mousemove", (event) => {
-        mouse.x = (event.x / elem.width) * 2 - 1
-        mouse.y = -((event.y / elem.height) * 2 - 1)
-      })
-    else
-      renderer.domElement.addEventListener("mousemove", (event) => {
-        mouse.x = (event.offsetX / elem.width) * 2 - 1
-        mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-      })
 
-    renderer.domElement.addEventListener("mouseleave", (event) => {
+    function setMouseCord(e, i = false) {
+      if (i) {
+        mouse.x = (e.x / elem.getBoundingClientRect().width) * 2 - 1
+        mouse.y = -((e.y / elem.getBoundingClientRect().height) * 2 - 1)
+      } else {
+        mouse.x = (e.offsetX / elem.getBoundingClientRect().width) * 2 - 1
+        mouse.y = -((e.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
+      }
+    }
+
+    (onDoc ? document : renderer).domElement.addEventListener("mousemove", (e) => setMouseCord(e, onDoc))
+
+    renderer.domElement.addEventListener("mouseleave", e => {
       intersect = 0
-      mouse.x = (event.offsetX / elem.width) * 2 - 1
-      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+      setMouseCord(e)
     })
-    renderer.domElement.addEventListener("mouseenter", (event) => {
+
+    renderer.domElement.addEventListener("mouseenter", e => {
       intersect = 1
-      mouse.x = (event.offsetX / elem.width) * 2 - 1
-      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+      setMouseCord(e)
     })
+
     window.addEventListener('resize', () => {
-      renderer.setSize(document.querySelector('.'+elem.classList[0]).getBoundingClientRect().width, document.querySelector('.'+elem.classList[0]).getBoundingClientRect().height)
+      renderer.setSize(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     })
 
     const clock = new THREE.Clock()
     function animate() {
+      renderer.domElement.style.cssText = styles.cssText !== '' ? styles.cssText : Object.values(styles).reduce((css, propertyName) => propertyName != 'visibility' ? `${css}${propertyName}:${styles.getPropertyValue(propertyName)};` : `${css}visibility:'visible';`);
       if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-        renderer.setSize(elem.width, elem.height)
+        renderer.setSize(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height)
       if (document.querySelector(o))
         if (parseInt(document.querySelector(o).style.top) < 0)
           document.querySelector(o).style.top = '0px'
@@ -259,13 +277,13 @@ function Shery() {
           circle.classList.add("circle")
 
             .addEventListener("mouseenter", function () {
-            gsap.to(circle, {
-              opacity: 1,
-              ease: Expo.easeOut,
-              duration: 1,
+              gsap.to(circle, {
+                opacity: 1,
+                ease: Expo.easeOut,
+                duration: 1,
+              })
             })
-          })
-          
+
 
           mask.addEventListener("mousemove", function (dets) {
             mask.appendChild(circle)
@@ -465,26 +483,18 @@ function Shery() {
           })
         });
     }, //!SECTION 
-    
+
     // SECTION - Image Effects 
-    imageEffect: function (element = "img", opts={}) {
+    imageEffect: function (element = "img", opts = {}) {
+
+
       document.querySelectorAll(element).forEach(function (elem) {
-        var parent = elem.parentNode
-        var div = document.createElement("div")
-        var frame = document.createElement("div")
-        div.classList.add(elem.classList[0])
-        div.id = elem.id
-        div.style.display = "inline-block"
-        frame.style.position = "relative"
-        elem.style.position = "absolute"
-        parent.replaceChild(frame, elem)
-        frame.appendChild(elem)
-        parent.replaceChild(div, frame)
-        div.appendChild(frame)
         if (!(elem.nodeName.toLowerCase() === 'img')) {
-          elem.width = document.querySelector('.'+elem.classList[0]).getBoundingClientRect().width
-          elem.height = document.querySelector('.'+elem.classList[0]).getBoundingClientRect().height
+          Array.from(elem.children).forEach((e, i) => {
+            if (i != 0) e.style.display = 'none'
+          })
         }
+
         switch (opts.style || 1) {
           // STUB - Simple Liquid Distortion Effect 
           case 1: {
@@ -610,7 +620,7 @@ function Shery() {
             gl_FragColor=final;          
             }`
             var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              resolution: { value: new THREE.Vector2(elem.width, elem.height) },
+              resolution: { value: new THREE.Vector2(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height) },
               distortion: { value: true },
               mode: { value: -3 },
               mousemove: { value: 0 },
@@ -730,7 +740,7 @@ function Shery() {
               uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
               uAmplitude: { value: 1.5, range: [0, 5] },
               uFrequency: { value: 3.5, range: [0, 10] },
-            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height, offset: -.04 })
+            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: 1, offset: -.04 })
 
             if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
             if (panel) {
@@ -749,29 +759,28 @@ function Shery() {
 
           // STUB - MultiImage Effect 
           case 5: {
-            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position = projectionMatrix *  viewMatrix * modelMatrix * vec4(position, 1.);vuv = uv;}`
+            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`
             const fragment = /*glsl*/ `
             uniform sampler2D uTexture[16];
-            uniform float a,b, uIntercept,time,uScroll,uSection,onMouse;
-            uniform vec2 mouse;
+            uniform float uIntercept,time,a,b,onMouse,uScroll,uSection;
             uniform bool isMulti;
+            uniform vec2 mouse;
             varying vec2 vuv;
             ₹snoise
             float cnoise(vec2 P){return snoise(vec3(P,1.0));}    
             void main() {                  
               vec2 uv = vuv;
-              float time = time* a;
-                  vec2 surface = vec2(cnoise(uv - mouse / 7. + .2) * .08, cnoise(uv - mouse / 7. + .2) * .08);
-                  surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
-                  uv += refract(vec2(mouse.x / 300., mouse.y / 300.),surface,b);
-                  gl_FragColor=texture2D(uTexture[0], uv);
-                  isMulti ;
-                  
+              float time = time * a;
+              vec2 surface = vec2(cnoise(uv - mouse / 7. + .2 * time) * .08, cnoise(uv - mouse / 7. + .2 * time) * .08);
+              surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
+              uv += refract(vec2(mouse.x / 300., mouse.y / 300.),surface,b);
+              gl_FragColor=texture2D(uTexture[0], uv);
+              isMulti ;
             }`
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
               a: { value: 2, range: [0, 30] },
               b: { value: 1. / 1.333, range: [-1, 1] },
-            }, { effect: 5, opts, fov: .9, onDoc: true, offset: -.04 })
+            }, { effect: 1, opts, fov: .9, onDoc: true, offset: -.04 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
                 .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })

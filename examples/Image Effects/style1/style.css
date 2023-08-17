@@ -1,0 +1,235 @@
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Medium.otf');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  font-family: "Gilroy";
+  text-rendering: geometricPrecision;
+  font-synthesis: weight;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  /* background-color: red; */
+  padding-bottom: 0vh;
+}
+
+#nav-main {
+  position: fixed !important;
+  z-index: 100;
+  padding: 0 0.5vw;
+  transition: all cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+  z-index: 99999;
+  width: 100vw;
+  margin-bottom: 0vh;
+  background-color: transparent;
+  height: 7vh;
+  display: flex;
+  justify-content: space-between;
+}
+
+#left-main-nav {
+  width: 25vw;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0vw;
+  padding-left: 3vw;
+  align-items: center;
+  overflow: hidden;
+}
+
+#left-main-nav img {
+  z-index: 90;
+  height: 2.3vw;
+}
+
+#nav-main-line {
+  z-index: 90;
+  width: 2px;
+  margin: 0 1vw;
+  height: 40%;
+  background-color: rgb(157, 157, 157);
+}
+
+#left-main-nav a {
+  font-size: 1.1vw;
+  transition: all cubic-bezier(0.19, 1, 0.22, 1) 1s;
+}
+
+#nav-main a {
+  text-decoration: none;
+  z-index: 90;
+  color: #222222;
+}
+
+#left-main-nav a h4,
+#right-main-nav a h4 {
+  font-weight: 600;
+}
+
+#right-main-nav {
+  transition: all cubic-bezier(0.19, 1, 0.22, 1) 1s;
+  width: 55vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 1.2vw;
+  justify-content: space-between !important;
+  margin-right: 1vw;
+}
+
+#right-main-nav a {
+  margin-right: 0vw !important;
+  font-size: 1.1vw;
+}
+
+img {
+  overflow-clip-margin: content-box;
+  overflow: clip;
+}
+
+
+#page-1 {
+  width: 100vw;
+  background-color: #fff;
+  display: flex;
+}
+
+#page-1-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 50vw;
+}
+
+#page-1-main {
+  font-size: 1.7vw;
+  font-weight: 900;
+}
+
+#page-1-main h1 {
+  padding-bottom: 2vh;
+  font-family: "Gilroy";
+  font-weight: 600;
+  font-size: 4vw;
+
+
+}
+
+#page-1-main h1 span {
+  font-family: "Gilroy";
+
+  color: #289e8a;
+}
+
+#page-1-main h6 {
+  align-items: center;
+  display: flex;
+  font-family: "Gilroy";
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+#page-1-main h6 i {
+  margin-right: 1vw;
+  background-color: #289e8a;
+  color: #fff;
+  height: 27px;
+  font-size: 15px;
+  width: 27px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#page-1-right {
+  height: 100vh;
+  width: 50vw;
+  background-image: url(https://ik.imagekit.io/sheryians/photed_MVice1qZE.png);
+  background-size: cover;
+  background-position: center;
+}
+
+
+#cta {
+  display: inline-block;
+  text-decoration: none;
+  padding: 1.5vw 2vw;
+  font-size: 1vw;
+  margin-top: 3vw;
+  font-weight: 500;
+  color: #fff;
+  border-radius: 5px;
+  background-color: #289e8a;
+}
+
+#cta:hover {
+  background-color: #196659;
+}
+
+#form button:hover {
+  background-color: #A5DDD4;
+  color: black
+}
+
+
+#page1-down {
+  margin-top: 5vh;
+  width: 35vw;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+#page1-down #left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #A5DDD4;
+}
+
+#page1-down #left img {
+  width: 50%;
+}
+
+#page1-down #right {
+  height: 100%;
+  width: 85%;
+  font-size: 0.9vw;
+  padding: 10px;
+  font-family: "Gilroy";
+  font-weight: 600;
+}
+
+#chat-button{
+  position: absolute;
+  bottom: 50px;
+  width: 50px;
+  font-size: 25px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  border-radius: 50%;
+  right: 50px;
+  transition: 0.3s;
+  z-index: 999999;
+  background-color: rgb(65, 150, 225);
+}
