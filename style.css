@@ -11,17 +11,12 @@ body {
     height: 100%;
 }
 
-.center{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 90%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+#main{
+    width: 100%;
 }
 
-.center h1{
-    font-size: 130px;
+#home{
+    width: 100%;
+    min-height: 80vh;
+    background-color: #dadada;
 }

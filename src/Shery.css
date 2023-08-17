@@ -163,7 +163,6 @@ canvas{
     z-index: 15;
     top: 0;
     left: 0;
-    transform: translate(-50%,-50%);
     border-radius: 50%;
     width: 0;
     opacity: 0;
