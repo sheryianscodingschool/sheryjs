@@ -21,7 +21,7 @@ Shery.js is a powerful and versatile JavaScript library that provides a collecti
    - Dynamic 3D Wave/Wobble Effect
    - Dynamic 3D Wind Effect
    - 3D Text Effect
-6. [Multiple Image (Scroll Effect)](##multiple-image-(scroll-effect))
+6. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
    - Customize Scroll Behavour
 7. [Debug Usage](#debug-usage)
    - Preset Usage
@@ -205,7 +205,7 @@ var Shery = new Shery()
 Shery.imageEffect('img', { style: 4 })
 ```
 
-## Multiple Image (Scroll Effect)
+## Multiple Image Scroll Effect
 
 All 3D effects in this library supports multi image with wave scroll effect 
 

@@ -11,6 +11,7 @@
   font-family: "Gilroy";
   text-rendering: geometricPrecision;
   font-synthesis: weight;
+  overflow: hidden;
 }
 
 html,
