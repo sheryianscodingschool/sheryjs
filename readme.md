@@ -312,7 +312,7 @@ Shery.imageEffect("img", {
 
 ## Examples
 
-For detailed usage examples and demos of each effect, check out the [examples](link-to-examples) directory in the Shery.js repository.
+For detailed usage examples and demos of each effect, check out the [examples](/examples/) directory in the Shery.js repository.
 
 ## Contributing
 
@@ -321,5 +321,3 @@ We welcome contributions from the community to enhance and expand Shery.js. If y
 ## License
 
 Shery.js is released under the [MIT License](link-to-license). Feel free to use it in both personal and commercial projects.
-
-# Shery.js - Cool Effects Library
