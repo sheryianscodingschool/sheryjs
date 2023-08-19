@@ -2,88 +2,78 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="../src/Shery.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../src/Shery.css">
 </head>
 
 <body>
-    <div class="mes">
-        <img src="../media/face/MES.png">
+  <div class="mes">
+    <img src="../media/face/MES.png">
+  </div>
+  <div class="frst"></div>
+  <div id="main">
+    <div id="left">
+      <div class="section"></div>
+      <div class="section"></div>
+      <div class="section"></div>
+      <div class="section"></div>
+      <div class="section"></div>
+      <div class="section"></div>
+      <div class="section" id="lastSection"></div>
     </div>
-    <div class="frst"></div>
-    <div id="main">
-        <div id="left">
-            <div class="section"></div>
-            <div class="section"></div>
-            <div class="section"></div>
-            <div class="section"></div>
-            <div class="section"></div>
-            <div class="section"></div>
-            <div class="section" id="lastSection"></div>
-        </div>
-        <div id="right">
-            <div class="image">
-                <img src="../media/face/face.jpg">
-                <img src="../media/face/face2.jpg">
-                <img src="../media/face/face3.jpg">
-                <img src="../media/face/face4.jpg">
-                <img src="../media/face/face5.jpg">
-                <img src="../media/face/face6.jpg">
-            </div>
-        </div>
+    <div id="right">
+      <div class="image">
+        <img src="../media/face/face.jpg">
+        <img src="../media/face/face2.jpg">
+        <img src="../media/face/face3.jpg">
+        <img src="../media/face/face4.jpg">
+        <img src="../media/face/face5.jpg">
+        <img src="../media/face/face6.jpg">
+      </div>
     </div>
-    <div class="frst"></div>
-    <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
-        integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"
-        integrity="sha512-Ic9xkERjyZ1xgJ5svx3y0u3xrvfT/uPkV99LBwe68xjy/mGtO+4eURHZBW2xW4SZbFrF1Tf090XqB+EVgXnVjw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="../src/Shery.js"></script>
-    <script>
-        var shery = new Shery()
-        shery.mouseFollower()
-            const targettop = document.querySelector('#main').getBoundingClientRect().top
-        let sections = document.querySelectorAll('.section')
+  </div>
+  <div class="frst"></div>
+  <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" integrity="sha512-Ic9xkERjyZ1xgJ5svx3y0u3xrvfT/uPkV99LBwe68xjy/mGtO+4eURHZBW2xW4SZbFrF1Tf090XqB+EVgXnVjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="../src/Shery.js"></script>
+  <script>
+    var shery = new Shery()
+    shery.mouseFollower()
+    const targettop = document.querySelector('#main').getBoundingClientRect().top
+    let sections = document.querySelectorAll('.section')
 
-        shery.imageEffect(".image", {
-            style: 5,
-            slideStyle: function (uScroll, doAction) {
-                ScrollTrigger.create({
-                    trigger: "#right",
-                    pin: true,
-                    start: "top top",
-                    markers: true,
-                    end: "bottom bottom",
-                    endTrigger: sections[sections.length - 1],
-                    scrub: true
-                })
+    ScrollTrigger.create({
+      trigger: "#right",
+      pin: true,
+      start: "top top",
+      markers: true,
+      end: "bottom bottom",
+      endTrigger: sections[sections.length - 1],
+      scrub: true
+    })
 
-                sections.forEach(function (elem, index) {
-                    ScrollTrigger.create({
-                        trigger: elem,
-                        start: "top top",
-                        scrub: true,
-                        onEnter: () => {
-                            doAction(index)
-                        },
-                        onEnterBack: () => {
-                            doAction(index)
-                        },
-                        onUpdate: (prog) => {
-                            uScroll(prog.progress + index)
-                        }
-                    })
-                })
-
+    shery.imageEffect(".image", {
+      style: 5,
+      slideStyle: function(uScroll) {
+        sections.forEach(function(elem, index) {
+          ScrollTrigger.create({
+            trigger: elem,
+            start: "top top",
+            scrub: true,
+            onUpdate: (prog) => {
+              uScroll(prog.progress + index)
             }
+          })
         })
-    </script>
+
+      }
+    })
+  </script>
 </body>
 
 </html>

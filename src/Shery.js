@@ -45,9 +45,9 @@ function Shery() {
       uniforms.uSection.value = newSection
       if (t.length > newSection) {
         if (t.length > newSection + 1)
-          uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
+          uniforms.uTexture.value = [ t[ newSection ], t[ newSection + 1 ] ]
         else
-          uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
+          uniforms.uTexture.value = [ t[ t.length - 1 ], t[ t.length - 1 ] ]
       }
 
     }
@@ -63,7 +63,7 @@ function Shery() {
               value: scrollProps.value + deltaY / innerHeight,
               duration: 0.5, // Adjust the duration as needed
               onUpdate: () => {
-                if (scrollProps.value < 0) scrollProps.value = offset
+                if (scrollProps.value < 0) scrollProps.value = 0
                 uniforms.uScroll.value = scrollProps.value
                 const newSection = Math.floor(scrollProps.value)
                 if (newSection !== uniforms.uSection.value) {
@@ -79,11 +79,11 @@ function Shery() {
           })
           let touchStartY = 0
           window.addEventListener('touchstart', e => {
-            touchStartY = e.touches[0].clientY
+            touchStartY = e.touches[ 0 ].clientY
           })
           window.addEventListener('touchmove', e => {
-            const deltaY = (touchStartY - e.touches[0].clientY) * 2 // Adjust the multiplier as needed
-            touchStartY = e.touches[0].clientY
+            const deltaY = (touchStartY - e.touches[ 0 ].clientY) * 2 // Adjust the multiplier as needed
+            touchStartY = e.touches[ 0 ].clientY
             handleScroll(deltaY * 3)
             e.preventDefault()
           }, { passive: false })
@@ -91,7 +91,7 @@ function Shery() {
         else
           window.addEventListener('scroll', () => {
             let scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset
-            if (scroll < 0) scroll = offset
+            if (scroll < 0) scroll = 0
             uniforms.uScroll.value = scroll
             const newSection = Math.floor(scroll)
             if (newSection != uniforms.uSection.value) {
@@ -100,8 +100,8 @@ function Shery() {
           })
       }
       for (let i = 0; i < elem.children.length; i++) {
-        t[i] = new THREE.TextureLoader().load(elem.children[i].getAttribute("src"))
-        
+        t[ i ] = new THREE.TextureLoader().load(elem.children[ i ].getAttribute("src"))
+
       }
     }
 
@@ -113,14 +113,19 @@ function Shery() {
       uSection: { value: 0 },
       isMulti: { value: (!(elem.nodeName.toLowerCase() === 'img')) },
       uScroll: { value: offset * 3 },
-      uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [new THREE.TextureLoader().load(elem.getAttribute("src"))] : [t[0], t[1]] },
+      uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [ new THREE.TextureLoader().load(elem.getAttribute("src")) ] : [ t[ 0 ], t[ 1 ] ] },
     })
 
-    const setScroll = (x) => uniforms.uScroll.value = x
+    const setScroll = (x) => {
+      if (x >= 0) {
+        uniforms.uScroll.value = x
+        doAction(Math.floor(x))
+      }
+    }
 
 
     if (opts.slideStyle && typeof opts.slideStyle === 'function')
-      opts.slideStyle(setScroll, doAction)
+      opts.slideStyle(setScroll)
 
     const checker = document.createElement("canvas");
     const checker1 = document.createElement("div");
@@ -129,7 +134,7 @@ function Shery() {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     setCanvasPos()
-    elem.style.visibility = 'hidden'
+    // elem.style.visibility = 'hidden'
     renderer.setSize(getSize(elem).width, getSize(elem).height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     elem.parentElement.appendChild(renderer.domElement)
@@ -138,27 +143,27 @@ function Shery() {
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size, geoVertex, geoVertex), new THREE.ShaderMaterial({ vertexShader: vertex.replace('₹snoise', snoise), fragmentShader: fragment.replace('₹snoise', snoise), uniforms, }))
     scene.add(plane)
 
-    var geoVertex = { value: 32, range: [1, 64] }
+    var geoVertex = { value: 32, range: [ 1, 64 ] }
     var debugObj = {
-      "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
+      "Mode": [ "Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage" ],
       "Mode Active": "Soft Light",
-      "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+      "Trigo": [ "Sin", "Cos", "Tan", "Atan" ],
       "Trig A": "Cos",
-      "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+      "Trigo": [ "Sin", "Cos", "Tan", "Atan" ],
       "Trig A": "Cos",
       "Trig N": "Sin",
-      "Mouse": ["Off", "Mode 1", " Mode 2", " Mode 3"],
-      "onMouse": ["Always Active", "Active On Hover", "Deactive On Hover"],
+      "Mouse": [ "Off", "Mode 1", " Mode 2", " Mode 3" ],
+      "onMouse": [ "Always Active", "Active On Hover", "Deactive On Hover" ],
       "Active": "Always Active",
       "Mouse Active": "Off",
-      "Offset": { "value": offset * 3, "range": [-1, 1] },
+      "Offset": { "value": offset * 3, "range": [ -1, 1 ] },
       "Color": "#54A8FF",
-      "speed": { "precise": 1, "normal": 1, "range": [-500, 500], "rangep": [-10, 10] },
-      "frequency": { "precise": 1, "normal": 50, "range": [-800, 800], "rangep": [-50, 50] },
-      "pixelStrength": { "precise": 1, "normal": 3, range: [-20, 100], "rangep": [-20, 20] },
-      "strength": { "precise": 1, "normal": 0.2, "range": [-40, 40], "rangep": [-5, 5] },
-      "s": .6, range: [.1, 1],
-      "f": .6, rangef: [1, 10]
+      "speed": { "precise": 1, "normal": 1, "range": [ -500, 500 ], "rangep": [ -10, 10 ] },
+      "frequency": { "precise": 1, "normal": 50, "range": [ -800, 800 ], "rangep": [ -50, 50 ] },
+      "pixelStrength": { "precise": 1, "normal": 3, range: [ -20, 100 ], "rangep": [ -20, 20 ] },
+      "strength": { "precise": 1, "normal": 0.2, "range": [ -40, 40 ], "rangep": [ -5, 5 ] },
+      "s": .6, range: [ .1, 1 ],
+      "f": .6, rangef: [ 1, 10 ]
     }
 
     var controlKit = null
@@ -176,13 +181,13 @@ function Shery() {
       camera.updateProjectionMatrix()
     }
 
-    if ((opts.debug && !isdebug[effect]) || false) {
-      isdebug[2] = true
+    if ((opts.debug && !isdebug[ effect ]) || false) {
+      isdebug[ 2 ] = true
       controlKit = new ControlKit()
 
-      panel = controlKit.addPanel({ enable: false, label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
+      panel = controlKit.addPanel({ enable: false, label: "Debug Panel", fixed: false, position: [ dposition, 0 ], width: 280 })
         .addButton('Save To Clipboard', () => { const { uScroll, isMulti, uSection, time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)) })
-      if ((!(elem.nodeName.toLowerCase() === 'img')))
+      if ((!(elem.nodeName.toLowerCase() === 'img')) && !opts.staticScroll)
         panel.addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
     }
 
@@ -212,31 +217,28 @@ function Shery() {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     })
 
-
     function setCanvasPos() {
       elem.style.display = oldDisplay
       const styles = window.getComputedStyle(elem)
       for (let prop in styles) {
         if (styles.hasOwnProperty(prop) && !Number(prop) && prop !== 'length') {
-          const style = styles[prop];
-          const styleValue = window.getComputedStyle(checker)[prop];
-          const styleValue1 = window.getComputedStyle(checker1)[prop];
-          
+          const style = styles[ prop ];
+          const styleValue = window.getComputedStyle(checker)[ prop ];
+          const styleValue1 = window.getComputedStyle(checker1)[ prop ];
+
           if (styleValue !== styleValue1 || styleValue !== style) {
-            renderer.domElement.style[prop] = style;
+            renderer.domElement.style[ prop ] = style;
           }
         }
+        elem.style.display = 'none'
       }
       renderer.domElement.style.display = oldDisplay
       renderer.domElement.style.visibility = 'visible'
-      elem.style.display = 'none'
     }
 
     const clock = new THREE.Clock()
     function animate() {
       setCanvasPos()
-      if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-        renderer.setSize(getSize(elem).width, getSize(elem).height)
       if (document.querySelector(o))
         if (parseInt(document.querySelector(o).style.top) < 0)
           document.querySelector(o).style.top = '0px'
@@ -352,7 +354,7 @@ function Shery() {
             opacity: 1,
             ease: Power1,
           })
-          gsap.to(this.childNodes[0], {
+          gsap.to(this.childNodes[ 0 ], {
             scale: 1,
             ease: opts.ease || Expo.easeOut,
             duration: opts.duration || 1,
@@ -412,14 +414,14 @@ function Shery() {
           alltexts.forEach(function (elem, i) {
             var len = elem.childNodes.length - 1
             for (var i = 0; i < elem.childNodes.length / 2; i++) {
-              elem.childNodes[i].dataset.delay = i
+              elem.childNodes[ i ].dataset.delay = i
             }
             for (
               var i = Math.floor(elem.childNodes.length / 2);
               i < elem.childNodes.length;
               i++
             ) {
-              elem.childNodes[i].dataset.delay = len - i
+              elem.childNodes[ i ].dataset.delay = len - i
             }
             elem.childNodes.forEach(function (al) {
               gsap.from(al, {
@@ -484,7 +486,7 @@ function Shery() {
 
           elem.classList.add("hovercircle")
           elem.addEventListener("mouseenter", function (dets) {
-            media.setAttribute("src", opts.images ? opts.images[calculateMedia(index)] : opts.videos[calculateMedia(index)])
+            media.setAttribute("src", opts.images ? opts.images[ calculateMedia(index) ] : opts.videos[ calculateMedia(index) ])
           })
 
           var timer
@@ -541,7 +543,7 @@ function Shery() {
           })
         } else {
           oldDisplay = window.getComputedStyle(elem).display
-          elem.style.visibility = 'hidden'
+          // elem.style.visibility = 'hidden'
         }
 
         switch (opts.style || 1) {
@@ -565,8 +567,8 @@ function Shery() {
             }`
 
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              a: { value: 2, range: [0, 30] },
-              b: { value: .7, range: [-1, 1] },
+              a: { value: 2, range: [ 0, 30 ] },
+              b: { value: .7, range: [ -1, 1 ] },
             }, { effect: 1, opts, offset: -.04 })
 
             if (panel) {
@@ -675,18 +677,18 @@ function Shery() {
               mousemove: { value: 0 },
               modeA: { value: 1 },
               modeN: { value: 0 },
-              speed: { value: 1, range: [-500, 500], rangep: [-10, 10] },
-              frequency: { value: 50, range: [-800, 800], rangep: [-50, 50] },
-              angle: { value: 0.5, range: [0, Math.PI] },
-              waveFactor: { value: 1.4, range: [-3, 3] },
+              speed: { value: 1, range: [ -500, 500 ], rangep: [ -10, 10 ] },
+              frequency: { value: 50, range: [ -800, 800 ], rangep: [ -50, 50 ] },
+              angle: { value: 0.5, range: [ 0, Math.PI ] },
+              waveFactor: { value: 1.4, range: [ -3, 3 ] },
               color: { value: new THREE.Color(0.33, 0.66, 1) },
-              pixelStrength: { value: 3, range: [-20, 100], rangep: [-20, 20] },
-              quality: { value: 5, range: [0, 10] },
-              contrast: { value: 1, range: [-25, 25] },
-              brightness: { value: 1, range: [-1, 25] },
-              colorExposer: { value: 0.182, range: [-5, 5] },
-              strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
-              exposer: { value: 8, range: [-100, 100] },
+              pixelStrength: { value: 3, range: [ -20, 100 ], rangep: [ -20, 20 ] },
+              quality: { value: 5, range: [ 0, 10 ] },
+              contrast: { value: 1, range: [ -25, 25 ] },
+              brightness: { value: 1, range: [ -1, 25 ] },
+              colorExposer: { value: 0.182, range: [ -5, 5 ] },
+              strength: { value: 0.2, range: [ -40, 40 ], rangep: [ -5, 5 ] },
+              exposer: { value: 8, range: [ -100, 100 ] },
             }, { effect: 2, opts, dposition: 350 })
             if (panel) {
               panel.addCheckbox(uniforms.distortion, "value", { label: "Distortion Effect" })
@@ -696,7 +698,7 @@ function Shery() {
                 .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniforms.modeA.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
                 .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniforms.color.value.set(x) })
-              controlKit.addPanel({ enable: false, label: "Debug Panel", width: 350, fixed: false, position: [0, 0], })
+              controlKit.addPanel({ enable: false, label: "Debug Panel", width: 350, fixed: false, position: [ 0, 0 ], })
                 .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.normal })
                 .addSlider(debugObj.speed, "precise", "rangep", { label: "Speed Precise", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.precise })
                 .addSlider(debugObj.frequency, "normal", "range", { label: "Frequency", step: 0.00001, onChange: () => uniforms.frequency.value = debugObj.frequency.normal })
@@ -741,9 +743,9 @@ function Shery() {
             varying vec2 vUv;void main(){vec2 uv=vUv;gl_FragColor = texture2D(uTexture[0], vUv); isMulti ;
             }`
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
-              uFrequencyX: { value: 25, range: [0, 100] },
-              uFrequencyY: { value: 25, range: [0, 100] },
-              uFrequencyZ: { value: 15, range: [0, 100] },
+              uFrequencyX: { value: 12, range: [ 0, 100 ] },
+              uFrequencyY: { value: 12, range: [ 0, 100 ] },
+              uFrequencyZ: { value: 10, range: [ 0, 100 ] },
             }, { effect: 3, opts, geoVertex: 32, fov: 1.0375, size: .01744, offset: -.04 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
@@ -786,12 +788,12 @@ function Shery() {
 
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
               uColor: { value: false },
-              uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
-              uAmplitude: { value: 1.5, range: [0, 5] },
-              uFrequency: { value: 3.5, range: [0, 10] },
+              uSpeed: { value: .6, range: [ .1, 1 ], rangef: [ 1, 10 ] },
+              uAmplitude: { value: 1.5, range: [ 0, 5 ] },
+              uFrequency: { value: 3.5, range: [ 0, 10 ] },
             }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: 1, offset: -.04 })
 
-            if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
+            if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[ key ].value = opts.config[ key ].value)
             if (panel) {
               panel.addCheckbox(uniforms.uColor, "value", { label: "Color Depth" })
                 .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
@@ -827,8 +829,8 @@ function Shery() {
               isMulti ;
             }`
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              a: { value: 2, range: [0, 30] },
-              b: { value: 1. / 1.333, range: [-1, 1] },
+              a: { value: 2, range: [ 0, 30 ] },
+              b: { value: 1. / 1.333, range: [ -1, 1 ] },
             }, { effect: 1, opts, fov: .9, onDoc: true, offset: -.04 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
