@@ -1,8 +1,8 @@
-# Shery.js - Cool Effects Library
+# Shery.js - Add Life to Your Web Experience
 
 ![Shery.js Logo](./media/logonospace.png)
 
-Shery.js is a powerful and versatile JavaScript library that provides a collection of cool effects and 3d functionalities to enhance the user experience on web applications. With Shery.js, you can easily implement eye-catching and interactive effects, adding a touch of creativity to your projects. This Markdown document serves as the documentation and guide for using Shery.js in your web development projects.
+Shery.js is a fantastic JavaScript library designed to make your web projects pop with eye-catching effects and mesmerizing 3D features. Whether you're a developer looking to jazz up your website or a designer wanting to add that extra flair, Shery.js has got you covered. This GitHub readme will walk you through the key aspects of using Shery.js in your web development journey.
 
 ## Table of Contents
 
@@ -20,7 +20,6 @@ Shery.js is a powerful and versatile JavaScript library that provides a collecti
    - Dynamic Distortion Effect
    - Dynamic 3D Wave/Wobble Effect
    - Dynamic 3D Wind Effect
-   - 3D Text Effect
 6. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
    - Custom Scroll Trigger Callback
 7. [Debug Usage](#debug-usage)
@@ -317,10 +316,32 @@ shery.imageEffect("img", {
 
 For detailed usage examples and demos of each effect, check out the [examples](/examples/) directory in the Shery.js repository.
 
+## Meet the Visionaries Behind Shery.js 🌟
+
+In the heart of the dynamic world of web development, the creators of Shery.js are making waves with their unique visions and unwavering determination.
+
+### 🚀 Harsh Sharma - [@asynchronousJavascriptor](https://github.com/asynchronousJavascriptor)
+
+![Harsh Sharma](https://media.licdn.com/dms/image/C4E03AQFS_A05xqS99w/profile-displayphoto-shrink_800_800/0/1627712637084?e=1698278400&v=beta&t=I0GoS7x-ZeImxYIOlNQHnnDVO9pmrOxJyVysA4z6QgE)
+
+A Tech Enthusiast and full-time learner, Harsh Sharma is not just a developer but a trailblazer with a mission. Hailing from the city of Bhopal, he's the visionary behind the awe-inspiring startup, **Sheryians Coding School**. With Sheryians, Harsh is defying conventions and making the impossible possible. He's on a quest to empower non-graduates to achieve their dreams by helping them secure tech jobs in the most remarkable way.
+
+Connect with him: [Harsh's Linkdin Profile](https://www.linkedin.com/in/harsh-sharma-924629147/)\
+Step into his world: [Harsh's GitHub Profile](https://github.com/asynchronousJavascriptor)
+
+### 🎮 Aayush Chouhan - [@aayushchouhan24](https://github.com/aayushchouhan24)
+
+![Aayush Chouhan](https://media.licdn.com/dms/image/D4D03AQErH7fb8TgbXg/profile-displayphoto-shrink_800_800/0/1692557398040?e=1698278400&v=beta&t=hsQCaNR7LeeHRywyrpDfs1HsUj0XLHF8l1pWXDmFD5g)
+
+A lover of technology, computers, and the thrill of gaming, Aayush Chouhan is a true explorer in the realm of cyberspace. From his early days in game penetration testing to becoming a multifaceted developer, Aayush has always been drawn to the frontier of innovation. Starting with his foray into freelancing, he's honed his skills in programming languages and ventured into the intricate worlds of Web and Android development. His journey took an exciting turn as he embraced Three.js, diving into the captivating world of 3D graphics.
+
+Connect with him: [Aayush's Linkdin Profile](https://www.linkedin.com/in/aayushchouhan24/)\
+Dive into his journey: [Aayush's GitHub Profile](https://github.com/aayushchouhan24)
+
 ## Contributing
 
-We welcome contributions from the community to enhance and expand Shery.js. If you encounter bugs, have feature suggestions, or want to contribute code, please check out our [contribution guidelines](link-to-contribution-guidelines) for more information.
+We welcome contributions from the community to enhance and expand [Shery.js](https://github.com/your-repo-link). If you encounter bugs, have feature suggestions, or want to contribute code, please check out our [contribution guidelines](contribution.md) for more information.
 
 ## License
 
-Shery.js is released under the [MIT License](link-to-license). Feel free to use it in both personal and commercial projects.
+Shery.js is released under the [MIT License](license.md). Feel free to use it in both personal and commercial projects.
