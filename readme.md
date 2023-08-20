@@ -39,10 +39,10 @@ To use Shery.js in your project, you can include it in your HTML file via a CDN 
 
 ```html
 <!-- Using the CDN -->
-<script src="https://cdn.example.com/shery.js"></script>
+<script src="https://cdn.example.com/Shery.js"></script>
 
 <!-- Hosting it locally -->
-<script src="path/to/shery.js"></script>
+<script src="path/to/Shery.js"></script>
 ```
 
 ## Getting Started
@@ -51,11 +51,12 @@ Once you have included Shery.js in your project, you can start using its effects
 
 ```javascript
 // Example code to initialize Shery.js and use a cool effect.
-const Shery = new Shery()
-Shery.mouseFollower()
+const shery = new Shery()
+shery.mouseFollower()
 ```
 
-###Required Libraries
+### Required Libraries
+
 To successfully run this project, you'll need some libraries.
 
 ```javascript
@@ -82,9 +83,9 @@ These are effects are implemented with the help of Gsap and Css to offer a uniqu
 The feature creates smooth mouse follower, creating an engaging user experience.
 
 ```javascript
-const Shery = new Shery()
-//Parameters are optional.
-Shery.mouseFollower({
+const shery = new Shery()
+shery.mouseFollower({
+  //Parameters are optional.
   skew: true,
   ease: Expo.easeOut,
   duration: 1
@@ -96,10 +97,7 @@ Shery.mouseFollower({
 The mask zoomer effect enables zooming into an image on mouse hover with a smooth mask transition, directing the user's focus to the targeted content.
 
 ```javascript
-const Shery = new Shery()
-//Parameters are optional.
-Shery.imageMasker('img', {
-  // Element to target.
+shery.imageMasker('img', /* Element to target.*/ { 
   //Parameters are optional.
   mouseFollower: true,
   text: 'Shery',
@@ -113,10 +111,8 @@ Shery.imageMasker('img', {
 The magnet mouse attractor effect draws elements towards the cursor, as if they are magnetically attracted, offering a unique and interactive experience.
 
 ```javascript
-const Shery = new Shery()
-//Parameters are optional.
-Shery.makeMagnet('img', {
-  // Element to target.
+const shery = new Shery()
+shery.makeMagnet('img', /* Element to target.*/  {
   //Parameters are optional.
   ease: Expo.easeOut,
   duration: 1
@@ -128,10 +124,8 @@ Shery.makeMagnet('img', {
 The text animate effect animates text with cool animation , with many preset animation, offering a unique experience.
 
 ```javascript
-const Shery = new Shery()
-//Parameters are optional.
-Shery.textAnimate('text', {
-  // Element to target.
+const shery = new Shery()
+shery.textAnimate('text', /* Element to target.*/ { 
   //Parameters are optional.
   style: 1,
   y: 10,
@@ -142,21 +136,19 @@ Shery.textAnimate('text', {
 })
 ```
 
-<br>
-
 ## 3D Image Effects
 
 These are effects are implemented with the help of Three.js to offer a unique experience with single function.
 
-```javascript
+```html
 <img class="img" src="example.img">//Must provide a class to image.
+```
 
-var Shery = new Shery();
-
-Shery.imageEffect("img", {
+```javascript
+shery.imageEffect("img", {
   style: 2, //Select Style
   debug: true, // Debug Panel
-  config: { /* Confid made from debug panel */}
+  config: { /* Config made from debug panel */},
   preset:'./presets/wigglewobble.json'
 });
 ```
@@ -168,8 +160,11 @@ Shery.imageEffect("img", {
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
 ```javascript
-var Shery = new Shery()
-Shery.imageEffect('.img',{style: 1 /*OR 5 for different variant */ })
+shery.imageEffect('.img',{
+  style: 1 /*OR 5 for different variant */ ,
+  debug: true
+});
+
 ```
 
 ### Dynamic Distortion Effect
@@ -179,8 +174,10 @@ Shery.imageEffect('.img',{style: 1 /*OR 5 for different variant */ })
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
 ```javascript
-var Shery = new Shery()
-Shery.imageEffect('img', { style: 2 })
+shery.imageEffect('.img',{
+  style: 2,
+  debug: true
+});
 ```
 
 ### Dynamic 3D Wave/Wobble Effect
@@ -190,8 +187,10 @@ Shery.imageEffect('img', { style: 2 })
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
 ```javascript
-var Shery = new Shery()
-Shery.imageEffect('img', { style: 3 })
+shery.imageEffect('.img',{
+  style: 3 ,
+  debug: true
+});
 ```
 
 ### Dynamic 3D Wind Effect
@@ -201,8 +200,10 @@ Shery.imageEffect('img', { style: 3 })
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
 ```javascript
-var Shery = new Shery()
-Shery.imageEffect('img', { style: 4 })
+shery.imageEffect('.img',{
+  style: 4 ,
+  debug: true
+});
 ```
 
 ## Multiple Image Scroll Effect
@@ -213,17 +214,20 @@ All 3D effects in this library supports multi image with wave scroll effect whic
 
 To use this you just need to give a div with images you want.
 
-```javascript
+```html
 <div class="images">
   <img src="image1">
   <img src="image2">
   <img src="image3">
 </div>
+```
 
+```javascript
 var Shery = new Shery()
-Shery.imageEffect('.images', {
+shery.imageEffect('.images', {
   style: 3,
-  staticScroll: true // Scroll without any scrollable area on a static page.
+  staticScroll: true // Scroll without any scrollable area on a static page. 
+  //NOTE - You Must Use Gsap CDN For using static scroll
 })
 
 ```
@@ -241,19 +245,19 @@ To define your specific scroll behavior, utilize the `slideStyle` callback in th
 5. Inside the event listener, utilize the `setScroll` function and provide the parameter `window.scrollY / innerHeight` to obtain the current scroll position relative to the window height. You can customize this calculation as needed, possibly integrating the progress from GSAP or similar methods.
 6. By following these steps, you will successfully implement your own personalized scroll-triggering mechanism.
 
-
-```javascript
-
-//Here is the code snippet demonstrating this process:
+```html
+<!-- Here is the code snippet demonstrating this process: -->
 
 <div class="images">
   <img src="image1">
   <img src="image2">
   <img src="image3">
 </div>
+```
 
+```javascript
 var Shery = new Shery();
-Shery.imageEffect(".image", {
+shery.imageEffect(".image", {
   style: 5,
   slideStyle: (setScroll) => {
     window.addEventListener('scroll', () => {
@@ -273,11 +277,12 @@ To customize any of the 3d effects provided by Shery.js, simply enable debug mod
 
 To save/use the tweek from your debug you need to click on ` SAVE TO CLIPBOARD ` and the paste that config in config parameter.
 
-```javascript
+```html
 <img class="img" src="example.img">
+```
 
-var Shery = new Shery()
-Shery.imageEffect('.img',
+```javascript
+shery.imageEffect('.img',
     {
         style: 3,
         debug: true,
@@ -294,7 +299,7 @@ Shery.imageEffect('.img',
 
 Create your own preset or use someone elses with the help of preset option `{preset:'./presets/wigglewobble.json'}` you can create your own preset with the help of debug panel like :-
 
-1. Enable [debug panel](#usage) for your chosen style effect.
+1. Enable [debug panel](#debug-usage) for your chosen style effect.
 2. Do your customization's in debug panel.
 3. Now click on **SAVE TO CLIPBOARD** button in debug panel.
 4. Now create an new **_.json_** file.
@@ -302,9 +307,7 @@ Create your own preset or use someone elses with the help of preset option `{pre
 6. And you created a new preset you can use it later or share it and help community.
 
 ```javascript
-var Shery = new Shery();
-
-Shery.imageEffect("img", {
+shery.imageEffect("img", {
   style: 2,
   preset:'./presets/wigglewobble.json'
 });
