@@ -10,6 +10,14 @@ function Shery() {
     plane.geometry.dispose()
     plane.geometry = newGeometry
   }
+  let oldDisplay = null
+  const getSize = e => {
+    e.style.display = oldDisplay
+    const sizes = { width: e.getBoundingClientRect().width, height: e.getBoundingClientRect().height }
+    e.style.display = 'none'
+    return sizes
+  }
+
   //ANCHOR - DubugUi Fix 
   function fix() {
     const s = '#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap'
@@ -38,9 +46,9 @@ function Shery() {
       uniforms.uSection.value = newSection
       if (t.length > newSection) {
         if (t.length > newSection + 1)
-          uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
+          uniforms.uTexture.value = [ t[ newSection ], t[ newSection + 1 ] ]
         else
-          uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
+          uniforms.uTexture.value = [ t[ t.length - 1 ], t[ t.length - 1 ] ]
       }
 
     }
@@ -48,7 +56,7 @@ function Shery() {
       fragment = fragment.replace('isMulti ;', `
       float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       gl_FragColor = mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y));`)
-      const scrollProps = { value: 0 };
+      const scrollProps = { value: 0 }
       if (!opts.slideStyle) {
         if (opts.staticScroll) {
           function handleScroll(deltaY) {
@@ -56,47 +64,48 @@ function Shery() {
               value: scrollProps.value + deltaY / innerHeight,
               duration: 0.5, // Adjust the duration as needed
               onUpdate: () => {
-                if (scrollProps.value < 0) scrollProps.value = offset
-                uniforms.uScroll.value = scrollProps.value;
-                const newSection = Math.floor(scrollProps.value);
+                if (scrollProps.value < 0) scrollProps.value = 0
+                uniforms.uScroll.value = scrollProps.value
+                const newSection = Math.floor(scrollProps.value)
                 if (newSection !== uniforms.uSection.value) {
-                  if (t.length > newSection + 1) doAction(newSection);
+                  if (t.length > newSection + 1) doAction(newSection)
                 }
               },
-            });
+            })
           }
 
           window.addEventListener('wheel', e => {
-            const deltaY = e.deltaY;
-            handleScroll(deltaY);
-          });
-          let touchStartY = 0;
+            const deltaY = e.deltaY
+            handleScroll(deltaY)
+          })
+          let touchStartY = 0
           window.addEventListener('touchstart', e => {
-            touchStartY = e.touches[0].clientY;
-          });
+            touchStartY = e.touches[ 0 ].clientY
+          })
           window.addEventListener('touchmove', e => {
-            const deltaY = (touchStartY - e.touches[0].clientY) * 2; // Adjust the multiplier as needed
-            touchStartY = e.touches[0].clientY;
-            handleScroll(deltaY * 3);
-            e.preventDefault();
-          }, { passive: false });
+            const deltaY = (touchStartY - e.touches[ 0 ].clientY) * 2 // Adjust the multiplier as needed
+            touchStartY = e.touches[ 0 ].clientY
+            handleScroll(deltaY * 3)
+            e.preventDefault()
+          }, { passive: false })
         }
         else
           window.addEventListener('scroll', () => {
             let scroll = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset
-            if (scroll < 0) scroll = offset
+            if (scroll < 0) scroll = 0
             uniforms.uScroll.value = scroll
             const newSection = Math.floor(scroll)
             if (newSection != uniforms.uSection.value) {
               if (t.length > newSection + 1) doAction(newSection)
             }
-            console.log()
           })
       }
       for (let i = 0; i < elem.children.length; i++) {
-        t[i] = new THREE.TextureLoader().load(elem.children[i].getAttribute("src"))
+        t[ i ] = new THREE.TextureLoader().load(elem.children[ i ].getAttribute("src"))
+
       }
     }
+
     Object.assign(uniforms, {
       time: { value: 0 },
       mouse: { value: mouse },
@@ -105,94 +114,132 @@ function Shery() {
       uSection: { value: 0 },
       isMulti: { value: (!(elem.nodeName.toLowerCase() === 'img')) },
       uScroll: { value: offset * 3 },
-      uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [new THREE.TextureLoader().load(elem.getAttribute("src"))] : [t[0], t[1]] },
+      uTexture: { value: (elem.nodeName.toLowerCase() === 'img') ? [ new THREE.TextureLoader().load(elem.getAttribute("src")) ] : [ t[ 0 ], t[ 1 ] ] },
     })
 
-    const setScroll = (x) => uniforms.uScroll.value = x
+    const setScroll = (x) => {
+      if (x >= 0) {
+        uniforms.uScroll.value = x
+        doAction(Math.floor(x))
+      }
+    }
 
 
     if (opts.slideStyle && typeof opts.slideStyle === 'function')
-      opts.slideStyle(setScroll, doAction)
+      opts.slideStyle(setScroll)
+
+    const checker = document.createElement("canvas");
+    const checker1 = document.createElement("div");
+    document.body.appendChild(checker)
+    document.body.appendChild(checker1)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(elem.width, elem.height)
+    setCanvasPos()
+    // elem.style.visibility = 'hidden'
+    renderer.setSize(getSize(elem).width, getSize(elem).height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    elem.style.visibility = "hidden"
     elem.parentElement.appendChild(renderer.domElement)
+
     const snoise = `vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size, geoVertex, geoVertex), new THREE.ShaderMaterial({ vertexShader: vertex.replace('₹snoise', snoise), fragmentShader: fragment.replace('₹snoise', snoise), uniforms, }))
     scene.add(plane)
-    var geoVertex = { value: 32, range: [1, 64] }
+
+    var geoVertex = { value: 32, range: [ 1, 64 ] }
     var debugObj = {
-      "Mode": ["Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage"],
+      "Mode": [ "Off", "Reflact/Glow", "Exclusion", "Diffrance", "Darken", "ColorBurn", "ColorDoge", "SoftLight", "Overlay", "Phonix", "Add", "Multiply", "Screen", "Negitive", "Divide", "Substract", "Neon", "Natural", "Mod", "NeonNegative", "Dark", "Avarage" ],
       "Mode Active": "Soft Light",
-      "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+      "Trigo": [ "Sin", "Cos", "Tan", "Atan" ],
       "Trig A": "Cos",
-      "Trigo": ["Sin", "Cos", "Tan", "Atan"],
+      "Trigo": [ "Sin", "Cos", "Tan", "Atan" ],
       "Trig A": "Cos",
       "Trig N": "Sin",
-      "Mouse": ["Off", "Mode 1", " Mode 2", " Mode 3"],
-      "onMouse": ["Always Active", "Active On Hover", "Deactive On Hover"],
+      "Mouse": [ "Off", "Mode 1", " Mode 2", " Mode 3" ],
+      "onMouse": [ "Always Active", "Active On Hover", "Deactive On Hover" ],
       "Active": "Always Active",
       "Mouse Active": "Off",
-      "Offset": { "value": offset * 3, "range": [-1, 1] },
+      "Offset": { "value": offset * 3, "range": [ -1, 1 ] },
       "Color": "#54A8FF",
-      "speed": { "precise": 1, "normal": 1, "range": [-500, 500], "rangep": [-10, 10] },
-      "frequency": { "precise": 1, "normal": 50, "range": [-800, 800], "rangep": [-50, 50] },
-      "pixelStrength": { "precise": 1, "normal": 3, range: [-20, 100], "rangep": [-20, 20] },
-      "strength": { "precise": 1, "normal": 0.2, "range": [-40, 40], "rangep": [-5, 5] },
-      "s": .6, range: [.1, 1],
-      "f": .6, rangef: [1, 10]
+      "speed": { "precise": 1, "normal": 1, "range": [ -500, 500 ], "rangep": [ -10, 10 ] },
+      "frequency": { "precise": 1, "normal": 50, "range": [ -800, 800 ], "rangep": [ -50, 50 ] },
+      "pixelStrength": { "precise": 1, "normal": 3, range: [ -20, 100 ], "rangep": [ -20, 20 ] },
+      "strength": { "precise": 1, "normal": 0.2, "range": [ -40, 40 ], "rangep": [ -5, 5 ] },
+      "s": .6, range: [ .1, 1 ],
+      "f": .6, rangef: [ 1, 10 ]
     }
+
     var controlKit = null
     var panel = null
+
     const config = c => {
       if (c.color) c.color.value = new THREE.Color(c.color.value)
       Object.assign(uniforms, c)
     }
+
     if (opts.preset) fetch(opts.preset).then(response => response.json()).then(json => config(json))
     if (opts.config) config(opts.config)
     if (uniforms.uFrequencyZ) {
       camera.fov = 1 + uniforms.uFrequencyZ.value / 400
       camera.updateProjectionMatrix()
     }
-    if ((opts.debug && !isdebug[effect]) || false) {
-      isdebug[2] = true
-      controlKit = new ControlKit()
-      panel = controlKit.addPanel({ label: "Debug Panel", fixed: false, position: [dposition, 0], width: 280 })
-        .addButton('Save To Clipboard', () => { const { uScroll, isMulti, uSection, time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)) })
-        .addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
-    }
-    if (onDoc)
-      document.addEventListener("mousemove", (event) => {
-        mouse.x = (event.x / elem.width) * 2 - 1
-        mouse.y = -((event.y / elem.height) * 2 - 1)
-      })
-    else
-      renderer.domElement.addEventListener("mousemove", (event) => {
-        mouse.x = (event.offsetX / elem.width) * 2 - 1
-        mouse.y = -((event.offsetY / elem.height) * 2 - 1)
-      })
 
-    renderer.domElement.addEventListener("mouseleave", (event) => {
+    if ((opts.debug && !isdebug[ effect ]) || false) {
+      isdebug[ 2 ] = true
+      controlKit = new ControlKit()
+
+      panel = controlKit.addPanel({ enable: false, label: "Debug Panel", fixed: false, position: [ dposition, 0 ], width: 280 })
+        .addButton('Save To Clipboard', () => { const { uScroll, isMulti, uSection, time, resolution, uTexture, mouse, uIntercept, ...rest } = uniforms; navigator.clipboard.writeText(JSON.stringify(rest)) })
+      if ((!(elem.nodeName.toLowerCase() === 'img')) && !opts.staticScroll)
+        panel.addSlider(debugObj.Offset, "value", "range", { label: "Slide Offset", step: 0.00001, onChange: () => { offset = debugObj.Offset.value; uniforms.uScroll.value = Math.max(offset, (scrollY / innerHeight) - (targettop / innerHeight)) + offset } })
+    }
+
+    function setMouseCord(e, i = false) {
+      if (i) {
+        mouse.x = (e.x / getSize(elem).width) * 2 - 1
+        mouse.y = -((e.y / getSize(elem).height) * 2 - 1)
+      } else {
+        mouse.x = (e.offsetX / getSize(elem).width) * 2 - 1
+        mouse.y = -((e.offsetY / getSize(elem).height) * 2 - 1)
+      }
+    }
+
+    (onDoc ? document : renderer.domElement).addEventListener("mousemove", (e) => setMouseCord(e, onDoc))
+
+    renderer.domElement.addEventListener("mouseleave", e => {
       intersect = 0
-      mouse.x = (event.offsetX / elem.width) * 2 - 1
-      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+      setMouseCord(e)
     })
-    renderer.domElement.addEventListener("mouseenter", (event) => {
+
+    renderer.domElement.addEventListener("mouseenter", e => {
       intersect = 1
-      mouse.x = (event.offsetX / elem.width) * 2 - 1
-      mouse.y = -((event.offsetY / elem.height) * 2 - 1)
+      setMouseCord(e)
     })
+
     window.addEventListener('resize', () => {
-      renderer.setSize(document.querySelector('.'+elem.classList[0]).getBoundingClientRect().width, document.querySelector('.'+elem.classList[0]).getBoundingClientRect().height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     })
 
+    function setCanvasPos() {
+      elem.style.display = oldDisplay
+      const styles = window.getComputedStyle(elem)
+      for (let prop in styles) {
+        if (styles.hasOwnProperty(prop) && !Number(prop) && prop !== 'length') {
+          const style = styles[ prop ];
+          const styleValue = window.getComputedStyle(checker)[ prop ];
+          const styleValue1 = window.getComputedStyle(checker1)[ prop ];
+
+          if (styleValue !== styleValue1 || styleValue !== style) {
+            renderer.domElement.style[ prop ] = style;
+          }
+        }
+        elem.style.display = 'none'
+      }
+      renderer.domElement.style.display = oldDisplay
+      renderer.domElement.style.visibility = 'visible'
+    }
+
     const clock = new THREE.Clock()
     function animate() {
-      if (renderer.domElement.width == 0 || renderer.domElement.height == 0)
-        renderer.setSize(elem.width, elem.height)
+      setCanvasPos()
       if (document.querySelector(o))
         if (parseInt(document.querySelector(o).style.top) < 0)
           document.querySelector(o).style.top = '0px'
@@ -263,14 +310,14 @@ function Shery() {
 
           circle.classList.add("circle")
 
-            mask.addEventListener("mouseenter", function () {
-            gsap.to(circle, {
-              opacity: 1,
-              ease: Expo.easeOut,
-              duration: 1,
+            .addEventListener("mouseenter", function () {
+              gsap.to(circle, {
+                opacity: 1,
+                ease: Expo.easeOut,
+                duration: 1,
+              })
             })
-          })
-          
+
 
           mask.addEventListener("mousemove", function (dets) {
             mask.appendChild(circle)
@@ -312,7 +359,7 @@ function Shery() {
             opacity: 1,
             ease: Power1,
           })
-          gsap.to(this.childNodes[0], {
+          gsap.to(this.childNodes[ 0 ], {
             scale: 1,
             ease: opts.ease || Expo.easeOut,
             duration: opts.duration || 1,
@@ -384,14 +431,14 @@ function Shery() {
           alltexts.forEach(function (elem, i) {
             var len = elem.childNodes.length - 1
             for (var i = 0; i < elem.childNodes.length / 2; i++) {
-              elem.childNodes[i].dataset.delay = i
+              elem.childNodes[ i ].dataset.delay = i
             }
             for (
               var i = Math.floor(elem.childNodes.length / 2);
               i < elem.childNodes.length;
               i++
             ) {
-              elem.childNodes[i].dataset.delay = len - i
+              elem.childNodes[ i ].dataset.delay = len - i
             }
             elem.childNodes.forEach(function (al) {
               gsap.from(al, {
@@ -413,69 +460,69 @@ function Shery() {
     // SECTION - Hover With Media 
     hoverWithMediaCircle: function (element, opts) {
       function calculateMedia(indexofelem) {
-        var lengthofres = opts.images ? opts.images.length : opts.videos.length;
-        return (indexofelem % lengthofres);
+        var lengthofres = opts.images ? opts.images.length : opts.videos.length
+        return (indexofelem % lengthofres)
       }
 
-      var parent = document.body;
-      var parentDiv = document.createElement("div");
-      parentDiv.classList.add("just-a-white-blend-screen");
-      parentDiv.classList.add("movercirc");
+      var parent = document.body
+      var parentDiv = document.createElement("div")
+      parentDiv.classList.add("just-a-white-blend-screen")
+      parentDiv.classList.add("movercirc")
 
-      var circle = document.createElement("div");
+      var circle = document.createElement("div")
 
       // <video preload="auto" muted="" loop="" autoplay="" src="blob:https://cuberto.com/e9ebb315-eef6-42b5-982d-53eb983c272f"></video>
-      var media = null;
-      document.body.click();
+      var media = null
+      document.body.click()
       if (opts.images) {
-        var img = document.createElement("img");
-        media = img;
+        var img = document.createElement("img")
+        media = img
       }
       else if (opts.videos) {
-        var vid = document.createElement("video");
-        vid.preload = true;
-        vid.autoplay = true;
-        vid.muted = true;
-        media = vid;
+        var vid = document.createElement("video")
+        vid.preload = true
+        vid.autoplay = true
+        vid.muted = true
+        media = vid
       }
 
 
-      circle.appendChild(media);
-      parent.appendChild(parentDiv);
-      parent.appendChild(circle);
+      circle.appendChild(media)
+      parent.appendChild(parentDiv)
+      parent.appendChild(circle)
 
-      circle.classList.add("movercirc");
+      circle.classList.add("movercirc")
 
       document.querySelectorAll(element)
         .forEach(function (elem, index) {
 
-          var prevx = 0;
-          var prevy = 0;
+          var prevx = 0
+          var prevy = 0
 
 
-          elem.classList.add("hovercircle");
+          elem.classList.add("hovercircle")
           elem.addEventListener("mouseenter", function (dets) {
-            media.setAttribute("src", opts.images ? opts.images[calculateMedia(index)] : opts.videos[calculateMedia(index)]);
+            media.setAttribute("src", opts.images ? opts.images[ calculateMedia(index) ] : opts.videos[ calculateMedia(index) ])
           })
 
-          var timer;
+          var timer
           elem.addEventListener("mousemove", function (dets) {
 
             var trans = gsap.utils.pipe(
               gsap.utils.clamp(-1, 1),
               gsap.utils.mapRange(-1, 1, .8, 1.2)
             )
-            var diffx = trans(dets.clientX-prevx);
-            var diffy = trans(dets.clientY-prevy);
-            prevx = dets.clientX;
-            prevy = dets.clientY;
+            var diffx = trans(dets.clientX - prevx)
+            var diffy = trans(dets.clientY - prevy)
+            prevx = dets.clientX
+            prevy = dets.clientY
 
-            clearTimeout(timer);
-            timer = setTimeout(function(){
+            clearTimeout(timer)
+            timer = setTimeout(function () {
               gsap.to(".movercirc", {
                 transform: `translate(-50%,-50%)`,
               })
-            }, 500);
+            }, 500)
 
             gsap.to(".movercirc", {
               left: dets.clientX,
@@ -500,28 +547,21 @@ function Shery() {
             })
             circle.classList.remove('blend')
           })
-        });
+        })
     }, //!SECTION 
 
     // SECTION - Image Effects 
-    imageEffect: function (element = "img", opts={}) {
+    imageEffect: function (element = "img", opts = {}) {
       document.querySelectorAll(element).forEach(function (elem) {
-        var parent = elem.parentNode
-        var div = document.createElement("div")
-        var frame = document.createElement("div")
-        div.classList.add(elem.classList[0])
-        div.id = elem.id
-        div.style.display = "inline-block"
-        frame.style.position = "relative"
-        elem.style.position = "absolute"
-        parent.replaceChild(frame, elem)
-        frame.appendChild(elem)
-        parent.replaceChild(div, frame)
-        div.appendChild(frame)
         if (!(elem.nodeName.toLowerCase() === 'img')) {
-          elem.width = document.querySelector('.'+elem.classList[0]).getBoundingClientRect().width
-          elem.height = document.querySelector('.'+elem.classList[0]).getBoundingClientRect().height
+          Array.from(elem.children).forEach((e, i) => {
+            if (i != 0) e.style.display = 'none'
+          })
+        } else {
+          oldDisplay = window.getComputedStyle(elem).display
+          // elem.style.visibility = 'hidden'
         }
+
         switch (opts.style || 1) {
           // STUB - Simple Liquid Distortion Effect 
           case 1: {
@@ -543,8 +583,8 @@ function Shery() {
             }`
 
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              a: { value: 2, range: [0, 30] },
-              b: { value: .7, range: [-1, 1] },
+              a: { value: 2, range: [ 0, 30 ] },
+              b: { value: .7, range: [ -1, 1 ] },
             }, { effect: 1, opts, offset: -.04 })
 
             if (panel) {
@@ -647,24 +687,24 @@ function Shery() {
             gl_FragColor=final;          
             }`
             var { debugObj, controlKit, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              resolution: { value: new THREE.Vector2(elem.width, elem.height) },
+              resolution: { value: new THREE.Vector2(getSize(elem).width, getSize(elem).height) },
               distortion: { value: true },
               mode: { value: -3 },
               mousemove: { value: 0 },
               modeA: { value: 1 },
               modeN: { value: 0 },
-              speed: { value: 1, range: [-500, 500], rangep: [-10, 10] },
-              frequency: { value: 50, range: [-800, 800], rangep: [-50, 50] },
-              angle: { value: 0.5, range: [0, Math.PI] },
-              waveFactor: { value: 1.4, range: [-3, 3] },
+              speed: { value: 1, range: [ -500, 500 ], rangep: [ -10, 10 ] },
+              frequency: { value: 50, range: [ -800, 800 ], rangep: [ -50, 50 ] },
+              angle: { value: 0.5, range: [ 0, Math.PI ] },
+              waveFactor: { value: 1.4, range: [ -3, 3 ] },
               color: { value: new THREE.Color(0.33, 0.66, 1) },
-              pixelStrength: { value: 3, range: [-20, 100], rangep: [-20, 20] },
-              quality: { value: 5, range: [0, 10] },
-              contrast: { value: 1, range: [-25, 25] },
-              brightness: { value: 1, range: [-1, 25] },
-              colorExposer: { value: 0.182, range: [-5, 5] },
-              strength: { value: 0.2, range: [-40, 40], rangep: [-5, 5] },
-              exposer: { value: 8, range: [-100, 100] },
+              pixelStrength: { value: 3, range: [ -20, 100 ], rangep: [ -20, 20 ] },
+              quality: { value: 5, range: [ 0, 10 ] },
+              contrast: { value: 1, range: [ -25, 25 ] },
+              brightness: { value: 1, range: [ -1, 25 ] },
+              colorExposer: { value: 0.182, range: [ -5, 5 ] },
+              strength: { value: 0.2, range: [ -40, 40 ], rangep: [ -5, 5 ] },
+              exposer: { value: 8, range: [ -100, 100 ] },
             }, { effect: 2, opts, dposition: 350 })
             if (panel) {
               panel.addCheckbox(uniforms.distortion, "value", { label: "Distortion Effect" })
@@ -674,7 +714,7 @@ function Shery() {
                 .addSelect(debugObj, 'Trigo', { target: "Trig A", label: 'Effect StyleA', onChange: x => uniforms.modeA.value = x })
                 .addSelect(debugObj, 'Trigo', { target: "Trig N", label: 'Effect StyleN', onChange: x => uniforms.modeN.value = x })
                 .addColor(debugObj, 'Color', { colorMode: 'hex', onChange: x => uniforms.color.value.set(x) })
-              controlKit.addPanel({ label: "Debug Panel", width: 350, fixed: false, position: [0, 0], })
+              controlKit.addPanel({ enable: false, label: "Debug Panel", width: 350, fixed: false, position: [ 0, 0 ], })
                 .addSlider(debugObj.speed, "normal", "range", { label: "Speed", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.normal })
                 .addSlider(debugObj.speed, "precise", "rangep", { label: "Speed Precise", step: 0.00001, onChange: () => uniforms.speed.value = debugObj.speed.precise })
                 .addSlider(debugObj.frequency, "normal", "range", { label: "Frequency", step: 0.00001, onChange: () => uniforms.frequency.value = debugObj.frequency.normal })
@@ -719,9 +759,9 @@ function Shery() {
             varying vec2 vUv;void main(){vec2 uv=vUv;gl_FragColor = texture2D(uTexture[0], vUv); isMulti ;
             }`
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
-              uFrequencyX: { value: 25, range: [0, 100] },
-              uFrequencyY: { value: 25, range: [0, 100] },
-              uFrequencyZ: { value: 15, range: [0, 100] },
+              uFrequencyX: { value: 12, range: [ 0, 100 ] },
+              uFrequencyY: { value: 12, range: [ 0, 100 ] },
+              uFrequencyZ: { value: 10, range: [ 0, 100 ] },
             }, { effect: 3, opts, geoVertex: 32, fov: 1.0375, size: .01744, offset: -.04 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
@@ -764,12 +804,12 @@ function Shery() {
 
             var { debugObj, panel, geoVertex, plane, uniforms, animate } = init(elem, vertex, fragment, {
               uColor: { value: false },
-              uSpeed: { value: .6, range: [.1, 1], rangef: [1, 10] },
-              uAmplitude: { value: 1.5, range: [0, 5] },
-              uFrequency: { value: 3.5, range: [0, 10] },
-            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: elem.width / elem.height, offset: -.04 })
+              uSpeed: { value: .6, range: [ .1, 1 ], rangef: [ 1, 10 ] },
+              uAmplitude: { value: 1.5, range: [ 0, 5 ] },
+              uFrequency: { value: 3.5, range: [ 0, 10 ] },
+            }, { effect: 4, opts, geoVertex: 16, fov: 25, size: .4, aspect: 1, offset: -.04 })
 
-            if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[key].value = opts.config[key].value)
+            if (opts.config) Object.keys(opts.config).forEach((key) => uniforms[ key ].value = opts.config[ key ].value)
             if (panel) {
               panel.addCheckbox(uniforms.uColor, "value", { label: "Color Depth" })
                 .addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
@@ -786,29 +826,28 @@ function Shery() {
 
           // STUB - MultiImage Effect 
           case 5: {
-            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position = projectionMatrix *  viewMatrix * modelMatrix * vec4(position, 1.);vuv = uv;}`
+            const vertex = /*glsl*/ `varying vec2 vuv;void main(){gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.);vuv = uv;}`
             const fragment = /*glsl*/ `
             uniform sampler2D uTexture[16];
-            uniform float a,b, uIntercept,time,uScroll,uSection,onMouse;
-            uniform vec2 mouse;
+            uniform float uIntercept,time,a,b,onMouse,uScroll,uSection;
             uniform bool isMulti;
+            uniform vec2 mouse;
             varying vec2 vuv;
             ₹snoise
             float cnoise(vec2 P){return snoise(vec3(P,1.0));}    
             void main() {                  
               vec2 uv = vuv;
-              float time = time* a;
-                  vec2 surface = vec2(cnoise(uv - mouse / 7. + .2) * .08, cnoise(uv - mouse / 7. + .2) * .08);
-                  surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
-                  uv += refract(vec2(mouse.x / 300., mouse.y / 300.),surface,b);
-                  gl_FragColor=texture2D(uTexture[0], uv);
-                  isMulti ;
-                  
+              float time = time * a;
+              vec2 surface = vec2(cnoise(uv - mouse / 7. + .2 * time) * .08, cnoise(uv - mouse / 7. + .2 * time) * .08);
+              surface = onMouse == 0. ? surface : onMouse == 1. ? mix( vec2(0.) , surface ,uIntercept) : mix(surface , vec2(0.) ,uIntercept);
+              uv += refract(vec2(mouse.x / 300., mouse.y / 300.),surface,b);
+              gl_FragColor=texture2D(uTexture[0], uv);
+              isMulti ;
             }`
             var { debugObj, panel, uniforms, animate } = init(elem, vertex, fragment, {
-              a: { value: 2, range: [0, 30] },
-              b: { value: 1. / 1.333, range: [-1, 1] },
-            }, { effect: 5, opts, fov: .9, onDoc: true, offset: -.04 })
+              a: { value: 2, range: [ 0, 30 ] },
+              b: { value: 1. / 1.333, range: [ -1, 1 ] },
+            }, { effect: 1, opts, fov: .9, onDoc: true, offset: -.04 })
             if (panel) {
               panel.addSelect(debugObj, "onMouse", { target: 'Active', label: 'Effect Mode', onChange: x => uniforms.onMouse.value = x })
                 .addSlider(uniforms.a, "value", "range", { label: "Speed", step: .001 })

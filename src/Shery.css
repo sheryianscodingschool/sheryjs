@@ -53,9 +53,6 @@
 .parent {
     display: inline-block;
 }
-canvas{
-    display: block;
-}
 
 #controlKit .panel .group-list .group .sub-group-list .sub-group ul li,
 #controlKit .panel .scrollBar {
@@ -80,6 +77,10 @@ canvas{
     font-size: .9em !important;
     text-shadow: none !important;
     font-weight: 800 !important;
+}
+
+#controlKit .picker canvas{
+    position: relative;
 }
 
 #controlKit .panel .button:hover{
@@ -137,6 +138,7 @@ canvas{
     width: auto !important;
 }
 #controlKit{
+    z-index: 999999999999999999;
     position: fixed !important;
 }
 
