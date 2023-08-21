@@ -1,5 +1,6 @@
 function Shery() {
   var globalMouseFollower = null
+  var pichhemousefollower = null
   var isdebug = []
   const lerp = (x, y, a) => x * (1 - a) + y * a
 
@@ -210,8 +211,11 @@ function Shery() {
   return {
     // SECTION - Mouse Followerv
     mouseFollower: function (opts = {}) {
-      globalMouseFollower = document.createElement("div")
+      globalMouseFollower = document.createElement("div");
+      picchemousefollower = document.createElement("div");
       globalMouseFollower.classList.add("mousefollower")
+      picchemousefollower.classList.add("mousefollower");
+      picchemousefollower.id = "behindmouse";
       var posx = 0
       window.addEventListener("mousemove", function (dets) {
         if (opts.skew) {
@@ -239,6 +243,7 @@ function Shery() {
           ease: opts.ease || Expo.easeOut,
         })
       })
+      document.body.appendChild(picchemousefollower)
       document.body.appendChild(globalMouseFollower)
     },//!SECTION 
 
@@ -258,7 +263,7 @@ function Shery() {
 
           circle.classList.add("circle")
 
-            .addEventListener("mouseenter", function () {
+            mask.addEventListener("mouseenter", function () {
             gsap.to(circle, {
               opacity: 1,
               ease: Expo.easeOut,
@@ -323,14 +328,26 @@ function Shery() {
           var bcr = elem.getBoundingClientRect()
           var zeroonex = gsap.utils.mapRange(0, bcr.width, 0, 1, dets.clientX - bcr.left)
           var zerooney = gsap.utils.mapRange(0, bcr.height, 0, 1, dets.clientY - bcr.top)
+
+          gsap.to(".mousefollower", {
+            scale: 4,
+            ease: Power2,
+            duration: .5
+          })
+
           gsap.to(elem, {
-            x: lerp(-50, 50, zeroonex),
-            y: lerp(-50, 50, zerooney),
+            x: lerp(-20, 20, zeroonex),
+            y: lerp(-20, 20, zerooney),
             duration: opts.duration || 1,
             ease: opts.ease || Expo.easeOut,
           })
         })
         elem.addEventListener("mouseleave", function (dets) {
+          gsap.to(".mousefollower", {
+            scale: 1,
+            ease: Power2,
+            duration: .5
+          })
           gsap.to(elem, { x: 0, y: 0, duration: opts.duration || 1, ease: opts.ease || Expo.easeOut, })
         })
       })
@@ -407,7 +424,6 @@ function Shery() {
 
       var circle = document.createElement("div");
 
-
       // <video preload="auto" muted="" loop="" autoplay="" src="blob:https://cuberto.com/e9ebb315-eef6-42b5-982d-53eb983c272f"></video>
       var media = null;
       document.body.click();
@@ -464,8 +480,8 @@ function Shery() {
             gsap.to(".movercirc", {
               left: dets.clientX,
               top: dets.clientY,
-              width: "15vw",
-              height: "15vw",
+              width: "20vw",
+              height: "20vw",
               transform: `translate(-50%,-50%) scale(${diffx, diffy})`,
               ease: Circ,
               duration: .4,
@@ -486,7 +502,7 @@ function Shery() {
           })
         });
     }, //!SECTION 
-    
+
     // SECTION - Image Effects 
     imageEffect: function (element = "img", opts={}) {
       document.querySelectorAll(element).forEach(function (elem) {

@@ -12,7 +12,12 @@
     height: 15px;
     border-radius: 50%;
     z-index: 99999;
+    mix-blend-mode: exclusion;
     background-color: var(--mousefollowercolor);
+}
+
+#behindmouse {
+    background-color: white;
 }
 
 .mask {
@@ -144,7 +149,6 @@ canvas{
 }
 
 .hovercircle{
-    padding: 30px;
     position: relative;
     z-index: 5;
     display: inline-block;
@@ -167,8 +171,8 @@ canvas{
     opacity: 0;
     overflow: hidden;
     height: 0;
-    max-width: 300px;
-    max-height: 300px;
+    max-width: 400px;
+    max-height: 400px;
 }
 
 .movercirc img{
