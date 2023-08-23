@@ -1,0 +1,48 @@
+{
+  "name": "shery-js",
+  "version": "1.0.0-alpha.1.1",
+  "description": "Shery.js: JavaScript library for captivating web effects and 3D features.",
+  "main": "src/Shery.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "build": "webpack --config bundler/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aayushchouhan24/sheryjs.git"
+  },
+  "keywords": [
+    "javascript",
+    "library",
+    "web-development",
+    "3D-features",
+    "three.js"
+  ],
+  "author": "@aayushchouhan24, @asynchronousJavascriptor",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aayushchouhan24/sheryjs/issues"
+  },
+  "homepage": "https://github.com/aayushchouhan24/sheryjs#readme",
+  "dependencies": {
+    "controlkit": "^0.1.9",
+    "gsap": "^3.12.2",
+    "three": "^0.155.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "style": "src/Shery.css",
+  "devDependencies": {
+    "css-loader": "^6.8.1",
+    "css-minimizer-webpack-plugin": "^5.0.1",
+    "mini-css-extract-plugin": "^2.7.6",
+    "terser-webpack-plugin": "^5.3.9",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}

@@ -34,14 +34,24 @@ Shery.js is designed to make it easy for developers to incorporate cool visual e
 
 ## Installation
 
-To use Shery.js in your project, you can include it in your HTML file via a CDN or by downloading the library and hosting it locally.
+To use Shery.js in your project, you can include it in your HTML file via a CDN or import it in js by using node.
+
+When using node or browserify install
+
+```bash
+npm install controlkit
+```
+
+and require
+
+```javascript
+import Shery from 'sheryjs'
+```
+
+Alternatively use the standalone version found in ./dist
 
 ```html
-<!-- Using the CDN -->
-<script src="https://cdn.example.com/Shery.js"></script>
-
-<!-- Hosting it locally -->
-<script src="path/to/Shery.js"></script>
+<script type='text/javascript' src='Shery.js'></script>
 ```
 
 ## Getting Started
@@ -50,13 +60,15 @@ Once you have included Shery.js in your project, you can start using its effects
 
 ```javascript
 // Example code to initialize Shery.js and use a cool effect.
-const shery = new Shery()
-shery.mouseFollower()
+
+import Shery from 'sheryjs' /*Dont use if using CDN*/
+
+Shery.mouseFollower()
 ```
 
 ### Required Libraries
 
-To successfully run this project, you'll need some libraries.
+To successfully run with CDN, you'll need some libraries.
 
 ```javascript
 // Gsap is needed for Basic Effects
@@ -82,8 +94,7 @@ These are effects are implemented with the help of Gsap and Css to offer a uniqu
 The feature creates smooth mouse follower, creating an engaging user experience.
 
 ```javascript
-const shery = new Shery()
-shery.mouseFollower({
+Shery.mouseFollower({
   //Parameters are optional.
   skew: true,
   ease: Expo.easeOut,
@@ -96,7 +107,7 @@ shery.mouseFollower({
 The mask zoomer effect enables zooming into an image on mouse hover with a smooth mask transition, directing the user's focus to the targeted content.
 
 ```javascript
-shery.imageMasker('img', /* Element to target.*/ { 
+Shery.imageMasker('img', /* Element to target.*/ { 
   //Parameters are optional.
   mouseFollower: true,
   text: 'Shery',
@@ -110,8 +121,7 @@ shery.imageMasker('img', /* Element to target.*/ {
 The magnet mouse attractor effect draws elements towards the cursor, as if they are magnetically attracted, offering a unique and interactive experience.
 
 ```javascript
-const shery = new Shery()
-shery.makeMagnet('img', /* Element to target.*/  {
+Shery.makeMagnet('img', /* Element to target.*/  {
   //Parameters are optional.
   ease: Expo.easeOut,
   duration: 1
@@ -123,8 +133,7 @@ shery.makeMagnet('img', /* Element to target.*/  {
 The text animate effect animates text with cool animation , with many preset animation, offering a unique experience.
 
 ```javascript
-const shery = new Shery()
-shery.textAnimate('text', /* Element to target.*/ { 
+Shery.textAnimate('text', /* Element to target.*/ { 
   //Parameters are optional.
   style: 1,
   y: 10,
@@ -144,7 +153,7 @@ These are effects are implemented with the help of Three.js to offer a unique ex
 ```
 
 ```javascript
-shery.imageEffect("img", {
+Shery.imageEffect("img", {
   style: 2, //Select Style
   debug: true, // Debug Panel
   config: { /* Config made from debug panel */},
@@ -159,7 +168,7 @@ shery.imageEffect("img", {
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
 ```javascript
-shery.imageEffect('.img',{
+Shery.imageEffect('.img',{
   style: 1 /*OR 5 for different variant */ ,
   debug: true
 });
@@ -173,7 +182,7 @@ shery.imageEffect('.img',{
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
 ```javascript
-shery.imageEffect('.img',{
+Shery.imageEffect('.img',{
   style: 2,
   debug: true
 });
@@ -186,7 +195,7 @@ shery.imageEffect('.img',{
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
 ```javascript
-shery.imageEffect('.img',{
+Shery.imageEffect('.img',{
   style: 3 ,
   debug: true
 });
@@ -199,7 +208,7 @@ shery.imageEffect('.img',{
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
 ```javascript
-shery.imageEffect('.img',{
+Shery.imageEffect('.img',{
   style: 4 ,
   debug: true
 });
@@ -222,11 +231,11 @@ To use this you just need to give a div with images you want.
 ```
 
 ```javascript
-var Shery = new Shery()
-shery.imageEffect('.images', {
+Shery.imageEffect('.images', {
   style: 3,
-  staticScroll: true // Scroll without any scrollable area on a static page. 
-  //NOTE - You Must Use Gsap CDN For using static scroll
+  // Scroll without any scrollable area on a static page. 
+  staticScroll: true 
+  /*NOTE - if using cdn, add gsp cdn for staticScroll*/
 })
 
 ```
@@ -255,8 +264,7 @@ To define your specific scroll behavior, utilize the `slideStyle` callback in th
 ```
 
 ```javascript
-var Shery = new Shery();
-shery.imageEffect(".image", {
+Shery.imageEffect(".image", {
   style: 5,
   slideStyle: (setScroll) => {
     window.addEventListener('scroll', () => {
@@ -274,14 +282,14 @@ By adhering to these instructions, you can create and control your unique scroll
 
 To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameater `{debug:true}` for effects which supports it.
 
-To save/use the tweek from your debug you need to click on ` SAVE TO CLIPBOARD ` and the paste that config in config parameter.
+To save/use the tweek from your debug you need to click on `SAVE TO CLIPBOARD` and the paste that config in config parameter.
 
 ```html
 <img class="img" src="example.img">
 ```
 
 ```javascript
-shery.imageEffect('.img',
+Shery.imageEffect('.img',
     {
         style: 3,
         debug: true,
@@ -306,7 +314,7 @@ Create your own preset or use someone elses with the help of preset option `{pre
 6. And you created a new preset you can use it later or share it and help community.
 
 ```javascript
-shery.imageEffect("img", {
+Shery.imageEffect("img", {
   style: 2,
   preset:'./presets/wigglewobble.json'
 });
@@ -326,8 +334,8 @@ In the heart of the dynamic world of web development, the creators of Shery.js a
 
 A Tech Enthusiast and full-time learner, Harsh Sharma is not just a developer but a trailblazer with a mission. Hailing from the city of Bhopal, he's the visionary behind the awe-inspiring startup, **Sheryians Coding School**. With Sheryians, Harsh is defying conventions and making the impossible possible. He's on a quest to empower non-graduates to achieve their dreams by helping them secure tech jobs in the most remarkable way.
 
-Connect with him: [Harsh's Linkdin Profile](https://www.linkedin.com/in/harsh-sharma-924629147/)\
-Step into his world: [Harsh's GitHub Profile](https://github.com/asynchronousJavascriptor)
+Connect with him: [Harsh&#39;s Linkdin Profile](https://www.linkedin.com/in/harsh-sharma-924629147/)
+Step into his world: [Harsh&#39;s GitHub Profile](https://github.com/asynchronousJavascriptor)
 
 ### 🎮 Aayush Chouhan - [@aayushchouhan24](https://github.com/aayushchouhan24)
 
@@ -335,8 +343,8 @@ Step into his world: [Harsh's GitHub Profile](https://github.com/asynchronousJav
 
 A lover of technology, computers, and the thrill of gaming, Aayush Chouhan is a true explorer in the realm of cyberspace. From his early days in game penetration testing to becoming a multifaceted developer, Aayush has always been drawn to the frontier of innovation. Starting with his foray into freelancing, he's honed his skills in programming languages and ventured into the intricate worlds of Web and Android development. His journey took an exciting turn as he embraced Three.js, diving into the captivating world of 3D graphics.
 
-Connect with him: [Aayush's Linkdin Profile](https://www.linkedin.com/in/aayushchouhan24/)\
-Dive into his journey: [Aayush's GitHub Profile](https://github.com/aayushchouhan24)
+Connect with him: [Aayush&#39;s Linkdin Profile](https://www.linkedin.com/in/aayushchouhan24/)
+Dive into his journey: [Aayush&#39;s GitHub Profile](https://github.com/aayushchouhan24)
 
 ## Contributing
 
