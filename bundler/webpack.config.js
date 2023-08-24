@@ -39,7 +39,7 @@ module.exports = {
     minimize: true,
     minimizer: [
       new CssMinimizerPlugin(),
-      // new TerserPlugin(), // Add this line for JS minification
+      new TerserPlugin(), // Add this line for JS minification
     ],
   },
 }
