@@ -1,0 +1,28 @@
+{
+    "name": "nodeExample",
+    "version": "1.0.0",
+    "description": "A Webpack App",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "webpack-dev-server --open --mode development",
+        "build": "webpack --mode production"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.22.11",
+        "@babel/preset-env": "^7.22.10",
+        "babel-loader": "^9.1.3",
+        "css-loader": "^6.8.1",
+        "glslify-loader": "^2.0.0",
+        "html-loader": "^4.2.0",
+        "html-webpack-plugin": "^5.5.3",
+        "mini-css-extract-plugin": "^2.7.6",
+        "raw-loader": "^4.0.2",
+        "terser-webpack-plugin": "^5.3.9",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^4.10.0",
+        "webpack-dev-server": "^4.15.1"
+    },
+    "dependencies": {
+        "sheryjs": "sheryjs"
+    }
+}

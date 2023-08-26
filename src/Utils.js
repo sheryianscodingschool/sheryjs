@@ -172,7 +172,7 @@ export const init = (
 
   const elemMesh = new THREE.Mesh(geometry, material);
   elemMesh.scale.set(elemWidth, elemHeight);
-  redraw(elemMesh, uniforms.geoVertex);
+  redraw(elemMesh, uniforms.geoVertex.value);
   scene.add(elemMesh);
 
   var debugObj = {

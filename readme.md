@@ -12,9 +12,10 @@ Shery.js is a fantastic JavaScript library designed to make your web projects po
    - Required Libraries
 4. [Cool Effects](#cool-effects)
    - Mouse Follower
-   - Mask Zoomer or Image Masker
+   - Image Masker / Mask Zoomer
    - Make Magnet
    - Text Animate
+   - Hover With Media Circle
 5. [3D Image Effects](#3d-image-effects)
    - Simple Liquid Distortion Effect
    - Dynamic Distortion Effect
@@ -39,19 +40,35 @@ To use Shery.js in your project, you can include it in your HTML file via a CDN 
 When using node or browserify install
 
 ```bash
-npm install controlkit
+npm install sheryjs
 ```
 
 and require
 
 ```javascript
-import Shery from 'sheryjs'
+import Shery from "sheryjs";
 ```
 
-Alternatively use the standalone version found in ./dist
+To understand clearly see this  [Example](/examples/nodeExample/).
+
+Alternatively use the standalone version found in ./dist locally
 
 ```html
-<script type='text/javascript' src='Shery.js'></script>
+<link rel="stylesheet" href="Shery.css" />
+```
+
+```html
+<script type="text/javascript" src="Shery.js"></script>
+```
+
+OR CDN version from unpkg
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" />
+```
+
+```html
+<script type="text/javascript" src="https://unpkg.com/sheryjs/dist/Shery.js"></script>
 ```
 
 ## Getting Started
@@ -61,9 +78,9 @@ Once you have included Shery.js in your project, you can start using its effects
 ```javascript
 // Example code to initialize Shery.js and use a cool effect.
 
-import Shery from 'sheryjs' /*Dont use if using CDN*/
+import Shery from "sheryjs"; /*Don't use if using CDN*/
 
-Shery.mouseFollower()
+Shery.mouseFollower();
 ```
 
 ### Required Libraries
@@ -98,8 +115,8 @@ Shery.mouseFollower({
   //Parameters are optional.
   skew: true,
   ease: Expo.easeOut,
-  duration: 1
-})
+  duration: 1,
+});
 ```
 
 ### Mask Zoomer
@@ -107,13 +124,15 @@ Shery.mouseFollower({
 The mask zoomer effect enables zooming into an image on mouse hover with a smooth mask transition, directing the user's focus to the targeted content.
 
 ```javascript
-Shery.imageMasker('img', /* Element to target.*/ { 
-  //Parameters are optional.
-  mouseFollower: true,
-  text: 'Shery',
-  ease: Expo.easeOut,
-  duration: 1
-})
+Shery.imageMasker(
+  ".mask-target", /* Element to target.*/ 
+  {//Parameters are optional.
+    mouseFollower: true,
+    text: "Shery",
+    ease: Expo.easeOut,
+    duration: 1,
+  }
+);
 ```
 
 ### Make Magnet
@@ -121,11 +140,13 @@ Shery.imageMasker('img', /* Element to target.*/ {
 The magnet mouse attractor effect draws elements towards the cursor, as if they are magnetically attracted, offering a unique and interactive experience.
 
 ```javascript
-Shery.makeMagnet('img', /* Element to target.*/  {
-  //Parameters are optional.
-  ease: Expo.easeOut,
-  duration: 1
-})
+Shery.makeMagnet(
+  ".magnet-target",/* Element to target.*/ 
+  {//Parameters are optional.
+    ease: Expo.easeOut,
+    duration: 1,
+  }
+);
 ```
 
 ### Text Animate
@@ -133,15 +154,31 @@ Shery.makeMagnet('img', /* Element to target.*/  {
 The text animate effect animates text with cool animation , with many preset animation, offering a unique experience.
 
 ```javascript
-Shery.textAnimate('text', /* Element to target.*/ { 
-  //Parameters are optional.
-  style: 1,
-  y: 10,
-  delay: 0.1,
-  duration: 2,
-  ease: Expo.easeOut,
-  multiplier: 0.1
-})
+Shery.textAnimate(
+  ".text-target",/* Element to target.*/ 
+  {//Parameters are optional.
+    style: 1,
+    y: 10,
+    delay: 0.1,
+    duration: 2,
+    ease: Expo.easeOut,
+    multiplier: 0.1,
+  }
+);
+```
+
+### Hover With Media Circle
+
+The hover with media circle effect creates a circular media element (image or video) which follows the cursor's movement when hovering over specified elements with blending effect. This effect provides an engaging way to showcase media content associated with the hovered elements.
+
+```javascript
+Shery.hoverWithMediaCircle(
+  ".hover-target",  /* Element to target.*/ 
+  {
+    images: ["image1.jpg", "image2.jpg", "image3.jpg"], /*OR*/ 
+    //videos: ["video1.mp4", "video2.mp4"],
+  }
+);
 ```
 
 ## 3D Image Effects
@@ -149,15 +186,17 @@ Shery.textAnimate('text', /* Element to target.*/ {
 These are effects are implemented with the help of Three.js to offer a unique experience with single function.
 
 ```html
-<img class="img" src="example.img">//Must provide a class to image.
+<img class="img" src="example.img" />//Must provide a class to image.
 ```
 
 ```javascript
 Shery.imageEffect("img", {
   style: 2, //Select Style
   debug: true, // Debug Panel
-  config: { /* Config made from debug panel */},
-  preset:'./presets/wigglewobble.json'
+  config: {
+    /* Config made from debug panel */
+  },
+  preset: "./presets/wigglewobble.json",
 });
 ```
 
@@ -168,11 +207,10 @@ Shery.imageEffect("img", {
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
 ```javascript
-Shery.imageEffect('.img',{
-  style: 1 /*OR 5 for different variant */ ,
-  debug: true
+Shery.imageEffect(".img", {
+  style: 1 /*OR 5 for different variant */,
+  debug: true,
 });
-
 ```
 
 ### Dynamic Distortion Effect
@@ -182,9 +220,9 @@ Shery.imageEffect('.img',{
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
 ```javascript
-Shery.imageEffect('.img',{
+Shery.imageEffect(".img", {
   style: 2,
-  debug: true
+  debug: true,
 });
 ```
 
@@ -195,9 +233,9 @@ Shery.imageEffect('.img',{
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
 ```javascript
-Shery.imageEffect('.img',{
-  style: 3 ,
-  debug: true
+Shery.imageEffect(".img", {
+  style: 3,
+  debug: true,
 });
 ```
 
@@ -208,9 +246,9 @@ Shery.imageEffect('.img',{
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
 ```javascript
-Shery.imageEffect('.img',{
-  style: 4 ,
-  debug: true
+Shery.imageEffect(".img", {
+  style: 4,
+  debug: true,
 });
 ```
 
@@ -218,26 +256,25 @@ Shery.imageEffect('.img',{
 
 ![Multi](./media/multi.gif)
 
-All 3D effects in this library supports multi image with wave scroll effect which increases the productivty and usability of effect, offering a unique and interactive experience.
+All 3D effects in this library supports multi image with wave scroll effect which increases the productivity and usability of effect, offering a unique and interactive experience.
 
 To use this you just need to give a div with images you want.
 
 ```html
 <div class="images">
-  <img src="image1">
-  <img src="image2">
-  <img src="image3">
+  <img src="image1" />
+  <img src="image2" />
+  <img src="image3" />
 </div>
 ```
 
 ```javascript
-Shery.imageEffect('.images', {
+Shery.imageEffect(".images", {
   style: 3,
-  // Scroll without any scrollable area on a static page. 
-  staticScroll: true 
+  // Scroll without any scrollable area on a static page.
+  staticScroll: true,
   /*NOTE - if using cdn, add gsp cdn for staticScroll*/
-})
-
+});
 ```
 
 ### Custom Scroll Trigger Callback
@@ -257,9 +294,9 @@ To define your specific scroll behavior, utilize the `slideStyle` callback in th
 <!-- Here is the code snippet demonstrating this process: -->
 
 <div class="images">
-  <img src="image1">
-  <img src="image2">
-  <img src="image3">
+  <img src="image1" />
+  <img src="image2" />
+  <img src="image3" />
 </div>
 ```
 
@@ -267,10 +304,10 @@ To define your specific scroll behavior, utilize the `slideStyle` callback in th
 Shery.imageEffect(".image", {
   style: 5,
   slideStyle: (setScroll) => {
-    window.addEventListener('scroll', () => {
+    window.addEventListener("scroll", () => {
       setScroll(window.scrollY / innerHeight); //Updating the scroll
     });
-  }
+  },
 });
 ```
 
@@ -280,26 +317,25 @@ By adhering to these instructions, you can create and control your unique scroll
 
 ![Debug](./media/debug.png)
 
-To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameater `{debug:true}` for effects which supports it.
+To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameter `{debug:true}` for effects which supports it.
 
-To save/use the tweek from your debug you need to click on `SAVE TO CLIPBOARD` and the paste that config in config parameter.
+To save/use the tweak from your debug you need to click on `SAVE TO CLIPBOARD` and the paste that config in config parameter.
 
 ```html
-<img class="img" src="example.img">
+<img class="img" src="example.img" />
 ```
 
 ```javascript
-Shery.imageEffect('.img',
-    {
-        style: 3,
-        debug: true,
-        config: {
-            "uFrequencyX": { "value": 100, "range": [0, 100] },
-            "uFrequencyY": { "value": 44.86, "range": [0, 100] },
-            "uFrequencyZ": { "value": 100, "range": [0, 100] },
-            "uTime": { "value": 37.14299999999965 }
-        }
-    })
+Shery.imageEffect(".img", {
+  style: 3,
+  debug: true,
+  config: {
+    uFrequencyX: { value: 100, range: [0, 100] },
+    uFrequencyY: { value: 44.86, range: [0, 100] },
+    uFrequencyZ: { value: 100, range: [0, 100] },
+    uTime: { value: 37.14299999999965 },
+  },
+});
 ```
 
 ### Preset Usage
@@ -316,7 +352,7 @@ Create your own preset or use someone elses with the help of preset option `{pre
 ```javascript
 Shery.imageEffect("img", {
   style: 2,
-  preset:'./presets/wigglewobble.json'
+  preset: "./presets/wigglewobble.json",
 });
 ```
 
@@ -334,7 +370,7 @@ In the heart of the dynamic world of web development, the creators of Shery.js a
 
 A Tech Enthusiast and full-time learner, Harsh Sharma is not just a developer but a trailblazer with a mission. Hailing from the city of Bhopal, he's the visionary behind the awe-inspiring startup, **Sheryians Coding School**. With Sheryians, Harsh is defying conventions and making the impossible possible. He's on a quest to empower non-graduates to achieve their dreams by helping them secure tech jobs in the most remarkable way.
 
-Connect with him: [Harsh&#39;s Linkdin Profile](https://www.linkedin.com/in/harsh-sharma-924629147/)
+Connect with him: [Harsh&#39;s Linkedin Profile](https://www.linkedin.com/in/harsh-sharma-924629147/)
 Step into his world: [Harsh&#39;s GitHub Profile](https://github.com/asynchronousJavascriptor)
 
 ### 🎮 Aayush Chouhan - [@aayushchouhan24](https://github.com/aayushchouhan24)
@@ -343,7 +379,7 @@ Step into his world: [Harsh&#39;s GitHub Profile](https://github.com/asynchronou
 
 A lover of technology, computers, and the thrill of gaming, Aayush Chouhan is a true explorer in the realm of cyberspace. From his early days in game penetration testing to becoming a multifaceted developer, Aayush has always been drawn to the frontier of innovation. Starting with his foray into freelancing, he's honed his skills in programming languages and ventured into the intricate worlds of Web and Android development. His journey took an exciting turn as he embraced Three.js, diving into the captivating world of 3D graphics.
 
-Connect with him: [Aayush&#39;s Linkdin Profile](https://www.linkedin.com/in/aayushchouhan24/)
+Connect with him: [Aayush&#39;s Linkedin Profile](https://www.linkedin.com/in/aayushchouhan24/)
 Dive into his journey: [Aayush&#39;s GitHub Profile](https://github.com/aayushchouhan24)
 
 ## Contributing
