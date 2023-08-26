@@ -694,7 +694,7 @@ export function imageEffect(element = "img", opts = {}) {
         ₹snoise
         varying vec2 vUv;void main(){vec2 uv=vUv;gl_FragColor = texture2D(uTexture[0], vUv); isMulti ;
         }`;
-            var { debugObj, panel, geoVertex, elemMesh, uniforms, animate } = init(
+            var { debugObj, panel, elemMesh, uniforms, animate } = init(
               elem,
               vertex,
               fragment,
@@ -702,6 +702,7 @@ export function imageEffect(element = "img", opts = {}) {
                 uFrequencyX: { value: 12, range: [0, 100] },
                 uFrequencyY: { value: 12, range: [0, 100] },
                 uFrequencyZ: { value: 10, range: [0, 100] },
+                geoVertex : { value: 32, range: [1, 64] }
               },
               {
                 camera,
@@ -710,10 +711,8 @@ export function imageEffect(element = "img", opts = {}) {
                 height,
                 scene,
                 geometry,
-  
                 effect: 3,
                 opts,
-                geoVertex: 32,
                 fov: 1.0375,
                 size: 0.01744,
                 offset: -0.04,
@@ -726,11 +725,11 @@ export function imageEffect(element = "img", opts = {}) {
                   label: "Effect Mode",
                   onChange: (x) => (uniforms.onMouse.value = x),
                 })
-                .addSlider(geoVertex, "value", "range", {
+                .addSlider(uniforms.geoVertex, "value", "range", {
                   label: "VertexCount",
                   step: 1,
                   onChange: () => {
-                    redraw(elemMesh, geoVertex.value);
+                    redraw(elemMesh, uniforms.geoVertex.value);
                   },
                 })
                 .addSlider(uniforms.uFrequencyX, "value", "range", {
@@ -779,7 +778,7 @@ export function imageEffect(element = "img", opts = {}) {
         ₹snoise
         void main() {vec2 uv = vUv; gl_FragColor =uColor? mix(texture2D(uTexture[0], vUv ),vec4(1.0),vWave):texture2D(uTexture[0], vUv ); isMulti ;}`;
   
-            var { debugObj, panel, geoVertex, elemMesh, uniforms, animate } = init(
+            var { debugObj, panel, elemMesh, uniforms, animate } = init(
               elem,
               vertex,
               fragment,
@@ -788,6 +787,7 @@ export function imageEffect(element = "img", opts = {}) {
                 uSpeed: { value: 0.6, range: [0.1, 1], rangef: [1, 10] },
                 uAmplitude: { value: 1.5, range: [0, 5] },
                 uFrequency: { value: 3.5, range: [0, 10] },
+                geoVertex : { value: 32, range: [1, 64] }
               },
               {
                 camera,
@@ -798,7 +798,6 @@ export function imageEffect(element = "img", opts = {}) {
                 geometry,
                 effect: 4,
                 opts,
-                geoVertex: 32,
                 offset: -0.04,
               }
             );
@@ -815,10 +814,10 @@ export function imageEffect(element = "img", opts = {}) {
                   label: "Effect Mode",
                   onChange: (x) => (uniforms.onMouse.value = x),
                 })
-                .addSlider(geoVertex, "value", "range", {
+                .addSlider(uniforms.geoVertex, "value", "range", {
                   label: "VertexCount",
                   step: 1,
-                  onChange: () => redraw(elemMesh, geoVertex.value),
+                  onChange: () => redraw(elemMesh, uniforms.geoVertex.value),
                 })
                 .addSlider(debugObj, "s", "range", {
                   label: "Speed",

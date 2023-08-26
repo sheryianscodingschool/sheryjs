@@ -7,7 +7,7 @@
   <title>Document</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="../../../src/Shery.css">
+  <link rel="stylesheet" href="../../dist/Shery.css">
 </head>
 
 <body>
@@ -54,7 +54,7 @@
           <h6>
             <i class="ri-check-line"></i> Support via mentors
           </h6>
-          <a href="/courses/" id="cta">Explore our courses</a>
+          <a  id="cta">Explore our courses</a>
           <div id="page1-down">
             <div id="left">
               <img loading="lazy" src="https://sheryians.com/Assets/images/Icon%20awesome-feather-alt.png" alt="">
@@ -68,21 +68,21 @@
       </div>
 
       <div id="page-1-right">
-        <img src="https://ik.imagekit.io/sheryians/photed_MVice1qZE.png" alt="" srcset="">
+        <img src="./media/boy.webp" alt="" srcset="">
       </div>
     </div>
   </div>
   <div id="chat-button">
     <i class="ri-chat-3-fill"></i>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="../../../src/Shery.js"></script>
+  <script src="../../dist/Shery.js"></script>
   <script>
-        var shery = new Shery();
-        shery.imageEffect('#page-1-right img')
+    Shery.imageEffect('#page-1-right img', {
+      style: 5,
+      debug: true
+    })
   </script>
 </body>
 

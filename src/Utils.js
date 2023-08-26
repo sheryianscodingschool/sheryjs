@@ -45,7 +45,6 @@ export const init = (
     opts,
     effect = 0,
     onDoc = false,
-    geoVertex = 1,
     dposition = 1,
     offset = 0,
   } = {}
@@ -144,6 +143,7 @@ export const init = (
     uSection: { value: 0 },
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
     uScroll: { value: offset * 3 },
+    geoVertex: { value: 1, range: [1, 64] },
     uTexture: {
       value:
         elem.nodeName.toLowerCase() === "img"
@@ -172,10 +172,9 @@ export const init = (
 
   const elemMesh = new THREE.Mesh(geometry, material);
   elemMesh.scale.set(elemWidth, elemHeight);
-  redraw(elemMesh, geoVertex);
+  redraw(elemMesh, uniforms.geoVertex);
   scene.add(elemMesh);
 
-  var geoVertex = { value: 32, range: [1, 64] };
   var debugObj = {
     Mode: [
       "Off",
@@ -268,6 +267,7 @@ export const init = (
           resolution,
           uTexture,
           mouse,
+          mousem,
           uIntercept,
           ...rest
         } = uniforms;
@@ -453,7 +453,6 @@ export const init = (
     debugObj,
     controlKit,
     panel,
-    geoVertex,
     animate,
     elemMesh,
     uniforms: elemMesh.material.uniforms,
