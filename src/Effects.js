@@ -195,6 +195,7 @@ export function makeMagnet(element, opts = {}) {
 export function textAnimate(element, opts = {}) {
   var alltexts = document.querySelectorAll(element)
   alltexts.forEach(function (elem) {
+    elem.textContent = elem.textContent.replaceAll(' ',' ')
     elem.classList.add("sheryelem")
     var clutter = ""
     elem.textContent.split("").forEach(function (char) {
