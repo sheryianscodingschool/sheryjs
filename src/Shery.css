@@ -1,7 +1,9 @@
 :root {
     --mousefollowercolor: black;
 }
-
+body{
+    background-color: #fff;
+}
 .mousefollower {
     pointer-events: none;
     transform: translate(-50%, -50%);

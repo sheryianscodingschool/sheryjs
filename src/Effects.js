@@ -23,7 +23,8 @@ export function mouseFollower(opts = {}) {
   picchemousefollower.classList.add("mousefollower")
   picchemousefollower.id = "behindmouse"
   var posx = 0
-  window.addEventListener("mousemove", function (dets) {
+  var diff = 0
+  addEventListener("mousemove", function (dets) {
     if (opts.skew) {
       diff = gsap.utils.clamp(15, 35, dets.clientX - posx)
       posx = dets.clientX
@@ -42,12 +43,12 @@ export function mouseFollower(opts = {}) {
     })
   })
 
-  document.addEventListener("mouseenter", function () {
+  addEventListener("mouseenter", function () {
     gsap.to(".mousefollower", {
       opacity: 1,
     })
   })
-  document.addEventListener("mouseleave", function () {
+  addEventListener("mouseleave", function () {
     gsap.to(".mousefollower", {
       opacity: 0,
       duration: opts.duration || 1,
@@ -119,9 +120,9 @@ export function imageMasker(element = "img", opts = {}) {
     })
     mask.addEventListener("mousemove", function (dets) {
       gsap.to(elem, {
-        scale: opts.scale || 1.2,
+        scale: opts.scale || elem.getBoundingClientRect().width<450?1.05:1.025,
         ease: opts.ease || Expo.easeOut,
-        duration: opts.duration || 1,
+        duration: opts.duration || 0.7,
       })
     })
     mask.addEventListener("mouseleave", function () {
@@ -195,7 +196,7 @@ export function makeMagnet(element, opts = {}) {
 export function textAnimate(element, opts = {}) {
   var alltexts = document.querySelectorAll(element)
   alltexts.forEach(function (elem) {
-    elem.textContent = elem.textContent.replaceAll(' ',' ')
+    elem.textContent = elem.textContent.trim().replaceAll(' ', ' ')
     elem.classList.add("sheryelem")
     var clutter = ""
     elem.textContent.split("").forEach(function (char) {

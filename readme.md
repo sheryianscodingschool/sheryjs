@@ -87,17 +87,17 @@ Shery.mouseFollower();
 
 To successfully run with CDN, you'll need some libraries.
 
-```javascript
-// Gsap is needed for Basic Effects
+```html
+<!--  Gsap is needed for Basic Effects -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-// Scroll Trigger is needed for Scroll Effects
+ <!-- Scroll Trigger is needed for Scroll Effects -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-// Three.js is needed for 3d Effects
+ <!-- Three.js is needed for 3d Effects -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
 
-// ControlKit is needed for Debug Panel
+ <!-- ControlKit is needed for Debug Panel -->
     <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
 
 ```
@@ -114,7 +114,7 @@ The feature creates smooth mouse follower, creating an engaging user experience.
 Shery.mouseFollower({
   //Parameters are optional.
   skew: true,
-  ease: Expo.easeOut,
+  ease:'cubic-bezier(0.23, 1, 0.320, 1)',
   duration: 1,
 });
 ```
@@ -129,7 +129,7 @@ Shery.imageMasker(
   {//Parameters are optional.
     mouseFollower: true,
     text: "Shery",
-    ease: Expo.easeOut,
+    ease: 'cubic-bezier(0.23, 1, 0.320, 1)',
     duration: 1,
   }
 );
@@ -143,7 +143,7 @@ The magnet mouse attractor effect draws elements towards the cursor, as if they 
 Shery.makeMagnet(
   ".magnet-target",/* Element to target.*/ 
   {//Parameters are optional.
-    ease: Expo.easeOut,
+    ease: 'cubic-bezier(0.23, 1, 0.320, 1)',
     duration: 1,
   }
 );
@@ -161,7 +161,7 @@ Shery.textAnimate(
     y: 10,
     delay: 0.1,
     duration: 2,
-    ease: Expo.easeOut,
+    ease: 'cubic-bezier(0.23, 1, 0.320, 1)',
     multiplier: 0.1,
   }
 );

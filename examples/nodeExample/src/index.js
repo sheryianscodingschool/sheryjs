@@ -1,5 +1,5 @@
 import './styles.css'
-import Shery from 'sheryjs'
+import Shery from '../.././../src/Shery'
 
 Shery.mouseFollower()
 
@@ -8,12 +8,11 @@ Shery.hoverWithMediaCircle('#cta', {
 })
 
 
-// Shery.imageMasker('img', /* Element to target.*/ { 
-//     //Parameters are optional.
-//     mouseFollower: true,
-//     text: 'Shery',
-//     duration: 1
-// })
+Shery.imageMasker('#cts', { 
+    mouseFollower: true,
+    text: 'Shery',
+    duration: 1
+})
 
 
 Shery.makeMagnet('#left-main-nav img, #left-main-nav a, #right-main-nav a')
