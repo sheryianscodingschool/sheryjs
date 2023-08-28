@@ -39,6 +39,7 @@
   "devDependencies": {
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
+    "glsl-shader-loader": "^0.1.6",
     "mini-css-extract-plugin": "^2.7.6",
     "terser-webpack-plugin": "^5.3.9",
     "webpack": "^5.88.2",
