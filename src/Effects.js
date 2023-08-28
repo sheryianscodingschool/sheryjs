@@ -652,70 +652,70 @@ export function imageEffect(element = "img", opts = {}) {
         break //!STUB
 
       // STUB - Wind Distortion Effect
-      case 4:        {
-          var { debugObj, panel, elemMesh, uniforms, animate } = init(
-            elem,
-            vertex_4,
-            fragment_4,
-            {
-              uColor: { value: false },
-              uSpeed: { value: 0.6, range: [0.1, 1], rangef: [1, 10] },
-              uAmplitude: { value: 1.5, range: [0, 5] },
-              uFrequency: { value: 3.5, range: [0, 10] },
-              geoVertex: { value: 32, range: [1, 64] }
-            },
-            {
-              camera,
-              renderer,
-              width,
-              height,
-              scene,
-              geometry,
-              effect: 4,
-              opts,
-              offset: -0.04,
-            }
-          )
-
-          if (opts.config)
-            Object.keys(opts.config).forEach(
-              (key) => (uniforms[key].value = opts.config[key].value)
-            )
-          if (panel) {
-            panel
-              .addCheckbox(uniforms.uColor, "value", { label: "Color Depth" })
-              .addSelect(debugObj, "onMouse", {
-                target: "Active",
-                label: "Effect Mode",
-                onChange: (x) => (uniforms.onMouse.value = x),
-              })
-              .addSlider(uniforms.geoVertex, "value", "range", {
-                label: "VertexCount",
-                step: 1,
-                onChange: () => redraw(elemMesh, uniforms.geoVertex.value),
-              })
-              .addSlider(debugObj, "s", "range", {
-                label: "Speed",
-                onChange: () => (uniforms.uSpeed.value = debugObj.s),
-                step: 0.01,
-              })
-              .addSlider(debugObj, "f", "rangef", {
-                label: "FastForward",
-                onChange: () => (uniforms.uSpeed.value = debugObj.f),
-                step: 0.01,
-              })
-              .addSlider(uniforms.uAmplitude, "value", "range", {
-                label: "Amplitude",
-                step: 0.01,
-              })
-              .addSlider(uniforms.uFrequency, "value", "range", {
-                label: "Frequency",
-                step: 0.01,
-              })
-            fix()
+      case 4: {
+        var { debugObj, panel, elemMesh, uniforms, animate } = init(
+          elem,
+          vertex_4,
+          fragment_4,
+          {
+            uColor: { value: false },
+            uSpeed: { value: 0.6, range: [0.1, 1], rangef: [1, 10] },
+            uAmplitude: { value: 1.5, range: [0, 5] },
+            uFrequency: { value: 3.5, range: [0, 10] },
+            geoVertex: { value: 32, range: [1, 64] }
+          },
+          {
+            camera,
+            renderer,
+            width,
+            height,
+            scene,
+            geometry,
+            effect: 4,
+            opts,
+            offset: -0.04,
           }
-          animate()
+        )
+
+        if (opts.config)
+          Object.keys(opts.config).forEach(
+            (key) => (uniforms[key].value = opts.config[key].value)
+          )
+        if (panel) {
+          panel
+            .addCheckbox(uniforms.uColor, "value", { label: "Color Depth" })
+            .addSelect(debugObj, "onMouse", {
+              target: "Active",
+              label: "Effect Mode",
+              onChange: (x) => (uniforms.onMouse.value = x),
+            })
+            .addSlider(uniforms.geoVertex, "value", "range", {
+              label: "VertexCount",
+              step: 1,
+              onChange: () => redraw(elemMesh, uniforms.geoVertex.value),
+            })
+            .addSlider(debugObj, "s", "range", {
+              label: "Speed",
+              onChange: () => (uniforms.uSpeed.value = debugObj.s),
+              step: 0.01,
+            })
+            .addSlider(debugObj, "f", "rangef", {
+              label: "FastForward",
+              onChange: () => (uniforms.uSpeed.value = debugObj.f),
+              step: 0.01,
+            })
+            .addSlider(uniforms.uAmplitude, "value", "range", {
+              label: "Amplitude",
+              step: 0.01,
+            })
+            .addSlider(uniforms.uFrequency, "value", "range", {
+              label: "Frequency",
+              step: 0.01,
+            })
+          fix()
         }
+        animate()
+      }
         break //!STUB
 
       // STUB - MultiImage Effect
@@ -811,3 +811,88 @@ export function imageEffect(element = "img", opts = {}) {
     }
   })
 } //!SECTION
+
+export class ScrollPos {
+  constructor() {
+    this.acceleration = 0;
+    this.maxAcceleration = 5;
+    this.maxSpeed = 20;
+    this.velocity = 0;
+    this.dampen = 0.97;
+    this.speed = 8;
+    this.touchSpeed = 8;
+    this.scrollPos = 0;
+    this.velocityThreshold = 1;
+    this.snapToTarget = false;
+    this.mouseDown = false;
+    this.lastDelta = 0;
+
+    document.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+
+    window.addEventListener("touchend", () => this.lastDelta = 0)
+
+    window.addEventListener("touchmove", e => {
+      // e.preventDefault();
+      let delta = this.lastDelta - e.targetTouches[0].clientY;
+      this.accelerate(Math.sign(delta) * this.touchSpeed);
+      this.lastDelta = e.targetTouches[0].clientY;
+    })
+
+    window.addEventListener("wheel", e => {
+      this.accelerate(Math.sign(e.deltaY) * this.speed);
+    });
+
+    window.addEventListener("mousedown", () => this.mouseDown = true)
+
+    window.addEventListener("mousemove", e => {
+      if (this.mouseDown) {
+        let delta = this.lastDelta - e.clientY;
+        this.accelerate(Math.sign(delta) * this.touchSpeed * 0.4);
+        this.lastDelta = e.clientY;
+      }
+    })
+
+    window.addEventListener("mouseup", () => {
+      this.lastDelta = 0;
+      this.mouseDown = false;
+    })
+
+  }
+  accelerate(amount) {
+    if (this.acceleration < this.maxAcceleration) {
+      this.acceleration += amount;
+    }
+  }
+  update() {
+    this.velocity += this.acceleration;
+    if (Math.abs(this.velocity) > this.velocityThreshold) {
+      this.velocity *= this.dampen;
+      this.scrollPos += this.velocity;
+    } else {
+      this.velocity = 0;
+    }
+    if (Math.abs(this.velocity) > this.maxSpeed) {
+      this.velocity = Math.sign(this.velocity) * this.maxSpeed;
+    }
+    this.acceleration = 0;
+  }
+  snap(snapTarget, dampenThreshold = 100, velocityThresholdOffset = 1.5) {
+    if (Math.abs(snapTarget - this.scrollPos) < dampenThreshold) {
+      this.velocity *= this.dampen;
+    }
+    if (Math.abs(this.velocity) < this.velocityThreshold + velocityThresholdOffset) {
+      this.scrollPos += (snapTarget - this.scrollPos) * 0.1;
+    }
+  }
+  project(steps = 1) {
+    if (steps === 1) return this.scrollPos + this.velocity * this.dampen
+    var scrollPos = this.scrollPos;
+    var velocity = this.velocity;
+
+    for (var i = 0; i < steps; i++) {
+      velocity *= this.dampen;
+      scrollPos += velocity;
+    }
+    return scrollPos;
+  }
+}

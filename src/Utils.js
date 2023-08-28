@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import gsap from "gsap"
 import ControlKit from "controlkit"
+import { ScrollPos } from "./Effects";
 
 export const lerp = (x, y, a) => x * (1 - a) + y * a
 
@@ -74,9 +75,10 @@ export const init = (
   if (!(elem.nodeName.toLowerCase() === "img")) {
     fragment = fragment.replace(
       "isMulti ;",
-      `
-      float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
-      gl_FragColor = mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y));`
+      `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
+      float blend=uScroll-uSection;float blend2=1.-blend;vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
+      gl_FragColor =scrollType == 0.0? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;`
+
     );
     const scrollProps = { value: 0 };
     if (!opts.slideStyle) {
@@ -137,7 +139,9 @@ export const init = (
   }
   Object.assign(uniforms, {
     time: { value: 0 },
+    displaceAmount: { value: .05 },
     mouse: { value: mouse },
+    scrollType: { value: 0 },
     uIntercept: { value: 0 },
     onMouse: { value: 0 },
     uSection: { value: 0 },
@@ -421,8 +425,20 @@ export const init = (
   setTimeout(window.dispatchEvent(new Event('resize')), 0)
   addEventListener("resize", fit);
 
+  var mouseWheel = new ScrollPos()
+
   const clock = new THREE.Clock();
   function animate() {
+
+    if (!(elem.nodeName.toLowerCase() === "img")) {
+      mouseWheel.update();
+      let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight;
+      mouseWheel.snap(scrollTarget);
+      let { scrollPos } = mouseWheel;
+      if (scrollPos < 0) { scrollPos = 0 }
+      if (scrollPos > 0 && scrollPos < elemHeight * (t.length - 1)) setScroll(scrollPos / elemHeight)
+    }
+
     if (document.querySelector(o))
       if (parseInt(document.querySelector(o).style.top) < 0)
         document.querySelector(o).style.top = "0px"
