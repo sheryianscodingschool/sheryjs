@@ -1,23 +1,23 @@
 import * as THREE from "three"
 import gsap from "gsap"
 import ControlKit from "controlkit"
-import { ScrollPos } from "./Effects";
+import { ScrollPos } from "./Effects"
 
 export const lerp = (x, y, a) => x * (1 - a) + y * a
 
 export const fix = () => {
   const s =
-    "#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap";
-  const c = "#controlKit .panel .button, #controlKit .picker .button";
+    "#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap"
+  const c = "#controlKit .panel .button, #controlKit .picker .button"
   if (document.querySelector(s))
-    document.querySelectorAll(s).forEach((e) => (e.style.width = "30%"));
+    document.querySelectorAll(s).forEach((e) => (e.style.width = "30%"))
   if (document.querySelector(c)) {
-    document.querySelector(c).parentElement.style.float = "none";
-    document.querySelector(c).parentElement.style.width = "100% ";
+    document.querySelector(c).parentElement.style.float = "none"
+    document.querySelector(c).parentElement.style.width = "100% "
   }
   if (document.querySelector(s + ".color"))
-    document.querySelector(s + ".color").parentElement.style.width = "60%";
-};
+    document.querySelector(s + ".color").parentElement.style.width = "60%"
+}
 
 export const redraw = (elemMesh, v) => {
   let newGeometry = new THREE.PlaneGeometry(
@@ -25,10 +25,10 @@ export const redraw = (elemMesh, v) => {
     elemMesh.geometry.parameters.height,
     v,
     v
-  );
-  elemMesh.geometry.dispose();
-  elemMesh.geometry = newGeometry;
-};
+  )
+  elemMesh.geometry.dispose()
+  elemMesh.geometry = newGeometry
+}
 
 var isdebug = []
 export const init = (
@@ -50,28 +50,28 @@ export const init = (
     offset = 0,
   } = {}
 ) => {
-  let intersect = 0;
-  const o = "#controlKit .options";
+  let intersect = 0
+  const o = "#controlKit .options"
 
-  let elemWidth = elem.getBoundingClientRect().width;
-  let elemHeight = elem.getBoundingClientRect().height;
-  let elemLeft = elem.getBoundingClientRect().left;
+  let elemWidth = elem.getBoundingClientRect().width
+  let elemHeight = elem.getBoundingClientRect().height
+  let elemLeft = elem.getBoundingClientRect().left
 
-  const mouse = new THREE.Vector2();
-  const mousem = new THREE.Vector2();
+  const mouse = new THREE.Vector2()
+  const mousem = new THREE.Vector2()
 
   const src = [elem.getAttribute("src") && elem.getAttribute("src")]
-  let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])];
-  const target = opts.target ? document.querySelector(opts.target) : elem;
-  const targettop = target.getBoundingClientRect().top;
+  let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
+  const target = opts.target ? document.querySelector(opts.target) : elem
+  const targettop = target.getBoundingClientRect().top
   const doAction = (newSection) => {
-    uniforms.uSection.value = newSection;
+    uniforms.uSection.value = newSection
     if (t.length > newSection) {
       if (t.length > newSection + 1)
-        uniforms.uTexture.value = [t[newSection], t[newSection + 1]];
-      else uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]];
+        uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
+      else uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
     }
-  };
+  }
   if (!(elem.nodeName.toLowerCase() === "img")) {
     fragment = fragment.replace(
       "isMulti ;",
@@ -79,8 +79,8 @@ export const init = (
       float blend=uScroll-uSection;float blend2=1.-blend;vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
       gl_FragColor =scrollType == 0.0? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;`
 
-    );
-    const scrollProps = { value: 0 };
+    )
+    const scrollProps = { value: 0 }
     if (!opts.slideStyle) {
       if (opts.staticScroll) {
         function handleScroll(deltaY) {
@@ -88,46 +88,46 @@ export const init = (
             value: scrollProps.value + deltaY / innerHeight,
             duration: 0.5, // Adjust the duration as needed
             onUpdate: () => {
-              if (scrollProps.value < 0) scrollProps.value = 0;
-              uniforms.uScroll.value = scrollProps.value;
-              const newSection = Math.floor(scrollProps.value);
+              if (scrollProps.value < 0) scrollProps.value = 0
+              uniforms.uScroll.value = scrollProps.value
+              const newSection = Math.floor(scrollProps.value)
               if (newSection !== uniforms.uSection.value) {
-                if (t.length > newSection + 1) doAction(newSection);
+                if (t.length > newSection + 1) doAction(newSection)
               }
             },
-          });
+          })
         }
 
         window.addEventListener("wheel", (e) => {
-          const deltaY = e.deltaY;
-          handleScroll(deltaY);
-        });
-        let touchStartY = 0;
+          const deltaY = e.deltaY
+          handleScroll(deltaY)
+        })
+        let touchStartY = 0
         window.addEventListener("touchstart", (e) => {
-          touchStartY = e.touches[0].clientY;
-        });
+          touchStartY = e.touches[0].clientY
+        })
         window.addEventListener(
           "touchmove",
           (e) => {
-            const deltaY = (touchStartY - e.touches[0].clientY) * 2; // Adjust the multiplier as needed
-            touchStartY = e.touches[0].clientY;
-            handleScroll(deltaY * 3);
-            e.preventDefault();
+            const deltaY = (touchStartY - e.touches[0].clientY) * 2 // Adjust the multiplier as needed
+            touchStartY = e.touches[0].clientY
+            handleScroll(deltaY * 3)
+            e.preventDefault()
           },
           { passive: false }
-        );
+        )
       } else
         window.addEventListener("scroll", () => {
           let scroll =
             Math.max(offset, scrollY / innerHeight - targettop / innerHeight) +
-            offset;
-          if (scroll < 0) scroll = 0;
-          uniforms.uScroll.value = scroll;
-          const newSection = Math.floor(scroll);
+            offset
+          if (scroll < 0) scroll = 0
+          uniforms.uScroll.value = scroll
+          const newSection = Math.floor(scroll)
           if (newSection != uniforms.uSection.value) {
-            if (t.length > newSection + 1) doAction(newSection);
+            if (t.length > newSection + 1) doAction(newSection)
           }
-        });
+        })
     }
     for (let i = 0; i < elem.children.length; i++) {
       src[i] = elem.children[i].getAttribute("src")
@@ -154,30 +154,30 @@ export const init = (
           ? t
           : [t[0], t[1]],
     },
-  });
+  })
 
   const setScroll = (x) => {
     if (x >= 0) {
-      uniforms.uScroll.value = x;
-      doAction(Math.floor(x));
+      uniforms.uScroll.value = x
+      doAction(Math.floor(x))
     }
-  };
+  }
 
   if (opts.slideStyle && typeof opts.slideStyle === "function")
     opts.slideStyle(setScroll)
 
-  const snoise = `vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`;
+  const snoise = `vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`
 
   const material = new THREE.ShaderMaterial({
     vertexShader: vertex.replace("#define SNOISEHOLDER", snoise),
     fragmentShader: fragment.replace("#define SNOISEHOLDER", snoise),
     uniforms,
-  });
+  })
 
-  const elemMesh = new THREE.Mesh(geometry, material);
-  elemMesh.scale.set(elemWidth, elemHeight);
-  redraw(elemMesh, uniforms.geoVertex.value);
-  scene.add(elemMesh);
+  const elemMesh = new THREE.Mesh(geometry, material)
+  elemMesh.scale.set(elemWidth, elemHeight)
+  redraw(elemMesh, uniforms.geoVertex.value)
+  scene.add(elemMesh)
 
   var debugObj = {
     Mode: [
@@ -223,6 +223,13 @@ export const init = (
       range: [-800, 800],
       rangep: [-50, 50],
     },
+    Resolution_XY: {
+      value: 1000,
+      range: [0, 1000],
+      precise: 1,
+      rangep: [0, 100],
+
+    },
     pixelStrength: {
       precise: 1,
       normal: 3,
@@ -234,25 +241,25 @@ export const init = (
     range: [0.1, 1],
     f: 0.6,
     rangef: [1, 10],
-  };
+  }
 
-  var controlKit = null;
-  var panel = null;
+  var controlKit = null
+  var panel = null
 
   const config = (c) => {
-    if (c.color) c.color.value = new THREE.Color(c.color.value);
-    Object.assign(uniforms, c);
-  };
+    if (c.color) c.color.value = new THREE.Color(c.color.value)
+    Object.assign(uniforms, c)
+  }
 
   if (opts.preset)
     fetch(opts.preset)
       .then((response) => response.json())
-      .then((json) => config(json));
-  if (opts.config) config(opts.config);
+      .then((json) => config(json))
+  if (opts.config) config(opts.config)
 
   if ((opts.debug && !isdebug[effect]) || false) {
-    isdebug[effect] = true;
-    controlKit = new ControlKit();
+    isdebug[effect] = true
+    controlKit = new ControlKit()
 
     panel = controlKit
       .addPanel({
@@ -274,123 +281,123 @@ export const init = (
           mousem,
           uIntercept,
           ...rest
-        } = uniforms;
-        navigator.clipboard.writeText(JSON.stringify(rest));
-      });
+        } = uniforms
+        navigator.clipboard.writeText(JSON.stringify(rest))
+      })
     if (!(elem.nodeName.toLowerCase() === "img") && !opts.staticScroll)
       panel.addSlider(debugObj.Offset, "value", "range", {
         label: "Slide Offset",
         step: 0.00001,
         onChange: () => {
-          offset = debugObj.Offset.value;
+          offset = debugObj.Offset.value
           uniforms.uScroll.value =
             Math.max(offset, scrollY / innerHeight - targettop / innerHeight) +
-            offset;
+            offset
         },
-      });
+      })
   }
 
   function setMouseCord(e, i = false) {
-    mouse.x = (e.offsetX / elemWidth) * 2 - 1;
-    mouse.y = -((e.offsetY / elemHeight) * 2 - 1);
+    mouse.x = (e.offsetX / elemWidth) * 2 - 1
+    mouse.y = -((e.offsetY / elemHeight) * 2 - 1)
   }
 
   function getNormalizedMousePosition(event) {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
+    const centerX = window.innerWidth / 2
+    const centerY = window.innerHeight / 2
+    const mouseX = event.clientX
+    const mouseY = event.clientY
 
-    const deltaX = mouseX - centerX;
-    const deltaY = mouseY - centerY;
+    const deltaX = mouseX - centerX
+    const deltaY = mouseY - centerY
 
-    const normalizedX = deltaX / centerX;
-    const normalizedY = deltaY / centerY;
+    const normalizedX = deltaX / centerX
+    const normalizedY = deltaY / centerY
 
-    mousem.x = normalizedX / 300;
-    mousem.y = normalizedY / 300;
+    mousem.x = normalizedX / 300
+    mousem.y = normalizedY / 300
   }
 
-  elem.addEventListener("mousemove", (e) => setMouseCord(e, onDoc));
+  elem.addEventListener("mousemove", (e) => setMouseCord(e, onDoc))
 
   document.addEventListener("mousemove", (e) => {
-    getNormalizedMousePosition(e);
-  });
+    getNormalizedMousePosition(e)
+  })
 
   elem.addEventListener("mouseleave", (e) => {
-    intersect = 0;
-    setMouseCord(e);
-  });
+    intersect = 0
+    setMouseCord(e)
+  })
 
   elem.addEventListener("mouseenter", (e) => {
-    intersect = 1;
-    setMouseCord(e);
-  });
+    intersect = 1
+    setMouseCord(e)
+  })
 
   const fit = () => {
-    console.log('hi');
-    width = innerWidth;
-    height = innerHeight;
+    console.log('hi')
+    width = innerWidth
+    height = innerHeight
 
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-    camera.fov = 2 * Math.atan(height / 2 / 10) * (180 / Math.PI);
+    camera.fov = 2 * Math.atan(height / 2 / 10) * (180 / Math.PI)
 
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+    camera.aspect = width / height
+    camera.updateProjectionMatrix()
 
-    elemLeft = elem.getBoundingClientRect().left;
-    elemWidth = elem.getBoundingClientRect().width;
-    elemHeight = elem.getBoundingClientRect().height;
+    elemLeft = elem.getBoundingClientRect().left
+    elemWidth = elem.getBoundingClientRect().width
+    elemHeight = elem.getBoundingClientRect().height
 
     elemMesh.scale.set(
       elem.getBoundingClientRect().width,
       elem.getBoundingClientRect().height
-    );
+    )
 
-    const size = new THREE.Vector3();
-    new THREE.Box3().setFromObject(elemMesh).getSize(size);
+    const size = new THREE.Vector3()
+    new THREE.Box3().setFromObject(elemMesh).getSize(size)
     createCroppedTexture(src, size.x / size.y, t)
       .then((texture) => {
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        elemMesh.material.uniforms.uTexture.value = texture;
+        texture.minFilter = THREE.LinearFilter
+        texture.magFilter = THREE.LinearFilter
+        elemMesh.material.uniforms.uTexture.value = texture
         t = texture
       })
       .catch((error) => {
-        console.error("Error loading image:", error);
-      });
-  };
+        console.error("Error loading image:", error)
+      })
+  }
 
   function createCroppedTexture(imageUrls, newAspect, oldTextures = []) {
     return Promise.all(imageUrls.map((imageUrl, index) => {
       return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = imageUrl;
+        const img = new Image()
+        img.crossOrigin = "anonymous"
+        img.src = imageUrl
         img.onload = () => {
-          const imgWidth = img.width;
-          const imgHeight = img.height;
+          const imgWidth = img.width
+          const imgHeight = img.height
 
-          let newWidth, newHeight;
-          let xOffset = 0;
-          let yOffset = 0;
+          let newWidth, newHeight
+          let xOffset = 0
+          let yOffset = 0
 
           if (imgWidth / imgHeight > newAspect) {
-            newWidth = imgHeight * newAspect;
-            newHeight = imgHeight;
-            xOffset = (imgWidth - newWidth) / 2;
+            newWidth = imgHeight * newAspect
+            newHeight = imgHeight
+            xOffset = (imgWidth - newWidth) / 2
           } else {
-            newWidth = imgWidth;
-            newHeight = imgWidth / newAspect;
-            yOffset = (imgHeight - newHeight) / 2;
+            newWidth = imgWidth
+            newHeight = imgWidth / newAspect
+            yOffset = (imgHeight - newHeight) / 2
           }
 
-          const canvas = document.createElement("canvas");
-          canvas.width = newWidth;
-          canvas.height = newHeight;
-          const ctx = canvas.getContext("2d");
+          const canvas = document.createElement("canvas")
+          canvas.width = newWidth
+          canvas.height = newHeight
+          const ctx = canvas.getContext("2d")
           ctx.drawImage(
             img,
             xOffset,
@@ -401,40 +408,40 @@ export const init = (
             0,
             newWidth,
             newHeight
-          );
+          )
 
           if (oldTextures[index]) {
-            oldTextures[index].dispose();
+            oldTextures[index].dispose()
           }
 
-          const newTexture = new THREE.Texture(canvas);
-          newTexture.needsUpdate = true;
+          const newTexture = new THREE.Texture(canvas)
+          newTexture.needsUpdate = true
 
-          resolve(newTexture);
-        };
+          resolve(newTexture)
+        }
 
         img.onerror = (error) => {
-          reject(error);
-        };
-      });
-    }));
+          reject(error)
+        }
+      })
+    }))
   }
 
-  fit();
+  fit()
 
   setTimeout(window.dispatchEvent(new Event('resize')), 0)
-  addEventListener("resize", fit);
+  addEventListener("resize", fit)
 
   var mouseWheel = new ScrollPos()
 
-  const clock = new THREE.Clock();
+  const clock = new THREE.Clock()
   function animate() {
 
     if (!(elem.nodeName.toLowerCase() === "img")) {
-      mouseWheel.update();
-      let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight;
-      mouseWheel.snap(scrollTarget);
-      let { scrollPos } = mouseWheel;
+      mouseWheel.update()
+      let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight
+      mouseWheel.snap(scrollTarget)
+      let { scrollPos } = mouseWheel
       if (scrollPos < 0) { scrollPos = 0 }
       if (scrollPos > 0 && scrollPos < elemHeight * (t.length - 1)) setScroll(scrollPos / elemHeight)
     }
@@ -443,12 +450,13 @@ export const init = (
       if (parseInt(document.querySelector(o).style.top) < 0)
         document.querySelector(o).style.top = "0px"
 
-    renderer.render(scene, camera);
+    renderer.render(scene, camera)
 
     Object.assign(uniforms, {
       time: { value: clock.getElapsedTime() },
       mouse: { value: mouse },
       mousem: { value: mousem },
+     
       uIntercept: {
         value: THREE.MathUtils.lerp(
           uniforms.uIntercept.value,
@@ -456,14 +464,13 @@ export const init = (
           0.07
         ),
       },
-    });
+    })
 
+    elemMesh.material.uniforms.time.value = clock.getElapsedTime()
+    elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2
+    elemMesh.position.y = -elem.getBoundingClientRect().top + (height / 2) - (elemHeight / 2)
 
-    elemMesh.material.uniforms.time.value = clock.getElapsedTime();
-    elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2;
-    elemMesh.position.y = -elem.getBoundingClientRect().top + (height / 2) - (elemHeight / 2);
-
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animate)
   }
   return {
     debugObj,
@@ -472,5 +479,5 @@ export const init = (
     animate,
     elemMesh,
     uniforms: elemMesh.material.uniforms,
-  };
+  }
 }

@@ -1,5 +1,5 @@
-uniform vec2 resolution, mouse;
-uniform float uIntercept,scrollType,displaceAmount, time, frequency, angle, speed, waveFactor, contrast, pixelStrength, quality, brightness, colorExposer, strength, exposer, uScroll, uSection;
+uniform vec2 mouse;
+uniform float resolutionX,resolutionY,uIntercept,scrollType,displaceAmount, time, frequency, angle, speed, waveFactor, contrast, pixelStrength, quality, brightness, colorExposer, strength, exposer, uScroll, uSection;
 uniform int onMouse, mousemove, mode, modeA, modeN;
 uniform bool distortion;
 uniform vec3 color;
@@ -28,10 +28,11 @@ vec4 img(vec2 uv, float c) {
     float blend2 = 1. - blend;
     vec4 imageA = texture2D(uTexture[0], vec2(uv.x, uv.y - (((texture2D(uTexture[0], uv).r * displaceAmount) * blend) * 2.))) * blend2;
     vec4 imageB = texture2D(uTexture[1], vec2(uv.x, uv.y + (((texture2D(uTexture[1], uv).r * displaceAmount) * blend2) * 2.))) * blend;
-    return scrollType == 0 ? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll) - uSection, c + uv.y)) : imageA.bbra * blend + imageA * blend2 + imageB.bbra * blend2 + imageB * blend;
+    return scrollType == 0.0 ? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll) - uSection, c + uv.y)) : imageA.bbra * blend + imageA * blend2 + imageB.bbra * blend2 + imageB * blend;
 }
 
 void main() {
+    vec2 resolution = vec2(resolutionX*20.,resolutionY*20.);
     float brightness = clamp(brightness, -1., 25.);
     float frequency = clamp(frequency, -999., 999.);
     float contrast = clamp(contrast, -50., 50.);

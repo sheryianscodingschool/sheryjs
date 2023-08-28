@@ -1,17 +1,17 @@
 import gsap from "gsap"
 import * as THREE from "three"
-import vertex_1 from './shaders/effect1/vertex.glsl';
-import fragment_1 from './shaders/effect1/fragment.glsl';
-import vertex_2 from './shaders/effect2/vertex.glsl';
-import fragment_2 from './shaders/effect2/fragment.glsl';
-import vertex_3 from './shaders/effect3/vertex.glsl';
-import fragment_3 from './shaders/effect3/fragment.glsl';
-import vertex_4 from './shaders/effect4/vertex.glsl';
-import fragment_4 from './shaders/effect4/fragment.glsl';
-import vertex_5 from './shaders/effect5/vertex.glsl';
-import fragment_5 from './shaders/effect5/fragment.glsl';
-import vertex_6 from './shaders/effect6/vertex.glsl';
-import fragment_6 from './shaders/effect6/fragment.glsl';
+import vertex_1 from './shaders/effect1/vertex.glsl'
+import fragment_1 from './shaders/effect1/fragment.glsl'
+import vertex_2 from './shaders/effect2/vertex.glsl'
+import fragment_2 from './shaders/effect2/fragment.glsl'
+import vertex_3 from './shaders/effect3/vertex.glsl'
+import fragment_3 from './shaders/effect3/fragment.glsl'
+import vertex_4 from './shaders/effect4/vertex.glsl'
+import fragment_4 from './shaders/effect4/fragment.glsl'
+import vertex_5 from './shaders/effect5/vertex.glsl'
+import fragment_5 from './shaders/effect5/fragment.glsl'
+import vertex_6 from './shaders/effect6/vertex.glsl'
+import fragment_6 from './shaders/effect6/fragment.glsl'
 
 import {
   init,
@@ -433,12 +433,8 @@ export function imageEffect(element = "img", opts = {}) {
           vertex_2,
           fragment_2,
           {
-            resolution: {
-              value: new THREE.Vector2(
-                width,
-                height
-              ),
-            },
+            resolutionX: { value: 100 },
+            resolutionY: { value: 100 },
             distortion: { value: true },
             mode: { value: -3 },
             mousemove: { value: 0 },
@@ -533,6 +529,22 @@ export function imageEffect(element = "img", opts = {}) {
               onChange: () =>
                 (uniforms.frequency.value = debugObj.frequency.precise),
             })
+            .addSlider(debugObj.Resolution_XY, "value", "range", {
+              label: "Resolution",
+              step: 0.00001,
+              onChange: () => {
+                uniforms.resolutionX.value = debugObj.Resolution_XY.value
+                uniforms.resolutionY.value = debugObj.Resolution_XY.value
+              }
+            })
+            .addSlider(debugObj.Resolution_XY, "precise", "rangep", {
+              label: "Resolution Precise",
+              step: 0.00001,
+              onChange: () => {
+                uniforms.resolutionX.value = debugObj.Resolution_XY.precise
+                uniforms.resolutionY.value = debugObj.Resolution_XY.precise
+              }
+            })
             .addSlider(uniforms.angle, "value", "range", {
               label: "Angle",
               step: 0.00001,
@@ -545,15 +557,13 @@ export function imageEffect(element = "img", opts = {}) {
               label: "Pixel Strength",
               step: 0.00001,
               onChange: () =>
-              (uniforms.pixelStrength.value =
-                debugObj.pixelStrength.normal),
+                (uniforms.pixelStrength.value = debugObj.pixelStrength.normal),
             })
             .addSlider(debugObj.pixelStrength, "precise", "rangep", {
               label: "Precise Pixel",
               step: 0.00001,
               onChange: () =>
-              (uniforms.pixelStrength.value =
-                debugObj.pixelStrength.normal),
+                (uniforms.pixelStrength.value = debugObj.pixelStrength.precise),
             })
             .addSlider(uniforms.quality, "value", "range", {
               label: "Quality",
@@ -814,85 +824,85 @@ export function imageEffect(element = "img", opts = {}) {
 
 export class ScrollPos {
   constructor() {
-    this.acceleration = 0;
-    this.maxAcceleration = 5;
-    this.maxSpeed = 20;
-    this.velocity = 0;
-    this.dampen = 0.97;
-    this.speed = 8;
-    this.touchSpeed = 8;
-    this.scrollPos = 0;
-    this.velocityThreshold = 1;
-    this.snapToTarget = false;
-    this.mouseDown = false;
-    this.lastDelta = 0;
+    this.acceleration = 0
+    this.maxAcceleration = 5
+    this.maxSpeed = 20
+    this.velocity = 0
+    this.dampen = 0.97
+    this.speed = 8
+    this.touchSpeed = 8
+    this.scrollPos = 0
+    this.velocityThreshold = 1
+    this.snapToTarget = false
+    this.mouseDown = false
+    this.lastDelta = 0
 
-    document.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+    document.addEventListener("touchstart", e => e.preventDefault(), { passive: false })
 
     window.addEventListener("touchend", () => this.lastDelta = 0)
 
     window.addEventListener("touchmove", e => {
       // e.preventDefault();
-      let delta = this.lastDelta - e.targetTouches[0].clientY;
-      this.accelerate(Math.sign(delta) * this.touchSpeed);
-      this.lastDelta = e.targetTouches[0].clientY;
+      let delta = this.lastDelta - e.targetTouches[0].clientY
+      this.accelerate(Math.sign(delta) * this.touchSpeed)
+      this.lastDelta = e.targetTouches[0].clientY
     })
 
     window.addEventListener("wheel", e => {
-      this.accelerate(Math.sign(e.deltaY) * this.speed);
-    });
+      this.accelerate(Math.sign(e.deltaY) * this.speed)
+    })
 
     window.addEventListener("mousedown", () => this.mouseDown = true)
 
     window.addEventListener("mousemove", e => {
       if (this.mouseDown) {
-        let delta = this.lastDelta - e.clientY;
-        this.accelerate(Math.sign(delta) * this.touchSpeed * 0.4);
-        this.lastDelta = e.clientY;
+        let delta = this.lastDelta - e.clientY
+        this.accelerate(Math.sign(delta) * this.touchSpeed * 0.4)
+        this.lastDelta = e.clientY
       }
     })
 
     window.addEventListener("mouseup", () => {
-      this.lastDelta = 0;
-      this.mouseDown = false;
+      this.lastDelta = 0
+      this.mouseDown = false
     })
 
   }
   accelerate(amount) {
     if (this.acceleration < this.maxAcceleration) {
-      this.acceleration += amount;
+      this.acceleration += amount
     }
   }
   update() {
-    this.velocity += this.acceleration;
+    this.velocity += this.acceleration
     if (Math.abs(this.velocity) > this.velocityThreshold) {
-      this.velocity *= this.dampen;
-      this.scrollPos += this.velocity;
+      this.velocity *= this.dampen
+      this.scrollPos += this.velocity
     } else {
-      this.velocity = 0;
+      this.velocity = 0
     }
     if (Math.abs(this.velocity) > this.maxSpeed) {
-      this.velocity = Math.sign(this.velocity) * this.maxSpeed;
+      this.velocity = Math.sign(this.velocity) * this.maxSpeed
     }
-    this.acceleration = 0;
+    this.acceleration = 0
   }
   snap(snapTarget, dampenThreshold = 100, velocityThresholdOffset = 1.5) {
     if (Math.abs(snapTarget - this.scrollPos) < dampenThreshold) {
-      this.velocity *= this.dampen;
+      this.velocity *= this.dampen
     }
     if (Math.abs(this.velocity) < this.velocityThreshold + velocityThresholdOffset) {
-      this.scrollPos += (snapTarget - this.scrollPos) * 0.1;
+      this.scrollPos += (snapTarget - this.scrollPos) * 0.1
     }
   }
   project(steps = 1) {
     if (steps === 1) return this.scrollPos + this.velocity * this.dampen
-    var scrollPos = this.scrollPos;
-    var velocity = this.velocity;
+    var scrollPos = this.scrollPos
+    var velocity = this.velocity
 
     for (var i = 0; i < steps; i++) {
-      velocity *= this.dampen;
-      scrollPos += velocity;
+      velocity *= this.dampen
+      scrollPos += velocity
     }
-    return scrollPos;
+    return scrollPos
   }
 }
