@@ -401,7 +401,6 @@ export function imageEffect(element = "img", opts = {}) {
             geometry,
             effect: 1,
             opts,
-            offset: -0.04,
           }
         )
 
@@ -626,7 +625,6 @@ export function imageEffect(element = "img", opts = {}) {
             opts,
             fov: 1.0375,
             size: 0.01744,
-            offset: -0.04,
           }
         )
         if (panel) {
@@ -683,7 +681,6 @@ export function imageEffect(element = "img", opts = {}) {
             geometry,
             effect: 4,
             opts,
-            offset: -0.04,
           }
         )
 
@@ -750,7 +747,6 @@ export function imageEffect(element = "img", opts = {}) {
             opts,
             fov: 0.9,
             onDoc: true,
-            offset: -0.04,
           }
         )
         if (panel) {
@@ -794,7 +790,6 @@ export function imageEffect(element = "img", opts = {}) {
             opts,
             fov: 0.9,
             onDoc: true,
-            offset: -0.04,
           }
         )
         if (panel) {

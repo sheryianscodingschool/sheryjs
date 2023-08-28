@@ -271,9 +271,13 @@ To use this you just need to give a div with images you want.
 ```javascript
 Shery.imageEffect(".images", {
   style: 3,
-  // Scroll without any scrollable area on a static page.
-  staticScroll: true,
-  /*NOTE - if using cdn, add gsp cdn for staticScroll*/
+  /*optional parameters
+  these parameter dose not applies to custom scroll trigger callback */
+  scrollSnapping:true,
+  scrollSpeed:6,
+  touchSpeed:6,
+  damping:7
+
 });
 ```
 

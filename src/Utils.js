@@ -5,6 +5,8 @@ import { ScrollPos } from "./Effects"
 
 export const lerp = (x, y, a) => x * (1 - a) + y * a
 
+export const clamp = (val, min=1, max=10) => Math.min(Math.max(val, min), max)
+
 export const fix = () => {
   const s =
     "#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap"
@@ -47,7 +49,6 @@ export const init = (
     effect = 0,
     onDoc = false,
     dposition = 1,
-    offset = 0,
   } = {}
 ) => {
   let intersect = 0
@@ -64,12 +65,29 @@ export const init = (
   let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
   const target = opts.target ? document.querySelector(opts.target) : elem
   const targettop = target.getBoundingClientRect().top
-  const doAction = (newSection) => {
+  const doAction = newSection => {
     uniforms.uSection.value = newSection
     if (t.length > newSection) {
       if (t.length > newSection + 1)
         uniforms.uTexture.value = [t[newSection], t[newSection + 1]]
       else uniforms.uTexture.value = [t[t.length - 1], t[t.length - 1]]
+    }
+  }
+  var mouseWheel = new ScrollPos()
+  const staticScroll = () => {
+    if (!(elem.nodeName.toLowerCase() === "img") && !opts.slideStyle) {
+      mouseWheel.update()
+      mouseWheel.dampen = .9 + clamp(opts.damping || 7,0,9)/100
+      console.log(mouseWheel.dampen)
+      mouseWheel.speed = Math.abs(opts.scrollSpeed || 6)
+      mouseWheel.touchSpeed = Math.abs(opts.touchSpeed || 6)
+      let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight
+      if (opts.scrollSnapping) {
+        mouseWheel.snap(scrollTarget)
+      }
+      let { scrollPos } = mouseWheel
+      if (scrollPos < 0) { scrollPos = 0 }
+      if (scrollPos > 0 && scrollPos < elemHeight * (t.length - 1)) setScroll(scrollPos / elemHeight)
     }
   }
   if (!(elem.nodeName.toLowerCase() === "img")) {
@@ -80,55 +98,6 @@ export const init = (
       gl_FragColor =scrollType == 0.0? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;`
 
     )
-    const scrollProps = { value: 0 }
-    if (!opts.slideStyle) {
-      if (opts.staticScroll) {
-        function handleScroll(deltaY) {
-          gsap.to(scrollProps, {
-            value: scrollProps.value + deltaY / innerHeight,
-            duration: 0.5, // Adjust the duration as needed
-            onUpdate: () => {
-              if (scrollProps.value < 0) scrollProps.value = 0
-              uniforms.uScroll.value = scrollProps.value
-              const newSection = Math.floor(scrollProps.value)
-              if (newSection !== uniforms.uSection.value) {
-                if (t.length > newSection + 1) doAction(newSection)
-              }
-            },
-          })
-        }
-
-        window.addEventListener("wheel", (e) => {
-          const deltaY = e.deltaY
-          handleScroll(deltaY)
-        })
-        let touchStartY = 0
-        window.addEventListener("touchstart", (e) => {
-          touchStartY = e.touches[0].clientY
-        })
-        window.addEventListener(
-          "touchmove",
-          (e) => {
-            const deltaY = (touchStartY - e.touches[0].clientY) * 2 // Adjust the multiplier as needed
-            touchStartY = e.touches[0].clientY
-            handleScroll(deltaY * 3)
-            e.preventDefault()
-          },
-          { passive: false }
-        )
-      } else
-        window.addEventListener("scroll", () => {
-          let scroll =
-            Math.max(offset, scrollY / innerHeight - targettop / innerHeight) +
-            offset
-          if (scroll < 0) scroll = 0
-          uniforms.uScroll.value = scroll
-          const newSection = Math.floor(scroll)
-          if (newSection != uniforms.uSection.value) {
-            if (t.length > newSection + 1) doAction(newSection)
-          }
-        })
-    }
     for (let i = 0; i < elem.children.length; i++) {
       src[i] = elem.children[i].getAttribute("src")
       t[i] = new THREE.TextureLoader().load(src[i])
@@ -139,14 +108,14 @@ export const init = (
   }
   Object.assign(uniforms, {
     time: { value: 0 },
-    displaceAmount: { value: .05 },
+    displaceAmount: { value: .5 },
     mouse: { value: mouse },
     scrollType: { value: 0 },
     uIntercept: { value: 0 },
     onMouse: { value: 0 },
     uSection: { value: 0 },
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
-    uScroll: { value: offset * 3 },
+    uScroll: { value: 0 },
     geoVertex: { value: 1, range: [1, 64] },
     uTexture: {
       value:
@@ -182,19 +151,19 @@ export const init = (
   var debugObj = {
     Mode: [
       "Off",
-      "Reflact/Glow",
+      "Reflect/Glow",
       "Exclusion",
-      "Diffrance",
+      "Difference",
       "Darken",
       "ColorBurn",
       "ColorDoge",
       "SoftLight",
       "Overlay",
-      "Phonix",
+      "Phoenix",
       "Add",
       "Multiply",
       "Screen",
-      "Negitive",
+      "Negative",
       "Divide",
       "Substract",
       "Neon",
@@ -202,7 +171,7 @@ export const init = (
       "Mod",
       "NeonNegative",
       "Dark",
-      "Avarage",
+      "Average",
     ],
     "Mode Active": "Soft Light",
     Trigo: ["Sin", "Cos", "Tan", "Atan"],
@@ -211,10 +180,11 @@ export const init = (
     "Trig A": "Cos",
     "Trig N": "Sin",
     Mouse: ["Off", "Mode 1", " Mode 2", " Mode 3"],
-    onMouse: ["Always Active", "Active On Hover", "Deactive On Hover"],
+    onMouse: ["Always Active", "Active On Hover", "Deactivate On Hover"],
     Active: "Always Active",
+    scrollType: ["Wave", "Morph"],
+    scrollTypeIs: 'Wave',
     "Mouse Active": "Off",
-    Offset: { value: offset * 3, range: [-1, 1] },
     Color: "#54A8FF",
     speed: { precise: 1, normal: 1, range: [-500, 500], rangep: [-10, 10] },
     frequency: {
@@ -284,16 +254,11 @@ export const init = (
         } = uniforms
         navigator.clipboard.writeText(JSON.stringify(rest))
       })
-    if (!(elem.nodeName.toLowerCase() === "img") && !opts.staticScroll)
-      panel.addSlider(debugObj.Offset, "value", "range", {
-        label: "Slide Offset",
-        step: 0.00001,
-        onChange: () => {
-          offset = debugObj.Offset.value
-          uniforms.uScroll.value =
-            Math.max(offset, scrollY / innerHeight - targettop / innerHeight) +
-            offset
-        },
+    if (!(elem.nodeName.toLowerCase() === "img"))
+      panel.addSelect(debugObj, "scrollType", {
+        target: "scrollTypeIs",
+        label: "Scroll Type",
+        onChange: (x) => (uniforms.scrollType.value = x),
       })
   }
 
@@ -432,20 +397,9 @@ export const init = (
   setTimeout(window.dispatchEvent(new Event('resize')), 0)
   addEventListener("resize", fit)
 
-  var mouseWheel = new ScrollPos()
-
   const clock = new THREE.Clock()
   function animate() {
-
-    if (!(elem.nodeName.toLowerCase() === "img")) {
-      mouseWheel.update()
-      let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight
-      mouseWheel.snap(scrollTarget)
-      let { scrollPos } = mouseWheel
-      if (scrollPos < 0) { scrollPos = 0 }
-      if (scrollPos > 0 && scrollPos < elemHeight * (t.length - 1)) setScroll(scrollPos / elemHeight)
-    }
-
+    staticScroll()
     if (document.querySelector(o))
       if (parseInt(document.querySelector(o).style.top) < 0)
         document.querySelector(o).style.top = "0px"
@@ -456,7 +410,7 @@ export const init = (
       time: { value: clock.getElapsedTime() },
       mouse: { value: mouse },
       mousem: { value: mousem },
-     
+
       uIntercept: {
         value: THREE.MathUtils.lerp(
           uniforms.uIntercept.value,
