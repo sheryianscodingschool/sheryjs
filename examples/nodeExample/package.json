@@ -23,6 +23,6 @@
         "webpack-dev-server": "^4.15.1"
     },
     "dependencies": {
-        "sheryjs": "sheryjs"
+
     }
 }
