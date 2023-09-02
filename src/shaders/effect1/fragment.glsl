@@ -4,7 +4,7 @@ uniform bool isMulti;
 varying vec2 vuv;
 #define SNOISEHOLDER
 void main(){
-    vec2 uv=vuv;
+    vec2 uv=(vuv/1.1)+.05;
     vec3 v=vec3(vuv.x*1.+time*a/10.,vuv.y,time);
     vec2 surface=vec2(snoise(v)*.08,snoise(v)*.01);
     surface=onMouse==0.?surface:onMouse==1.?mix(vec2(0.),surface,uIntercept):mix(surface,vec2(0.),uIntercept);

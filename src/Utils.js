@@ -1,11 +1,10 @@
 import * as THREE from "three"
-import gsap from "gsap"
 import ControlKit from "controlkit"
 import { ScrollPos } from "./Effects"
 
 export const lerp = (x, y, a) => x * (1 - a) + y * a
 
-export const clamp = (val, min=1, max=10) => Math.min(Math.max(val, min), max)
+export const clamp = (val, min = 1, max = 10) => Math.min(Math.max(val, min), max)
 
 export const fix = () => {
   const s =
@@ -77,8 +76,7 @@ export const init = (
   const staticScroll = () => {
     if (!(elem.nodeName.toLowerCase() === "img") && !opts.slideStyle) {
       mouseWheel.update()
-      mouseWheel.dampen = .9 + clamp(opts.damping || 7,0,9)/100
-      console.log(mouseWheel.dampen)
+      mouseWheel.dampen = .9 + clamp(opts.damping || 7, 0, 9) / 100
       mouseWheel.speed = Math.abs(opts.scrollSpeed || 6)
       mouseWheel.touchSpeed = Math.abs(opts.touchSpeed || 6)
       let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight
@@ -112,12 +110,12 @@ export const init = (
     mouse: { value: mouse },
     scrollType: { value: 0 },
     uIntercept: { value: 0 },
+    geoVertex: {range: [1, 64], value: uniforms.geoVertex ? uniforms.geoVertex.value : 1 },
     onMouse: { value: 0 },
     uSection: { value: 0 },
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
     uScroll: { value: 0 },
-    geoVertex: { value: 1, range: [1, 64] },
-    uTexture: {
+    uTexture: { 
       value:
         elem.nodeName.toLowerCase() === "img"
           ? t
@@ -183,6 +181,13 @@ export const init = (
     onMouse: ["Always Active", "Active On Hover", "Deactivate On Hover"],
     Active: "Always Active",
     scrollType: ["Wave", "Morph"],
+    Resolution_XY: {
+      value: 1000,
+      range: [0, 1000],
+      precise: 1,
+      rangep: [0, 100],
+
+    },
     scrollTypeIs: 'Wave',
     "Mouse Active": "Off",
     Color: "#54A8FF",
@@ -262,7 +267,7 @@ export const init = (
       })
   }
 
-  function setMouseCord(e, i = false) {
+  function setMouseCord(e) {
     mouse.x = (e.offsetX / elemWidth) * 2 - 1
     mouse.y = -((e.offsetY / elemHeight) * 2 - 1)
   }
@@ -283,7 +288,7 @@ export const init = (
     mousem.y = normalizedY / 300
   }
 
-  elem.addEventListener("mousemove", (e) => setMouseCord(e, onDoc))
+  elem.addEventListener("mousemove", (e) => setMouseCord(e))
 
   document.addEventListener("mousemove", (e) => {
     getNormalizedMousePosition(e)
@@ -300,7 +305,6 @@ export const init = (
   })
 
   const fit = () => {
-    console.log('hi')
     width = innerWidth
     height = innerHeight
 
@@ -427,6 +431,7 @@ export const init = (
     requestAnimationFrame(animate)
   }
   return {
+    material,
     debugObj,
     controlKit,
     panel,

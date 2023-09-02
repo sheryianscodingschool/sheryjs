@@ -401,6 +401,7 @@ export function imageEffect(element = "img", opts = {}) {
             geometry,
             effect: 1,
             opts,
+            offset: -0.04,
           }
         )
 
@@ -432,8 +433,7 @@ export function imageEffect(element = "img", opts = {}) {
           vertex_2,
           fragment_2,
           {
-            resolutionX: { value: 100 },
-            resolutionY: { value: 100 },
+            resolutionXY: { value: 100 },
             distortion: { value: true },
             mode: { value: -3 },
             mousemove: { value: 0 },
@@ -532,16 +532,14 @@ export function imageEffect(element = "img", opts = {}) {
               label: "Resolution",
               step: 0.00001,
               onChange: () => {
-                uniforms.resolutionX.value = debugObj.Resolution_XY.value
-                uniforms.resolutionY.value = debugObj.Resolution_XY.value
+                uniforms.resolutionXY.value = debugObj.Resolution_XY.value
               }
             })
             .addSlider(debugObj.Resolution_XY, "precise", "rangep", {
               label: "Resolution Precise",
               step: 0.00001,
               onChange: () => {
-                uniforms.resolutionX.value = debugObj.Resolution_XY.precise
-                uniforms.resolutionY.value = debugObj.Resolution_XY.precise
+                uniforms.resolutionXY.value = debugObj.Resolution_XY.precise
               }
             })
             .addSlider(uniforms.angle, "value", "range", {
@@ -556,13 +554,15 @@ export function imageEffect(element = "img", opts = {}) {
               label: "Pixel Strength",
               step: 0.00001,
               onChange: () =>
-                (uniforms.pixelStrength.value = debugObj.pixelStrength.normal),
+              (uniforms.pixelStrength.value =
+                debugObj.pixelStrength.normal),
             })
             .addSlider(debugObj.pixelStrength, "precise", "rangep", {
               label: "Precise Pixel",
               step: 0.00001,
               onChange: () =>
-                (uniforms.pixelStrength.value = debugObj.pixelStrength.precise),
+              (uniforms.pixelStrength.value =
+                debugObj.pixelStrength.normal),
             })
             .addSlider(uniforms.quality, "value", "range", {
               label: "Quality",
@@ -625,6 +625,7 @@ export function imageEffect(element = "img", opts = {}) {
             opts,
             fov: 1.0375,
             size: 0.01744,
+            offset: -0.04,
           }
         )
         if (panel) {
@@ -681,6 +682,7 @@ export function imageEffect(element = "img", opts = {}) {
             geometry,
             effect: 4,
             opts,
+            offset: -0.04,
           }
         )
 
@@ -747,6 +749,7 @@ export function imageEffect(element = "img", opts = {}) {
             opts,
             fov: 0.9,
             onDoc: true,
+            offset: -0.04,
           }
         )
         if (panel) {
@@ -770,48 +773,96 @@ export function imageEffect(element = "img", opts = {}) {
       }
         break //!STUB
 
-      case 6: {
-        var { debugObj, panel, uniforms, animate } = init(
-          elem,
-          vertex_6,
-          fragment_6,
-          {
-            a: { value: 2, range: [0, 30] },
-            b: { value: 1 / 1.333, range: [-1, 1] },
-          },
-          {
-            camera,
-            renderer,
-            width,
-            height,
-            scene,
-            geometry,
-            effect: 1,
-            opts,
-            fov: 0.9,
-            onDoc: true,
-          }
-        )
-        if (panel) {
-          panel
-            .addSelect(debugObj, "onMouse", {
-              target: "Active",
-              label: "Effect Mode",
-              onChange: (x) => (uniforms.onMouse.value = x),
-            })
-            .addSlider(uniforms.a, "value", "range", {
-              label: "Speed",
-              step: 0.001,
-            })
-            .addSlider(uniforms.b, "value", "range", {
-              label: "Wobbleness",
-              step: 0.001,
-            })
-          fix()
-        }
-        animate()
-      }
-        break //!STUB
+``
+     // STUB - Page Curl
+      // case 6: {
+      //   let iMouse = new THREE.Vector4(0, 0, 0, 0)
+      //   let mouseDown = false
+      //   let mouseClicked = false
+      //   var { debugObj, panel, uniforms, animate } = init(
+      //     elem,
+      //     vertex_6,
+      //     fragment_6,
+      //     {
+      //       iResolution: { value: new THREE.Vector2(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height) },  // Canvas resolution
+      //       iMouse: { value: iMouse }         // Mouse data
+      //     },
+      //     {
+      //       camera,
+      //       renderer,
+      //       width,
+      //       height,
+      //       scene,
+      //       geometry,
+      //       effect: 1,
+      //       opts,
+      //       fov: 0.9,
+      //       onDoc: true,
+      //       offset: -0.04,
+      //     }
+      //   )
+      //   if (panel) {
+      //     panel
+      //       .addSelect(debugObj, "onMouse", {
+      //         target: "Active",
+      //         label: "Effect Mode",
+      //         onChange: (x) => (uniforms.onMouse.value = x),
+      //       })
+      //       .addSlider(uniforms.a, "value", "range", {
+      //         label: "Speed",
+      //         step: 0.001,
+      //       })
+      //       .addSlider(uniforms.b, "value", "range", {
+      //         label: "Wobbleness",
+      //         step: 0.001,
+      //       })
+      //     fix()
+      //   }
+
+      //   elem.addEventListener('mousemove', onMouseMove)
+      //   elem.addEventListener('mousedown', onMouseDown)
+      //   elem.addEventListener('mouseup', onMouseUp)
+
+      //   function onMouseMove(event) {
+      //     const normalizedX = (event.offsetX / elem.getBoundingClientRect().width) * 2 - 1
+      //     const normalizedY = -((event.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
+
+      //     if (mouseDown) {
+      //       uniforms.iMouse.value.x = normalizedX
+      //       uniforms.iMouse.value.y = normalizedY
+      //     }
+
+      //   }
+
+      //   function onMouseDown(event) {
+      //     mouseDown = true
+      //     const normalizedX = (event.offsetX / elem.getBoundingClientRect().width) * 2 - 1
+      //     const normalizedY = -((event.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
+      //     uniforms.iMouse.value.x = normalizedX
+      //     uniforms.iMouse.value.y = normalizedY
+      //     uniforms.iMouse.value.z = 1
+
+
+      //   }
+
+      //   function onMouseUp(event) {
+      //     mouseDown = false
+      //     iMouse.z = 0
+
+      //     if (!mouseClicked) {
+      //       mouseClicked = true
+      //       const normalizedX = (event.offsetX / elem.getBoundingClientRect().width) * 2 - 1
+      //       const normalizedY = -((event.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
+      //       uniforms.iMouse.value.w = normalizedX
+      //       uniforms.iMouse.value.z = Math.sign(iMouse.w)
+      //     }
+
+      //   }
+
+
+      //   animate()
+      // }
+      //   break //!STUB
 
     }
   })
@@ -847,7 +898,6 @@ export class ScrollPos {
       this.accelerate(Math.sign(e.deltaY) * this.speed)
     })
 
-    window.addEventListener("mousedown", () => this.mouseDown = true)
 
     window.addEventListener("mousemove", e => {
       if (this.mouseDown) {
@@ -873,6 +923,7 @@ export class ScrollPos {
     if (Math.abs(this.velocity) > this.velocityThreshold) {
       this.velocity *= this.dampen
       this.scrollPos += this.velocity
+      this.scrollPos = this.scrollPos >= 0? this.scrollPos: 0 // add by ankur
     } else {
       this.velocity = 0
     }

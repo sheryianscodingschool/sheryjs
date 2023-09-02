@@ -190,7 +190,7 @@ These are effects are implemented with the help of Three.js to offer a unique ex
 ```
 
 ```javascript
-Shery.imageEffect("img", {
+Shery.imageEffect(".img", {
   style: 2, //Select Style
   debug: true, // Debug Panel
   config: {

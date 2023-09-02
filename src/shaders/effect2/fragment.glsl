@@ -1,5 +1,5 @@
 uniform vec2 mouse;
-uniform float resolutionX,resolutionY,uIntercept,scrollType,displaceAmount, time, frequency, angle, speed, waveFactor, contrast, pixelStrength, quality, brightness, colorExposer, strength, exposer, uScroll, uSection;
+uniform float resolutionXY,uIntercept,scrollType,displaceAmount, time, frequency, angle, speed, waveFactor, contrast, pixelStrength, quality, brightness, colorExposer, strength, exposer, uScroll, uSection;
 uniform int onMouse, mousemove, mode, modeA, modeN;
 uniform bool distortion;
 uniform vec3 color;
@@ -32,13 +32,14 @@ vec4 img(vec2 uv, float c) {
 }
 
 void main() {
-    vec2 resolution = vec2(resolutionX*20.,resolutionY*20.);
+    vec2 resolution = vec2(resolutionXY*20.);
     float brightness = clamp(brightness, -1., 25.);
     float frequency = clamp(frequency, -999., 999.);
     float contrast = clamp(contrast, -50., 50.);
     float pixelStrength = clamp(pixelStrength, -20., 999.);
     float strength = clamp(strength, -100., 100.);
     float colorExposer = clamp(colorExposer, -5., 5.);
+    
     vec2 uv = .5 * (gl_FragCoord.xy - .5 * resolution.xy) / resolution.y;
     uv = mousemove != 0 ? mix(uv, .5 * (gl_FragCoord.xy - .5 * resolution.xy) / resolution.y + mouse.xy / 300., uIntercept) : uv;
     float c = (sin((uv.x * 7. * snoise(vec3(uv, 1.))) + (time)) / 15. * snoise(vec3(uv, 1.))) + .01;

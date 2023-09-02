@@ -1,6 +1,6 @@
 varying vec2 vUv;
 varying float vWave;
-uniform float time,uFrequency,uAmplitude,uSpeed,uIntercept,scrollTypeonMouse;
+uniform float time,uFrequency,uAmplitude,uSpeed,uIntercept,scrollType,onMouse;
 #define SNOISEHOLDER 
 void main(){
     vUv=uv;
