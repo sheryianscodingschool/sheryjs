@@ -368,7 +368,7 @@ For detailed usage examples and demos of each effect, check out the [examples](/
 
 In the heart of the dynamic world of web development, the creators of Shery.js are making waves with their unique visions and unwavering determination.
 
-### 🚀 Harsh Sharma - [@asynchronousJavascriptor](https://github.com/asynchronousJavascriptor)
+### 🚀 Harsh Vandana Sharma - [@asynchronousJavascriptor](https://github.com/asynchronousJavascriptor)
 
 ![Harsh Sharma](https://media.licdn.com/dms/image/C4E03AQFS_A05xqS99w/profile-displayphoto-shrink_800_800/0/1627712637084?e=1698278400&v=beta&t=I0GoS7x-ZeImxYIOlNQHnnDVO9pmrOxJyVysA4z6QgE)
 

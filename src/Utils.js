@@ -46,7 +46,6 @@ export const init = (
     geometry,
     opts,
     effect = 0,
-    onDoc = false,
     dposition = 1,
   } = {}
 ) => {
@@ -62,8 +61,6 @@ export const init = (
 
   const src = [elem.getAttribute("src") && elem.getAttribute("src")]
   let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
-  const target = opts.target ? document.querySelector(opts.target) : elem
-  const targettop = target.getBoundingClientRect().top
   const doAction = newSection => {
     uniforms.uSection.value = newSection
     if (t.length > newSection) {

@@ -10,8 +10,6 @@ import vertex_4 from './shaders/effect4/vertex.glsl'
 import fragment_4 from './shaders/effect4/fragment.glsl'
 import vertex_5 from './shaders/effect5/vertex.glsl'
 import fragment_5 from './shaders/effect5/fragment.glsl'
-import vertex_6 from './shaders/effect6/vertex.glsl'
-import fragment_6 from './shaders/effect6/fragment.glsl'
 
 import {
   init,
@@ -772,98 +770,6 @@ export function imageEffect(element = "img", opts = {}) {
         animate()
       }
         break //!STUB
-
-``
-     // STUB - Page Curl
-      // case 6: {
-      //   let iMouse = new THREE.Vector4(0, 0, 0, 0)
-      //   let mouseDown = false
-      //   let mouseClicked = false
-      //   var { debugObj, panel, uniforms, animate } = init(
-      //     elem,
-      //     vertex_6,
-      //     fragment_6,
-      //     {
-      //       iResolution: { value: new THREE.Vector2(elem.getBoundingClientRect().width, elem.getBoundingClientRect().height) },  // Canvas resolution
-      //       iMouse: { value: iMouse }         // Mouse data
-      //     },
-      //     {
-      //       camera,
-      //       renderer,
-      //       width,
-      //       height,
-      //       scene,
-      //       geometry,
-      //       effect: 1,
-      //       opts,
-      //       fov: 0.9,
-      //       onDoc: true,
-      //       offset: -0.04,
-      //     }
-      //   )
-      //   if (panel) {
-      //     panel
-      //       .addSelect(debugObj, "onMouse", {
-      //         target: "Active",
-      //         label: "Effect Mode",
-      //         onChange: (x) => (uniforms.onMouse.value = x),
-      //       })
-      //       .addSlider(uniforms.a, "value", "range", {
-      //         label: "Speed",
-      //         step: 0.001,
-      //       })
-      //       .addSlider(uniforms.b, "value", "range", {
-      //         label: "Wobbleness",
-      //         step: 0.001,
-      //       })
-      //     fix()
-      //   }
-
-      //   elem.addEventListener('mousemove', onMouseMove)
-      //   elem.addEventListener('mousedown', onMouseDown)
-      //   elem.addEventListener('mouseup', onMouseUp)
-
-      //   function onMouseMove(event) {
-      //     const normalizedX = (event.offsetX / elem.getBoundingClientRect().width) * 2 - 1
-      //     const normalizedY = -((event.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
-
-      //     if (mouseDown) {
-      //       uniforms.iMouse.value.x = normalizedX
-      //       uniforms.iMouse.value.y = normalizedY
-      //     }
-
-      //   }
-
-      //   function onMouseDown(event) {
-      //     mouseDown = true
-      //     const normalizedX = (event.offsetX / elem.getBoundingClientRect().width) * 2 - 1
-      //     const normalizedY = -((event.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
-      //     uniforms.iMouse.value.x = normalizedX
-      //     uniforms.iMouse.value.y = normalizedY
-      //     uniforms.iMouse.value.z = 1
-
-
-      //   }
-
-      //   function onMouseUp(event) {
-      //     mouseDown = false
-      //     iMouse.z = 0
-
-      //     if (!mouseClicked) {
-      //       mouseClicked = true
-      //       const normalizedX = (event.offsetX / elem.getBoundingClientRect().width) * 2 - 1
-      //       const normalizedY = -((event.offsetY / elem.getBoundingClientRect().height) * 2 - 1)
-      //       uniforms.iMouse.value.w = normalizedX
-      //       uniforms.iMouse.value.z = Math.sign(iMouse.w)
-      //     }
-
-      //   }
-
-
-      //   animate()
-      // }
-      //   break //!STUB
-
     }
   })
 } //!SECTION
