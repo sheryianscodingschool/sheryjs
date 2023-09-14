@@ -20,10 +20,11 @@ Shery.makeMagnet('#left-main-nav img, #left-main-nav a, #right-main-nav a')
 Shery.textAnimate('#left-main-nav h4', { style: 1 })
 
 Shery.imageEffect('#page-1-right',{
-    style:3 ,
+    style:2 ,
     debug:true,
     scrollSnapping:true,
     scrollSpeed:6,
     touchSpeed:6,
-    damping:7
+    damping:7,
+    gooey:true,
 })

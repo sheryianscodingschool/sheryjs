@@ -10,6 +10,8 @@ import vertex_4 from './shaders/effect4/vertex.glsl'
 import fragment_4 from './shaders/effect4/fragment.glsl'
 import vertex_5 from './shaders/effect5/vertex.glsl'
 import fragment_5 from './shaders/effect5/fragment.glsl'
+import vertex_6 from './shaders/effect6/vertex.glsl'
+import fragment_6 from './shaders/effect6/fragment.glsl'
 
 import {
   init,
@@ -459,7 +461,7 @@ export function imageEffect(element = "img", opts = {}) {
             geometry,
             effect: 2,
             opts,
-            dposition: 350,
+            dposition: 380,
           }
         )
         if (panel) {
@@ -499,10 +501,10 @@ export function imageEffect(element = "img", opts = {}) {
           controlKit
             .addPanel({
               enable: false,
-              label: "Debug Panel",
+              label: "Controls Panel",
               width: 350,
               fixed: false,
-              position: [0, 0],
+              position: [10, 10],
             })
             .addSlider(debugObj.speed, "normal", "range", {
               label: "Speed",
@@ -770,6 +772,31 @@ export function imageEffect(element = "img", opts = {}) {
         animate()
       }
         break //!STUB
+      case 6: {
+        var { debugObj, panel, uniforms, animate } = init(
+          elem,
+          vertex_6,
+          fragment_6,
+          {
+          },
+          {
+            camera,
+            renderer,
+            width,
+            height,
+            scene,
+            geometry,
+            effect: 6,
+            opts,
+          }
+        )
+
+        if (panel) {
+          fix()
+        }
+        animate()
+      }
+        break //!STUB
     }
   })
 } //!SECTION
@@ -829,7 +856,7 @@ export class ScrollPos {
     if (Math.abs(this.velocity) > this.velocityThreshold) {
       this.velocity *= this.dampen
       this.scrollPos += this.velocity
-      this.scrollPos = this.scrollPos >= 0? this.scrollPos: 0 // add by ankur
+      this.scrollPos = this.scrollPos >= 0 ? this.scrollPos : 0 // add by ankur
     } else {
       this.velocity = 0
     }

@@ -87,11 +87,13 @@ export const init = (
   }
   if (!(elem.nodeName.toLowerCase() === "img")) {
     fragment = fragment.replace(
-      "isMulti ;",
-      `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
+      "!isMulti;",
+      opts.gooey && !opts.slideStyle == true ? `vec2 pos=vec2(vuv.x,vuv.y/aspect);vec2 mouse=vec2(mousei.x*2.,(1.-mousei.y)/aspect);vec2 interpole = mix(vec2(0),vec2(metaball,noise_height),uIntercept);float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
+      float val=noise*interpole.y;float u=distance(mouse,pos)/(interpole.x+.00001);float mouseMetaball=clamp(1.-max(5.*u,-25.*u*u+10.*u),0.,1.);val+=mouseMetaball;float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
+      gl_FragColor=vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv),alpha));`:
+        `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       float blend=uScroll-uSection;float blend2=1.-blend;vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
       gl_FragColor =scrollType == 0.0? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;`
-
     )
     for (let i = 0; i < elem.children.length; i++) {
       src[i] = elem.children[i].getAttribute("src")
@@ -102,17 +104,28 @@ export const init = (
     }
   }
   Object.assign(uniforms, {
+    aspect: {
+      value: elemWidth / elemHeight
+    },
+    gooey: { value: opts.gooey ? true : false },
     time: { value: 0 },
     displaceAmount: { value: .5 },
+    mousei: { value: new THREE.Vector2() },
     mouse: { value: mouse },
     scrollType: { value: 0 },
     uIntercept: { value: 0 },
-    geoVertex: {range: [1, 64], value: uniforms.geoVertex ? uniforms.geoVertex.value : 1 },
+    geoVertex: { range: [1, 64], value: uniforms.geoVertex ? uniforms.geoVertex.value : 1 },
     onMouse: { value: 0 },
     uSection: { value: 0 },
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
     uScroll: { value: 0 },
-    uTexture: { 
+    noise_speed: { value: 0.2, range: [0, 10] },
+    metaball: { value: 1, range: [0, 10] },
+    discard_threshold: { value: 0.5, range: [0, 1] },
+    antialias_threshold: { value: 0.002, range: [0, .1] },
+    noise_height: { value: 0.5, range: [0, 5] },
+    noise_scale: { value: 10, range: [0, 100] },
+    uTexture: {
       value:
         elem.nodeName.toLowerCase() === "img"
           ? t
@@ -233,12 +246,48 @@ export const init = (
     isdebug[effect] = true
     controlKit = new ControlKit()
 
+    if (opts.gooey == true) {
+      controlKit
+        .addPanel({
+          enable: false,
+          label: "Gooey Panel",
+          width: 250,
+          fixed: false,
+          position: [dposition + 300, 10],
+        })
+        .addSlider(uniforms.noise_speed, "value", "range", {
+          label: "Speed",
+          step: 0.001,
+        })
+        .addSlider(uniforms.metaball, "value", "range", {
+          label: "GooeyBall",
+          step: 0.001,
+        })
+        .addSlider(uniforms.discard_threshold, "value", "range", {
+          label: "Threshold",
+          step: 0.001,
+        })
+        .addSlider(uniforms.antialias_threshold, "value", "range", {
+          label: "Antialias",
+          step: 0.001,
+        })
+        .addSlider(uniforms.noise_height, "value", "range", {
+          label: "Height",
+          step: 0.001,
+        })
+        .addSlider(uniforms.noise_scale, "value", "range", {
+          label: "Scale",
+          step: 0.001,
+        })
+
+    }
+
     panel = controlKit
       .addPanel({
         enable: false,
         label: "Debug Panel",
         fixed: false,
-        position: [dposition, 0],
+        position: [dposition, 10],
         width: 280,
       })
       .addButton("Save To Clipboard", () => {
@@ -256,7 +305,7 @@ export const init = (
         } = uniforms
         navigator.clipboard.writeText(JSON.stringify(rest))
       })
-    if (!(elem.nodeName.toLowerCase() === "img"))
+    if (!(elem.nodeName.toLowerCase() === "img") && opts.gooey != true)
       panel.addSelect(debugObj, "scrollType", {
         target: "scrollTypeIs",
         label: "Scroll Type",
@@ -289,6 +338,8 @@ export const init = (
 
   document.addEventListener("mousemove", (e) => {
     getNormalizedMousePosition(e)
+    uniforms.mousei.value.x = (e.clientX-elemLeft) / window.innerWidth
+    uniforms.mousei.value.y = (e.clientY) / window.innerHeight
   })
 
   elem.addEventListener("mouseleave", (e) => {
@@ -334,7 +385,9 @@ export const init = (
       .catch((error) => {
         console.error("Error loading image:", error)
       })
+    uniforms.aspect.value = elemWidth / elemHeight
   }
+
 
   function createCroppedTexture(imageUrls, newAspect, oldTextures = []) {
     return Promise.all(imageUrls.map((imageUrl, index) => {
@@ -400,7 +453,10 @@ export const init = (
 
   const clock = new THREE.Clock()
   function animate() {
-    staticScroll()
+    if (!opts.slideStyle)
+      if (opts.gooey != true)
+        staticScroll()
+
     if (document.querySelector(o))
       if (parseInt(document.querySelector(o).style.top) < 0)
         document.querySelector(o).style.top = "0px"
