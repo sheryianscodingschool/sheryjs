@@ -2,10 +2,9 @@ precision mediump float;
 
 uniform sampler2D uTexture[16];
 
-uniform float time,uIntercept,displaceAmount,scrollType,onMouse,uScroll,uSection;
-uniform bool isMulti;
+uniform float maskVal,time,uIntercept,displaceAmount,scrollType,onMouse,uScroll,uSection,aspect,noise_speed,metaball,discard_threshold,antialias_threshold,noise_height,noise_scale;
+uniform bool isMulti,masker;
 uniform vec2 mousei;
-uniform float aspect,noise_speed,metaball,discard_threshold,antialias_threshold,noise_height,noise_scale;
 varying vec2 vuv;
 
 #define SNOISEHOLDER
@@ -13,7 +12,7 @@ varying vec2 vuv;
 void main(){
     vec2 uv=vuv;
     uv=uv*2.-1.;
-    uv=mix(uv,uv/1.5,uIntercept);
+    uv=masker?mix(uv,uv/max(1.0,maskVal),uIntercept):uv/max(1.0,maskVal);
     uv=uv*.5+.5;
     !isMulti;
 }

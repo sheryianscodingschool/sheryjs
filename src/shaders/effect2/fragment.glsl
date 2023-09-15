@@ -2,8 +2,8 @@ uniform vec2 mouse;
 uniform float resolutionXY,uIntercept,scrollType,displaceAmount,time,frequency,angle,speed,waveFactor,contrast,pixelStrength,quality,brightness,colorExposer,strength,exposer,uScroll,uSection;
 uniform int onMouse,mousemove,mode,modeA,modeN;
 uniform vec2 mousei;
-uniform float aspect,noise_speed,metaball,discard_threshold,antialias_threshold,noise_height,noise_scale;
-uniform bool distortion,gooey;
+uniform float maskVal,aspect,noise_speed,metaball,discard_threshold,antialias_threshold,noise_height,noise_scale;
+uniform bool distortion,gooey,masker;
 uniform vec3 color;
 varying vec2 vuv;
 uniform sampler2D uTexture[16];
@@ -26,6 +26,9 @@ mat2 rotate2D(float r){
 #define SNOISEHOLDER
 
 vec4 img(vec2 uv,float c){
+    uv=uv*2.-1.;
+    uv=masker?mix(uv,uv/max(1.,maskVal),uIntercept):uv/max(1.,maskVal);
+    uv=uv*.5+.5;
     
     vec2 pos=vec2(uv.x,uv.y/aspect);
     vec2 mouse=vec2(mousei.x*2.,(1.-mousei.y)/aspect);

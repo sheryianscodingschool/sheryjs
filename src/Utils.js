@@ -61,6 +61,7 @@ export const init = (
 
   const src = [elem.getAttribute("src") && elem.getAttribute("src")]
   let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
+
   const doAction = newSection => {
     uniforms.uSection.value = newSection
     if (t.length > newSection) {
@@ -112,6 +113,8 @@ export const init = (
     displaceAmount: { value: .5 },
     mousei: { value: new THREE.Vector2() },
     mouse: { value: mouse },
+    masker: { value: false },
+    maskVal: { value: 1, range: [1, 5] },
     scrollType: { value: 0 },
     uIntercept: { value: 0 },
     geoVertex: { range: [1, 64], value: uniforms.geoVertex ? uniforms.geoVertex.value : 1 },
@@ -154,6 +157,7 @@ export const init = (
   const elemMesh = new THREE.Mesh(geometry, material)
   elemMesh.scale.set(elemWidth, elemHeight)
   redraw(elemMesh, uniforms.geoVertex.value)
+  elemMesh.visible = false
   scene.add(elemMesh)
 
   var debugObj = {
@@ -311,11 +315,21 @@ export const init = (
         label: "Scroll Type",
         onChange: (x) => (uniforms.scrollType.value = x),
       })
+    panel.addCheckbox(uniforms.masker, "value", {
+      label: "Image Zoomer",
+    })
+      .addSlider(uniforms.maskVal, "value", "range", {
+        label: "Zoom level",
+        step: 0.00001,
+      })
   }
+
 
   function setMouseCord(e) {
     mouse.x = (e.offsetX / elemWidth) * 2 - 1
     mouse.y = -((e.offsetY / elemHeight) * 2 - 1)
+    uniforms.mousei.value.x = (e.offsetX) / window.innerWidth
+    uniforms.mousei.value.y = ((e.offsetY) / window.innerHeight)
   }
 
   function getNormalizedMousePosition(event) {
@@ -338,8 +352,6 @@ export const init = (
 
   document.addEventListener("mousemove", (e) => {
     getNormalizedMousePosition(e)
-    uniforms.mousei.value.x = (e.clientX-elemLeft) / window.innerWidth
-    uniforms.mousei.value.y = (e.clientY) / window.innerHeight
   })
 
   elem.addEventListener("mouseleave", (e) => {
@@ -381,6 +393,7 @@ export const init = (
         texture.magFilter = THREE.LinearFilter
         elemMesh.material.uniforms.uTexture.value = texture
         t = texture
+        elemMesh.visible = true
       })
       .catch((error) => {
         console.error("Error loading image:", error)
@@ -453,6 +466,7 @@ export const init = (
 
   const clock = new THREE.Clock()
   function animate() {
+
     if (!opts.slideStyle)
       if (opts.gooey != true)
         staticScroll()

@@ -2,11 +2,10 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
     font-family: "Gilroy";
     text-rendering: geometricPrecision;
     font-synthesis: weight;
-    overflow: hidden;
     user-select: none;
   }
   
