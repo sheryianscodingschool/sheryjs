@@ -778,6 +778,10 @@ export function imageEffect(element = "img", opts = {}) {
           vertex_6,
           fragment_6,
           {
+            "noiseDetail": { "value": 7.44, "range": [0, 100] },
+            "distortionAmount": { "value": 2.98, "range": [0, 10] },
+            "scale": { "value": 36.36, "range": [0, 100] },
+            "speed": { "value": 0.79, "range": [0, 1] }
           },
           {
             camera,
@@ -792,6 +796,24 @@ export function imageEffect(element = "img", opts = {}) {
         )
 
         if (panel) {
+          panel
+            .addSlider(uniforms.speed, "value", "range", {
+              label: "speed",
+              step: 0.001,
+            })
+            .addSlider(uniforms.scale, "value", "range", {
+              label: "scale",
+              step: 0.001,
+            })
+            .addSlider(uniforms.distortionAmount, "value", "range", {
+              label: "Amount",
+              step: 0.001,
+            })
+            .addSlider(uniforms.noiseDetail, "value", "range", {
+              label: "noiseDetail",
+              step: 0.001,
+            })
+
           fix()
         }
         animate()

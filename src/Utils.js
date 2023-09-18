@@ -4,7 +4,8 @@ import { ScrollPos } from "./Effects"
 
 export const lerp = (x, y, a) => x * (1 - a) + y * a
 
-export const clamp = (val, min = 1, max = 10) => Math.min(Math.max(val, min), max)
+export const clamp = (val, min = 1, max = 10) =>
+  Math.min(Math.max(val, min), max)
 
 export const fix = () => {
   const s =
@@ -62,7 +63,7 @@ export const init = (
   const src = [elem.getAttribute("src") && elem.getAttribute("src")]
   let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
 
-  const doAction = newSection => {
+  const doAction = (newSection) => {
     uniforms.uSection.value = newSection
     if (t.length > newSection) {
       if (t.length > newSection + 1)
@@ -74,25 +75,30 @@ export const init = (
   const staticScroll = () => {
     if (!(elem.nodeName.toLowerCase() === "img") && !opts.slideStyle) {
       mouseWheel.update()
-      mouseWheel.dampen = .9 + clamp(opts.damping || 7, 0, 9) / 100
+      mouseWheel.dampen = 0.9 + clamp(opts.damping || 7, 0, 9) / 100
       mouseWheel.speed = Math.abs(opts.scrollSpeed || 6)
       mouseWheel.touchSpeed = Math.abs(opts.touchSpeed || 6)
-      let scrollTarget = (Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight)) * elemHeight
+      let scrollTarget =
+        Math.floor((mouseWheel.scrollPos + elemHeight * 0.5) / elemHeight) *
+        elemHeight
       if (opts.scrollSnapping) {
         mouseWheel.snap(scrollTarget)
       }
       let { scrollPos } = mouseWheel
-      if (scrollPos < 0) { scrollPos = 0 }
-      if (scrollPos > 0 && scrollPos < elemHeight * (t.length - 1)) setScroll(scrollPos / elemHeight)
+      if (scrollPos < 0) {
+        scrollPos = 0
+      }
+      if (scrollPos > 0 && scrollPos < elemHeight * (t.length - 1))
+        setScroll(scrollPos / elemHeight)
     }
   }
   if (!(elem.nodeName.toLowerCase() === "img")) {
     fragment = fragment.replace(
       "!isMulti;",
-      opts.gooey && !opts.slideStyle == true ? `vec2 pos=vec2(vuv.x,vuv.y/aspect);vec2 mouse=vec2(mousei.x*2.,(1.-mousei.y)/aspect);vec2 interpole = mix(vec2(0),vec2(metaball,noise_height),uIntercept);float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
-      float val=noise*interpole.y;float u=distance(mouse,pos)/(interpole.x+.00001);float mouseMetaball=clamp(1.-max(5.*u,-25.*u*u+10.*u),0.,1.);val+=mouseMetaball;float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
-      gl_FragColor=vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv),alpha));`:
-        `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
+      opts.gooey && !opts.slideStyle == true
+        ? `vec2 pos=vec2(vuv.x,vuv.y/aspect);vec2 mouse=vec2(mousei.x,(1.-mousei.y)/aspect);vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;float val=noise*interpole.y;float u=distance(mouse,pos)/(interpole.x+.00001);float mouseMetaball=clamp(1.-max(5.*u,-25.*u*u+10.*u),0.,1.);val+=mouseMetaball;float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
+        gl_FragColor=vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv2),alpha));`
+        : `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       float blend=uScroll-uSection;float blend2=1.-blend;vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
       gl_FragColor =scrollType == 0.0? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;`
     )
@@ -100,24 +106,28 @@ export const init = (
       src[i] = elem.children[i].getAttribute("src")
       t[i] = new THREE.TextureLoader().load(src[i])
       if (i > 0) {
-        elem.children[i].style.display = 'none'
+        elem.children[i].style.display = "none"
       }
     }
   }
   Object.assign(uniforms, {
     aspect: {
-      value: elemWidth / elemHeight
+      value: elemWidth / elemHeight,
     },
     gooey: { value: opts.gooey ? true : false },
     time: { value: 0 },
-    displaceAmount: { value: .5 },
+    displaceAmount: { value: 0.5 },
     mousei: { value: new THREE.Vector2() },
     mouse: { value: mouse },
     masker: { value: false },
     maskVal: { value: 1, range: [1, 5] },
     scrollType: { value: 0 },
     uIntercept: { value: 0 },
-    geoVertex: { range: [1, 64], value: uniforms.geoVertex ? uniforms.geoVertex.value : 1 },
+    geoVertex: {
+      range: [1, 64],
+      value: uniforms.geoVertex ? uniforms.geoVertex.value : 1,
+    },
+    noEffectGooey:{ value: true },
     onMouse: { value: 0 },
     uSection: { value: 0 },
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
@@ -125,14 +135,11 @@ export const init = (
     noise_speed: { value: 0.2, range: [0, 10] },
     metaball: { value: 1, range: [0, 10] },
     discard_threshold: { value: 0.5, range: [0, 1] },
-    antialias_threshold: { value: 0.002, range: [0, .1] },
+    antialias_threshold: { value: 0.002, range: [0, 0.1] },
     noise_height: { value: 0.5, range: [0, 5] },
     noise_scale: { value: 10, range: [0, 100] },
     uTexture: {
-      value:
-        elem.nodeName.toLowerCase() === "img"
-          ? t
-          : [t[0], t[1]],
+      value: elem.nodeName.toLowerCase() === "img" ? t : [t[0], t[1]],
     },
   })
 
@@ -200,9 +207,8 @@ export const init = (
       range: [0, 1000],
       precise: 1,
       rangep: [0, 100],
-
     },
-    scrollTypeIs: 'Wave',
+    scrollTypeIs: "Wave",
     "Mouse Active": "Off",
     Color: "#54A8FF",
     speed: { precise: 1, normal: 1, range: [-500, 500], rangep: [-10, 10] },
@@ -217,7 +223,6 @@ export const init = (
       range: [0, 1000],
       precise: 1,
       rangep: [0, 100],
-
     },
     pixelStrength: {
       precise: 1,
@@ -259,6 +264,9 @@ export const init = (
           fixed: false,
           position: [dposition + 300, 10],
         })
+        .addCheckbox(uniforms.noEffectGooey, "value", {
+          label: "GooeyBakEffect",
+        })
         .addSlider(uniforms.noise_speed, "value", "range", {
           label: "Speed",
           step: 0.001,
@@ -283,9 +291,8 @@ export const init = (
           label: "Scale",
           step: 0.001,
         })
-
     }
-
+    o
     panel = controlKit
       .addPanel({
         enable: false,
@@ -304,6 +311,7 @@ export const init = (
           uTexture,
           mouse,
           mousem,
+          mousei,
           uIntercept,
           ...rest
         } = uniforms
@@ -315,22 +323,28 @@ export const init = (
         label: "Scroll Type",
         onChange: (x) => (uniforms.scrollType.value = x),
       })
-    panel.addCheckbox(uniforms.masker, "value", {
-      label: "Image Zoomer",
-    })
+    panel
+      .addCheckbox(uniforms.masker, "value", {
+        label: "Image Zoomer",
+      })
       .addSlider(uniforms.maskVal, "value", "range", {
         label: "Zoom level",
         step: 0.00001,
       })
   }
 
-
   function setMouseCord(e) {
     mouse.x = (e.offsetX / elemWidth) * 2 - 1
     mouse.y = -((e.offsetY / elemHeight) * 2 - 1)
-    uniforms.mousei.value.x = (e.offsetX) / window.innerWidth
-    uniforms.mousei.value.y = ((e.offsetY) / window.innerHeight)
+    uniforms.mousei.value.x = e.offsetX/elemWidth
+    uniforms.mousei.value.y = e.offsetY / elemHeight
   }
+
+
+  elem.addEventListener("wheel", (e) => {
+    uniforms.mousei.value.x = e.offsetX/elemWidth
+    uniforms.mousei.value.y = e.offsetY / elemHeight
+  })
 
   function getNormalizedMousePosition(event) {
     const centerX = window.innerWidth / 2
@@ -401,75 +415,73 @@ export const init = (
     uniforms.aspect.value = elemWidth / elemHeight
   }
 
-
   function createCroppedTexture(imageUrls, newAspect, oldTextures = []) {
-    return Promise.all(imageUrls.map((imageUrl, index) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image()
-        img.crossOrigin = "anonymous"
-        img.src = imageUrl
-        img.onload = () => {
-          const imgWidth = img.width
-          const imgHeight = img.height
+    return Promise.all(
+      imageUrls.map((imageUrl, index) => {
+        return new Promise((resolve, reject) => {
+          const img = new Image()
+          img.crossOrigin = "anonymous"
+          img.src = imageUrl
+          img.onload = () => {
+            const imgWidth = img.width
+            const imgHeight = img.height
 
-          let newWidth, newHeight
-          let xOffset = 0
-          let yOffset = 0
+            let newWidth, newHeight
+            let xOffset = 0
+            let yOffset = 0
 
-          if (imgWidth / imgHeight > newAspect) {
-            newWidth = imgHeight * newAspect
-            newHeight = imgHeight
-            xOffset = (imgWidth - newWidth) / 2
-          } else {
-            newWidth = imgWidth
-            newHeight = imgWidth / newAspect
-            yOffset = (imgHeight - newHeight) / 2
+            if (imgWidth / imgHeight > newAspect) {
+              newWidth = imgHeight * newAspect
+              newHeight = imgHeight
+              xOffset = (imgWidth - newWidth) / 2
+            } else {
+              newWidth = imgWidth
+              newHeight = imgWidth / newAspect
+              yOffset = (imgHeight - newHeight) / 2
+            }
+
+            const canvas = document.createElement("canvas")
+            canvas.width = newWidth
+            canvas.height = newHeight
+            const ctx = canvas.getContext("2d")
+            ctx.drawImage(
+              img,
+              xOffset,
+              yOffset,
+              newWidth,
+              newHeight,
+              0,
+              0,
+              newWidth,
+              newHeight
+            )
+
+            if (oldTextures[index]) {
+              oldTextures[index].dispose()
+            }
+
+            const newTexture = new THREE.Texture(canvas)
+            newTexture.needsUpdate = true
+
+            resolve(newTexture)
           }
 
-          const canvas = document.createElement("canvas")
-          canvas.width = newWidth
-          canvas.height = newHeight
-          const ctx = canvas.getContext("2d")
-          ctx.drawImage(
-            img,
-            xOffset,
-            yOffset,
-            newWidth,
-            newHeight,
-            0,
-            0,
-            newWidth,
-            newHeight
-          )
-
-          if (oldTextures[index]) {
-            oldTextures[index].dispose()
+          img.onerror = (error) => {
+            reject(error)
           }
-
-          const newTexture = new THREE.Texture(canvas)
-          newTexture.needsUpdate = true
-
-          resolve(newTexture)
-        }
-
-        img.onerror = (error) => {
-          reject(error)
-        }
+        })
       })
-    }))
+    )
   }
 
   fit()
 
-  setTimeout(window.dispatchEvent(new Event('resize')), 0)
+  setTimeout(window.dispatchEvent(new Event("resize")), 0)
   addEventListener("resize", fit)
 
   const clock = new THREE.Clock()
   function animate() {
-
-    if (!opts.slideStyle)
-      if (opts.gooey != true)
-        staticScroll()
+    if (!opts.slideStyle) if (opts.gooey != true) staticScroll()
 
     if (document.querySelector(o))
       if (parseInt(document.querySelector(o).style.top) < 0)
@@ -493,7 +505,8 @@ export const init = (
 
     elemMesh.material.uniforms.time.value = clock.getElapsedTime()
     elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2
-    elemMesh.position.y = -elem.getBoundingClientRect().top + (height / 2) - (elemHeight / 2)
+    elemMesh.position.y =
+      -elem.getBoundingClientRect().top + height / 2 - elemHeight / 2
 
     requestAnimationFrame(animate)
   }

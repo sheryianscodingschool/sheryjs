@@ -3,7 +3,7 @@ uniform float resolutionXY,uIntercept,scrollType,displaceAmount,time,frequency,a
 uniform int onMouse,mousemove,mode,modeA,modeN;
 uniform vec2 mousei;
 uniform float maskVal,aspect,noise_speed,metaball,discard_threshold,antialias_threshold,noise_height,noise_scale;
-uniform bool distortion,gooey,masker;
+uniform bool distortion,gooey,masker,noEffectGooey;
 uniform vec3 color;
 varying vec2 vuv;
 uniform sampler2D uTexture[16];
@@ -31,7 +31,7 @@ vec4 img(vec2 uv,float c){
     uv=uv*.5+.5;
     
     vec2 pos=vec2(uv.x,uv.y/aspect);
-    vec2 mouse=vec2(mousei.x*2.,(1.-mousei.y)/aspect);
+    vec2 mouse=vec2(mousei.x,(1.-mousei.y)/aspect);
     float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
     float val=noise*noise_height;
     float u=distance(mouse,pos)/(metaball+.00001);
@@ -44,7 +44,8 @@ vec4 img(vec2 uv,float c){
     vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;
     vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
     
-    return gooey?vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv),alpha)):scrollType==0.?mix(texture2D(uTexture[1],uv),texture2D(uTexture[0],uv),step((uScroll)-uSection,c+uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;
+    vec2 uv2= noEffectGooey?vuv:uv;
+    return gooey?vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv2),alpha)):scrollType==0.?mix(texture2D(uTexture[1],uv),texture2D(uTexture[0],uv),step((uScroll)-uSection,c+uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;
 }
 
 void main(){
