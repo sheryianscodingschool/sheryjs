@@ -61,7 +61,7 @@ export const init = (
   const mousem = new THREE.Vector2()
 
   const src = [elem.getAttribute("src") && elem.getAttribute("src")]
-    let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
+  let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
 
   const doAction = (newSection) => {
     uniforms.uSection.value = newSection
@@ -110,7 +110,6 @@ export const init = (
       }
     }
   }
-  console.log(fragment);
   Object.assign(uniforms, {
     aspect: {
       value: elemWidth / elemHeight,
@@ -128,7 +127,7 @@ export const init = (
       range: [1, 64],
       value: uniforms.geoVertex ? uniforms.geoVertex.value : 1,
     },
-    noEffectGooey:{ value: true },
+    noEffectGooey: { value: true },
     onMouse: { value: 0 },
     uSection: { value: 0 },
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
@@ -337,13 +336,13 @@ export const init = (
   function setMouseCord(e) {
     mouse.x = (e.offsetX / elemWidth) * 2 - 1
     mouse.y = -((e.offsetY / elemHeight) * 2 - 1)
-    uniforms.mousei.value.x = e.offsetX/elemWidth
+    uniforms.mousei.value.x = e.offsetX / elemWidth
     uniforms.mousei.value.y = e.offsetY / elemHeight
   }
 
 
   elem.addEventListener("wheel", (e) => {
-    uniforms.mousei.value.x = e.offsetX/elemWidth
+    uniforms.mousei.value.x = e.offsetX / elemWidth
     uniforms.mousei.value.y = e.offsetY / elemHeight
   })
 

@@ -22,7 +22,7 @@ void main(){
     float x=uv.x*scale*(noiseDetail/100.)*sin(time)*speed;
     float y=uv.y*scale*(noiseDetail/100.)*cos(time)*speed;
     uv+=snoise(vec3(x,y,0.))*(distortionAmount/100.);
-    gl_FragColor=texture2D(uTexture[0],uv);    
+    gl_FragColor=texture2D(uTexture[0],uv);
     vec2 uv2=noEffectGooey?vuv:uv;
     !isMulti;
 }
