@@ -61,7 +61,7 @@ export const init = (
   const mousem = new THREE.Vector2()
 
   const src = [elem.getAttribute("src") && elem.getAttribute("src")]
-  let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
+    let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
 
   const doAction = (newSection) => {
     uniforms.uSection.value = newSection
@@ -110,6 +110,7 @@ export const init = (
       }
     }
   }
+  console.log(fragment);
   Object.assign(uniforms, {
     aspect: {
       value: elemWidth / elemHeight,

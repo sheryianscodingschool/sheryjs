@@ -745,7 +745,7 @@ export function imageEffect(element = "img", opts = {}) {
             height,
             scene,
             geometry,
-            effect: 1,
+            effect: 5,
             opts,
             fov: 0.9,
             onDoc: true,
@@ -777,7 +777,7 @@ export function imageEffect(element = "img", opts = {}) {
           elem,
           vertex_6,
           fragment_6,
-          {
+          { 
             "noiseDetail": { "value": 7.44, "range": [0, 100] },
             "distortionAmount": { "value": 2.98, "range": [0, 10] },
             "scale": { "value": 36.36, "range": [0, 100] },

@@ -21,13 +21,15 @@ Shery.js is a fantastic JavaScript library designed to make your web projects po
    - Dynamic Distortion Effect
    - Dynamic 3D Wave/Wobble Effect
    - Dynamic 3D Wind Effect
-6. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
+6. [Dynamic Gooey Effect](#dynamic-gooey-effect)
+7. [Dynamic Zoom Effect](#dynamic-zoom-effect)
+8. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
    - Custom Scroll Trigger Callback
-7. [Debug Usage](#debug-usage)
+9. [Debug Usage](#debug-usage)
    - Preset Usage
-8. [Examples](#examples)
-9. [Contributing](#contributing)
-10. [License](#license)
+10. [Examples](#examples)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ## Introduction
 
@@ -49,7 +51,7 @@ and require
 import Shery from "sheryjs";
 ```
 
-To understand clearly see this  [Example](/examples/nodeExample/).
+To understand clearly see this [Example](/examples/nodeExample/).
 
 Alternatively use the standalone version found in ./dist locally
 
@@ -68,7 +70,10 @@ OR CDN version from unpkg
 ```
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/sheryjs/dist/Shery.js"></script>
+<script
+  type="text/javascript"
+  src="https://unpkg.com/sheryjs/dist/Shery.js"
+></script>
 ```
 
 ## Getting Started
@@ -89,17 +94,16 @@ To successfully run with CDN, you'll need some libraries.
 
 ```html
 <!--  Gsap is needed for Basic Effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
- <!-- Scroll Trigger is needed for Scroll Effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- Scroll Trigger is needed for Scroll Effects -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
- <!-- Three.js is needed for 3d Effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
+<!-- Three.js is needed for 3d Effects -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
 
- <!-- ControlKit is needed for Debug Panel -->
-    <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
-
+<!-- ControlKit is needed for Debug Panel -->
+<script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
 ```
 
 ## Cool Effects
@@ -114,7 +118,7 @@ The feature creates smooth mouse follower, creating an engaging user experience.
 Shery.mouseFollower({
   //Parameters are optional.
   skew: true,
-  ease:'cubic-bezier(0.23, 1, 0.320, 1)',
+  ease: "cubic-bezier(0.23, 1, 0.320, 1)",
   duration: 1,
 });
 ```
@@ -124,15 +128,13 @@ Shery.mouseFollower({
 The mask zoomer effect enables zooming into an image on mouse hover with a smooth mask transition, directing the user's focus to the targeted content.
 
 ```javascript
-Shery.imageMasker(
-  ".mask-target", /* Element to target.*/ 
-  {//Parameters are optional.
-    mouseFollower: true,
-    text: "Shery",
-    ease: 'cubic-bezier(0.23, 1, 0.320, 1)',
-    duration: 1,
-  }
-);
+Shery.imageMasker(".mask-target" /* Element to target.*/, {
+  //Parameters are optional.
+  mouseFollower: true,
+  text: "Shery",
+  ease: "cubic-bezier(0.23, 1, 0.320, 1)",
+  duration: 1,
+});
 ```
 
 ### Make Magnet
@@ -140,13 +142,11 @@ Shery.imageMasker(
 The magnet mouse attractor effect draws elements towards the cursor, as if they are magnetically attracted, offering a unique and interactive experience.
 
 ```javascript
-Shery.makeMagnet(
-  ".magnet-target",/* Element to target.*/ 
-  {//Parameters are optional.
-    ease: 'cubic-bezier(0.23, 1, 0.320, 1)',
-    duration: 1,
-  }
-);
+Shery.makeMagnet(".magnet-target" /* Element to target.*/, {
+  //Parameters are optional.
+  ease: "cubic-bezier(0.23, 1, 0.320, 1)",
+  duration: 1,
+});
 ```
 
 ### Text Animate
@@ -154,17 +154,15 @@ Shery.makeMagnet(
 The text animate effect animates text with cool animation , with many preset animation, offering a unique experience.
 
 ```javascript
-Shery.textAnimate(
-  ".text-target",/* Element to target.*/ 
-  {//Parameters are optional.
-    style: 1,
-    y: 10,
-    delay: 0.1,
-    duration: 2,
-    ease: 'cubic-bezier(0.23, 1, 0.320, 1)',
-    multiplier: 0.1,
-  }
-);
+Shery.textAnimate(".text-target" /* Element to target.*/, {
+  //Parameters are optional.
+  style: 1,
+  y: 10,
+  delay: 0.1,
+  duration: 2,
+  ease: "cubic-bezier(0.23, 1, 0.320, 1)",
+  multiplier: 0.1,
+});
 ```
 
 ### Hover With Media Circle
@@ -172,13 +170,10 @@ Shery.textAnimate(
 The hover with media circle effect creates a circular media element (image or video) which follows the cursor's movement when hovering over specified elements with blending effect. This effect provides an engaging way to showcase media content associated with the hovered elements.
 
 ```javascript
-Shery.hoverWithMediaCircle(
-  ".hover-target",  /* Element to target.*/ 
-  {
-    images: ["image1.jpg", "image2.jpg", "image3.jpg"], /*OR*/ 
-    //videos: ["video1.mp4", "video2.mp4"],
-  }
-);
+Shery.hoverWithMediaCircle(".hover-target" /* Element to target.*/, {
+  images: ["image1.jpg", "image2.jpg", "image3.jpg"] /*OR*/,
+  //videos: ["video1.mp4", "video2.mp4"],
+});
 ```
 
 ## 3D Image Effects
@@ -252,6 +247,19 @@ Shery.imageEffect(".img", {
 });
 ```
 
+### Dynamic Perlin Noise Effect
+
+![Dynamic Perlin Noise Effect](./media/effect6.gif)
+
+The dynamic perlin noise effect adds a perlin noise to your image, can be used to create many type of noise related effects.
+
+```javascript
+Shery.imageEffect(".img", {
+  style: 6,
+  debug: true,
+});
+```
+
 ## Multiple Image Scroll Effect
 
 ![Multi](./media/multi.gif)
@@ -273,11 +281,10 @@ Shery.imageEffect(".images", {
   style: 3,
   /*optional parameters
   these parameter dose not applies to custom scroll trigger callback */
-  scrollSnapping:true,
-  scrollSpeed:6,
-  touchSpeed:6,
-  damping:7
-
+  scrollSnapping: true,
+  scrollSpeed: 6,
+  touchSpeed: 6,
+  damping: 7,
 });
 ```
 
@@ -305,7 +312,7 @@ To define your specific scroll behavior, utilize the `slideStyle` callback in th
 ```
 
 ```javascript
-Shery.imageEffect(".image", {
+Shery.imageEffect(".images", {
   style: 5,
   slideStyle: (setScroll) => {
     window.addEventListener("scroll", () => {
@@ -316,6 +323,40 @@ Shery.imageEffect(".image", {
 ```
 
 By adhering to these instructions, you can create and control your unique scroll-triggered effects in the **Multiple Image Scroll Effect** using the specified callback mechanism.
+
+## Dynamic Gooey Effect
+
+![Gooey](./media/gooey.gif)
+
+This is very dynamic gooey effect can be applied to any of the above effect with a single param `gooey:true` and can be tweaked in debug mode.
+
+```html
+<div class="images">
+  <img src="front_image" />
+  <img src="gooey_image" />
+</div>
+```
+
+```javascript
+Shery.imageEffect(".images", {
+  style: 6,
+  debug: true,
+  gooey: true,
+});
+```
+
+## Dynamic Zoom Effect
+
+![Zoomer](./media/zoomer.gif)
+
+This is very dynamic zoom effect can be applied to any of the above effect with a single tick in debug panel `image zoomer` and can be tweaked in debug mode.
+
+```javascript
+Shery.imageEffect(".image", {
+  style: 6,
+  debug: true,
+});
+```
 
 ## Debug Usage
 
