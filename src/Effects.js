@@ -417,7 +417,7 @@ export function imageEffect(element = "img", opts = {}) {
               step: 0.001,
             })
             .addSlider(uniforms.b, "value", "range", {
-              label: "Wobbleness",
+              label: "Wobbliness",
               step: 0.001,
             })
           fix()
@@ -668,7 +668,7 @@ export function imageEffect(element = "img", opts = {}) {
           fragment_4,
           {
             uColor: { value: false },
-            uSpeed: { value: 0.6, range: [0.1, 1], rangef: [1, 10] },
+            uSpeed: { value: 0.6, range: [0.1, 1], rangep: [1, 10] },
             uAmplitude: { value: 1.5, range: [0, 5] },
             uFrequency: { value: 3.5, range: [0, 10] },
             geoVertex: { value: 32, range: [1, 64] }
@@ -708,7 +708,7 @@ export function imageEffect(element = "img", opts = {}) {
               onChange: () => (uniforms.uSpeed.value = debugObj.s),
               step: 0.01,
             })
-            .addSlider(debugObj, "f", "rangef", {
+            .addSlider(debugObj, "f", "rangep", {
               label: "FastForward",
               onChange: () => (uniforms.uSpeed.value = debugObj.f),
               step: 0.01,
@@ -764,7 +764,7 @@ export function imageEffect(element = "img", opts = {}) {
               step: 0.001,
             })
             .addSlider(uniforms.b, "value", "range", {
-              label: "Wobbleness",
+              label: "Wobbliness",
               step: 0.001,
             })
           fix()
@@ -878,7 +878,7 @@ export class ScrollPos {
     if (Math.abs(this.velocity) > this.velocityThreshold) {
       this.velocity *= this.dampen
       this.scrollPos += this.velocity
-      this.scrollPos = this.scrollPos >= 0 ? this.scrollPos : 0 // add by ankur
+      this.scrollPos = this.scrollPos >= 0 ? this.scrollPos : 0 // added by ankur
     } else {
       this.velocity = 0
     }
