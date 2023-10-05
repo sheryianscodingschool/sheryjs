@@ -64,6 +64,24 @@ export const init = (
   let t = [elem.getAttribute("src") && new THREE.TextureLoader().load(src[0])]
 
   const sources = []
+
+  if (elem.getAttribute("src")) {
+    if (elem.nodeName.toLowerCase() === "video") {
+      const video = document.createElement('video')
+      video.crossOrigin = 'anonymous'
+      video.src = src[0]
+      video.muted = true
+      video.loop = true
+      video.preload = true
+      video.play()
+      sources[0] = video
+    } else {
+      const img = new Image()
+      img.crossOrigin = "anonymous"
+      img.src = src[0]
+      sources[0] = img
+    }
+  }
   const doAction = (newSection) => {
     uniforms.uSection.value = newSection
     if (t.length > newSection) {
