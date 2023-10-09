@@ -468,7 +468,7 @@ export const init = (
       })
     uniforms.aspect.value = elemWidth / elemHeight
   }
-
+  let loaded = false
   function createCroppedTexture(sources, newAspect, oldTextures = []) {
     return Promise.all(
       sources.map((source, index) => {
@@ -483,12 +483,10 @@ export const init = (
               videoTexture.magFilter = THREE.LinearFilter
               resolve(videoTexture)
             }
-
           } else {
-            source.onload = () => {
+            function load() {
               const imgWidth = source.width
               const imgHeight = source.height
-
               let newWidth, newHeight
               let xOffset = 0
               let yOffset = 0
@@ -527,7 +525,11 @@ export const init = (
               newTexture.needsUpdate = true
               resolve(newTexture)
             }
-
+            if (loaded) load()
+            source.onload = () => {
+              load()
+              loaded = true
+            }
             source.onerror = (error) => {
               reject(error)
             }
@@ -558,15 +560,15 @@ export const init = (
       mousem: { value: mousem },
     })
     if (!isGooeyLerping)
-    uniforms.uIntercept.value = THREE.MathUtils.lerp(
-      uniforms.uIntercept.value,
-      intersect === 1 ? 1 : 0,
-      0.07
-    )
+      uniforms.uIntercept.value = THREE.MathUtils.lerp(
+        uniforms.uIntercept.value,
+        intersect === 1 ? 1 : 0,
+        0.07
+      )
 
 
     if (isGooeyLerping && opts.gooey) {
-      uniforms.metaball.value = THREE.MathUtils.damp(uniforms.metaball.value, 4,THREE.MathUtils.inverseLerp(.1,1.9,1),THREE.MathUtils.lerp(.01,.008,1))
+      uniforms.metaball.value = THREE.MathUtils.damp(uniforms.metaball.value, 4, THREE.MathUtils.inverseLerp(.1, 1.9, 1), THREE.MathUtils.lerp(.01, .008, 1))
     }
     if (!isGooeyLerping && opts.gooey) {
       uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, originalGooey, 0.01)
