@@ -115,8 +115,19 @@ export const init = (
     fragment = fragment.replace(
       "!isMulti;",
       opts.gooey && !opts.slideStyle === true
-        ? `vec2 pos=vec2(vuv.x,vuv.y/aspect);vec2 mouse=vec2(mousei.x,(1.-mousei.y)/aspect);vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;float val=noise*interpole.y;float u=distance(mouse,pos)/(interpole.x+.00001);float mouseMetaball=clamp(1.-max(5.*u,-25.*u*u+10.*u),0.,1.);val+=mouseMetaball;float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
+        ? /*glsl*/`
+        
+        vec2 pos=vec2(vuv.x,vuv.y/aspect);
+        vec2 mouse=vec2(mousei.x+.01,1.05-mousei.y);
+        vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);
+        float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
+        float val=noise*interpole.y;
+        float u=1.0-smoothstep(interpole.x,.0,distance(mouse,pos));
+        float mouseMetaball=clamp(1.-u,0.,1.);
+        val+=mouseMetaball;
+        float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
         gl_FragColor=vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv2),alpha));`
+
         : `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       float blend=uScroll-uSection;float blend2=1.-blend;vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
       gl_FragColor =scrollType == 0.0? mix(texture2D(uTexture[1], uv), texture2D(uTexture[0], uv), step((uScroll)-uSection, sin(c) + uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;`
@@ -149,6 +160,7 @@ export const init = (
       value: elemWidth / elemHeight,
     },
     gooey: { value: opts.gooey ? true : false },
+    infiniteGooey: { value: false },
     time: { value: 0 },
     displaceAmount: { value: 0.5 },
     mousei: { value: new THREE.Vector2() },
@@ -167,10 +179,10 @@ export const init = (
     isMulti: { value: !(elem.nodeName.toLowerCase() === "img") },
     uScroll: { value: 0 },
     noise_speed: { value: 0.2, range: [0, 10] },
-    metaball: { value: 1, range: [0, 10] },
+    metaball: { value: .2, range: [0, 2] },
     discard_threshold: { value: 0.5, range: [0, 1] },
     antialias_threshold: { value: 0.002, range: [0, 0.1] },
-    noise_height: { value: 0.5, range: [0, 5] },
+    noise_height: { value: 0.5, range: [0, 2] },
     noise_scale: { value: 10, range: [0, 100] },
     uTexture: {
       value: elem.nodeName.toLowerCase() === "img" ? t : [t[0], t[1]],
@@ -290,6 +302,9 @@ export const init = (
           fixed: false,
           position: [dposition + 300, 10],
         })
+        .addCheckbox(uniforms.infiniteGooey, "value", {
+          label: "Infinite Gooey",
+        })
         .addCheckbox(uniforms.noEffectGooey, "value", {
           label: "GooeyBakEffect",
         })
@@ -385,6 +400,20 @@ export const init = (
     mousem.x = normalizedX / 300
     mousem.y = normalizedY / 300
   }
+  let isGooeyLerping = false
+  let currentGooey = 0
+
+  function calculateGooey(i) {
+    var l = src.length - 1
+    return i % l
+  }
+
+  const originalGooey = uniforms.metaball.value 
+  elem.addEventListener('mousedown', (e) => {
+    if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value) {
+      isGooeyLerping = true
+    }
+  })
 
   elem.addEventListener("mousemove", (e) => setMouseCord(e))
 
@@ -507,41 +536,6 @@ export const init = (
     )
   }
 
-  function cropVideoToAspectRatio(videoElement, targetAspectRatio) {
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-
-    const videoWidth = videoElement.videoWidth
-    const videoHeight = videoElement.videoHeight
-    const videoAspectRatio = videoWidth / videoHeight
-
-    let cropX, cropY, cropWidth, cropHeight
-
-    if (videoAspectRatio > targetAspectRatio) {
-      // Video is wider than the target aspect ratio
-      cropWidth = videoHeight * targetAspectRatio
-      cropHeight = videoHeight
-      cropX = (videoWidth - cropWidth) / 2
-      cropY = 0
-    } else {
-      // Video is taller than the target aspect ratio
-      cropWidth = videoWidth
-      cropHeight = videoWidth / targetAspectRatio
-      cropX = 0
-      cropY = (videoHeight - cropHeight) / 2
-    }
-
-    canvas.width = cropWidth
-    canvas.height = cropHeight
-
-    ctx.drawImage(videoElement, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight)
-
-    // Create a new video element with the cropped video
-    const croppedVideo = document.createElement('video')
-    croppedVideo.src = canvas.toDataURL('video/mp4')
-    return croppedVideo
-  }
-
   fit()
 
   setTimeout(window.dispatchEvent(new Event("resize")), 0)
@@ -570,6 +564,20 @@ export const init = (
         ),
       },
     })
+
+    if (isGooeyLerping && opts.gooey) {
+      uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, 1.5, 0.007)
+    }
+    if (!isGooeyLerping && opts.gooey) {
+      uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, originalGooey, 0.01)
+    }
+    if ((uniforms.metaball.value > (1.2)) && isGooeyLerping && opts.gooey) {
+      currentGooey++
+      uniforms.metaball.value = 0
+      isGooeyLerping = false
+      uniforms.uTexture.value = [t[calculateGooey(currentGooey)], t[calculateGooey(currentGooey + 1)]]
+    }
+
 
     elemMesh.material.uniforms.time.value = clock.getElapsedTime()
     elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2
