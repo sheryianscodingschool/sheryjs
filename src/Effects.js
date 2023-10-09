@@ -927,7 +927,7 @@ export function imageEffect(element = "img", opts = {}) {
                 } else {
                   uniforms.isTexture.value = true
                 }
-                uniforms.uTexture.value[1] = new THREE.TextureLoader().load(debugObj.backgroundImage)
+                uniforms.uTexture.value[2] = new THREE.TextureLoader().load(debugObj.backgroundImage)
               }
             })
 

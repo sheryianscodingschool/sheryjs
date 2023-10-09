@@ -410,7 +410,7 @@ export const init = (
 
   const originalGooey = uniforms.metaball.value
   elem.addEventListener('mousedown', (e) => {
-    if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value) {
+    if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
       isGooeyLerping = true
     }
   })
@@ -556,18 +556,17 @@ export const init = (
       time: { value: clock.getElapsedTime() },
       mouse: { value: mouse },
       mousem: { value: mousem },
-
-      uIntercept: {
-        value: THREE.MathUtils.lerp(
-          uniforms.uIntercept.value,
-          intersect === 1 ? 1 : 0,
-          0.07
-        ),
-      },
     })
+    if (!isGooeyLerping)
+    uniforms.uIntercept.value = THREE.MathUtils.lerp(
+      uniforms.uIntercept.value,
+      intersect === 1 ? 1 : 0,
+      0.07
+    )
+
 
     if (isGooeyLerping && opts.gooey) {
-      uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, 4, 0.005)
+      uniforms.metaball.value = THREE.MathUtils.damp(uniforms.metaball.value, 4,THREE.MathUtils.inverseLerp(.1,1.9,1),THREE.MathUtils.lerp(.01,.008,1))
     }
     if (!isGooeyLerping && opts.gooey) {
       uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, originalGooey, 0.01)

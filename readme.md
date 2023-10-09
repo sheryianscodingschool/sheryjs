@@ -21,6 +21,8 @@ Shery.js is a fantastic JavaScript library designed to make your web projects po
    - Dynamic Distortion Effect
    - Dynamic 3D Wave/Wobble Effect
    - Dynamic 3D Wind Effect
+   - Dynamic Perlin Noise Effect
+   - Dynamin Cyber Squares Effect
 6. [Dynamic Gooey Effect](#dynamic-gooey-effect)
 7. [Dynamic Zoom Effect](#dynamic-zoom-effect)
 8. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
@@ -252,6 +254,19 @@ Shery.imageEffect(".img", {
 ![Dynamic Perlin Noise Effect](./media/effect6.gif)
 
 The dynamic perlin noise effect adds a perlin noise to your image, can be used to create many type of noise related effects.
+
+```javascript
+Shery.imageEffect(".img", {
+  style: 6,
+  debug: true,
+});
+```
+
+### Dynamic Cyber Squares Effect
+
+![Dynamic Cyber Squares Effect](./media/effect7.gif)
+
+The dynamic cyber square effect adds a Cyber retro square patterns to your image, can be used to create many type of different square partern effects.
 
 ```javascript
 Shery.imageEffect(".img", {

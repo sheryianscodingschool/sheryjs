@@ -20,7 +20,7 @@ void main()
     
     uv-=vec2(.5,.5);
     
-    vec2 mousenew=vec2(mousei.x+.01,1.05-mousei.y);
+    vec2 mousenew=vec2(mousei.x,1.-mousei.y);
     float m=mouseMove?smoothstep(mouseMoveEWX,mouseMoveEHY,length(uvx-mousenew)):1.;
     
     float rot=radians((rotation));
