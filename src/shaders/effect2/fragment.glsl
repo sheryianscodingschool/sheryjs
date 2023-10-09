@@ -30,12 +30,13 @@ vec4 img(vec2 uv,float c){
     uv=masker?mix(uv,uv/max(1.,maskVal),uIntercept):uv/max(1.,maskVal);
     uv=uv*.5+.5;
     
-    vec2 pos=vec2(uv.x,uv.y/aspect);
-    vec2 mouse=vec2(mousei.x,(1.-mousei.y)/aspect);
+    vec2 pos=vec2(vuv.x,vuv.y/aspect);
+    vec2 mouse=vec2(mousei.x+.01,1.05-mousei.y);
+    vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);
     float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
-    float val=noise*noise_height;
-    float u=distance(mouse,pos)/(metaball+.00001);
-    float mouseMetaball=clamp(1.-max(5.*u,-25.*u*u+10.*u),0.,1.);
+    float val=noise*interpole.y;
+    float u=1.-smoothstep(interpole.x,.0,distance(mouse,pos));
+    float mouseMetaball=clamp(1.-u,0.,1.);
     val+=mouseMetaball;
     float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
     
@@ -44,7 +45,7 @@ vec4 img(vec2 uv,float c){
     vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;
     vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
     
-    vec2 uv2= noEffectGooey?vuv:uv;
+    vec2 uv2=noEffectGooey?vuv:uv;
     return gooey?vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv2),alpha)):scrollType==0.?mix(texture2D(uTexture[1],uv),texture2D(uTexture[0],uv),step((uScroll)-uSection,c+uv.y)):imageA.bbra*blend+imageA*blend2+imageB.bbra*blend2+imageB*blend;
 }
 

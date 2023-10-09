@@ -115,8 +115,7 @@ export const init = (
     fragment = fragment.replace(
       "!isMulti;",
       opts.gooey && !opts.slideStyle === true
-        ? /*glsl*/`
-        
+        ? /*glsl*/`       
         vec2 pos=vec2(vuv.x,vuv.y/aspect);
         vec2 mouse=vec2(mousei.x+.01,1.05-mousei.y);
         vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);
@@ -126,7 +125,7 @@ export const init = (
         float mouseMetaball=clamp(1.-u,0.,1.);
         val+=mouseMetaball;
         float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
-        gl_FragColor=vec4(mix(texture2D(uTexture[0],uv),texture2D(uTexture[1],uv2),alpha));`
+        gl_FragColor=vec4(mix(gl_FragColor,texture2D(uTexture[1],uv2),alpha));`
 
         : `float c = (sin((uv.x*7.0*snoise(vec3(uv,1.0)))+(time))/15.0*snoise(vec3(uv,1.0)))+.01;
       float blend=uScroll-uSection;float blend2=1.-blend;vec4 imageA=texture2D(uTexture[0],vec2(uv.x,uv.y-(((texture2D(uTexture[0],uv).r*displaceAmount)*blend)*2.)))*blend2;vec4 imageB=texture2D(uTexture[1],vec2(uv.x,uv.y+(((texture2D(uTexture[1],uv).r*displaceAmount)*blend2)*2.)))*blend;
@@ -214,6 +213,7 @@ export const init = (
   scene.add(elemMesh)
 
   var debugObj = {
+    backgroundImage: '',
     Mode: [
       "Off",
       "Reflect/Glow",
@@ -408,7 +408,7 @@ export const init = (
     return i % l
   }
 
-  const originalGooey = uniforms.metaball.value 
+  const originalGooey = uniforms.metaball.value
   elem.addEventListener('mousedown', (e) => {
     if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value) {
       isGooeyLerping = true
@@ -424,6 +424,7 @@ export const init = (
   elem.addEventListener("mouseleave", (e) => {
     intersect = 0
     setMouseCord(e)
+
   })
 
   elem.addEventListener("mouseenter", (e) => {
@@ -566,23 +567,21 @@ export const init = (
     })
 
     if (isGooeyLerping && opts.gooey) {
-      uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, 1.5, 0.007)
+      uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, 4, 0.005)
     }
     if (!isGooeyLerping && opts.gooey) {
       uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, originalGooey, 0.01)
     }
-    if ((uniforms.metaball.value > (1.2)) && isGooeyLerping && opts.gooey) {
+    if ((uniforms.metaball.value > (1.7)) && isGooeyLerping && opts.gooey) {
       currentGooey++
       uniforms.metaball.value = 0
       isGooeyLerping = false
       uniforms.uTexture.value = [t[calculateGooey(currentGooey)], t[calculateGooey(currentGooey + 1)]]
     }
 
-
     elemMesh.material.uniforms.time.value = clock.getElapsedTime()
     elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2
-    elemMesh.position.y =
-      -elem.getBoundingClientRect().top + height / 2 - elemHeight / 2
+    elemMesh.position.y = -elem.getBoundingClientRect().top + height / 2 - elemHeight / 2
 
     requestAnimationFrame(animate)
   }

@@ -12,6 +12,8 @@ import vertex_5 from './shaders/effect5/vertex.glsl'
 import fragment_5 from './shaders/effect5/fragment.glsl'
 import vertex_6 from './shaders/effect6/vertex.glsl'
 import fragment_6 from './shaders/effect6/fragment.glsl'
+import vertex_7 from './shaders/effect7/vertex.glsl'
+import fragment_7 from './shaders/effect7/fragment.glsl'
 
 import {
   init,
@@ -772,12 +774,14 @@ export function imageEffect(element = "img", opts = {}) {
         animate()
       }
         break //!STUB
+
+      // STUB - Perlin Noise Effect
       case 6: {
         var { debugObj, panel, uniforms, animate } = init(
           elem,
           vertex_6,
           fragment_6,
-          { 
+          {
             "noiseDetail": { "value": 7.44, "range": [0, 100] },
             "distortionAmount": { "value": 2.98, "range": [0, 10] },
             "scale": { "value": 36.36, "range": [0, 100] },
@@ -812,6 +816,119 @@ export function imageEffect(element = "img", opts = {}) {
             .addSlider(uniforms.noiseDetail, "value", "range", {
               label: "noiseDetail",
               step: 0.001,
+            })
+
+          fix()
+        }
+        animate()
+      }
+        break //!STUB
+
+      // STUB - Cyber Cube Effect
+      case 7: {
+        var { debugObj, panel, uniforms, animate } = init(
+          elem,
+          vertex_7,
+          fragment_7,
+          {
+            invert: { value: false },
+            isTexture: { value: false },
+            autorotate: { value: true },
+            mouseMove: { value: true },
+            color: { value: new THREE.Color(0xffffff) },
+            mouseMoveEWX: { value: 0, range: [0, 1] },
+            mouseMoveEHY: { value: 0.07, range: [0, 1] },
+            smoothness: { value: 1.44, range: [0, 3] },
+            circular: { value: 0, range: [-.1, .1] },
+            styling: { value: .82, range: [-3, 3] },
+            clustering: { value: 5.0, range: [0, 5] },
+            gapping: { value: .63, range: [0, 1] },
+            rotation: { value: 60, range: [0, 90] },
+            density: { value: .07, range: [0, 1] },
+            scale: { value: 42, range: [0, 100] },
+            pattern: { value: 5.58, range: [0, 15] },
+          },
+          {
+            camera,
+            renderer,
+            width,
+            height,
+            scene,
+            geometry,
+            effect: 7,
+            opts,
+          }
+        )
+
+        if (panel) {
+          panel
+            .addCheckbox(uniforms.invert, "value", {
+              label: "Invert",
+            })
+            .addCheckbox(uniforms.autorotate, "value", {
+              label: "Auto Rotate",
+            })
+            .addCheckbox(uniforms.mouseMove, "value", {
+              label: "Mouse Effect",
+            })
+            .addSlider(uniforms.mouseMoveEWX, 'value', 'range', {
+              label: 'EWX',
+              step: 0.001,
+            })
+            .addSlider(uniforms.mouseMoveEHY, 'value', 'range', {
+              label: 'EHY',
+              step: 0.001,
+            })
+            .addSlider(uniforms.rotation, 'value', 'range', {
+              label: 'Rotation',
+              step: 0.001,
+            })
+            .addSlider(uniforms.scale, 'value', 'range', {
+              label: 'Scale',
+              step: 0.001,
+            })
+            .addSlider(uniforms.pattern, 'value', 'range', {
+              label: 'Pattern',
+              step: 0.001,
+            })
+            .addSlider(uniforms.density, 'value', 'range', {
+              label: 'Density',
+              step: 0.001,
+            })
+            .addSlider(uniforms.clustering, 'value', 'range', {
+              label: 'Clustering',
+              step: 0.001,
+            })
+            .addSlider(uniforms.gapping, 'value', 'range', {
+              label: 'Gapping',
+              step: 0.001,
+            })
+            .addSlider(uniforms.smoothness, 'value', 'range', {
+              label: 'Smoothness',
+              step: 0.001,
+            })
+            .addSlider(uniforms.styling, 'value', 'range', {
+              label: 'Styling',
+              step: 0.001,
+            })
+            .addSlider(uniforms.circular, 'value', 'range', {
+              label: 'Ring Contrast',
+              step: 0.001,
+            })
+            .addColor(debugObj, "Color", {
+              colorMode: "hex",
+              onChange: (x) => uniforms.color.value.set(x),
+            })
+            .addStringInput(debugObj, 'backgroundImage', {
+              label: 'Effect Background Image Source',
+              onChange: () => {
+                if (debugObj.backgroundImage == '') {
+                  uniforms.isTexture.value = false
+                } else {
+                  uniforms.isTexture.value = true
+                }
+                uniforms.uTexture.value[1] = new THREE.TextureLoader().load(debugObj.backgroundImage)
+              }
             })
 
           fix()
