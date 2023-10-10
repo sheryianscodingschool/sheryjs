@@ -404,7 +404,7 @@ export const init = (
   let currentGooey = 0
 
   function calculateGooey(i) {
-    var l = src.length - 1
+    var l = src.length
     return i % l
   }
 
@@ -577,6 +577,7 @@ export const init = (
       currentGooey++
       uniforms.metaball.value = 0
       isGooeyLerping = false
+      console.log(currentGooey,calculateGooey(currentGooey),calculateGooey(currentGooey+1));
       uniforms.uTexture.value = [t[calculateGooey(currentGooey)], t[calculateGooey(currentGooey + 1)]]
     }
 
