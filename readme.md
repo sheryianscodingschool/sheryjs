@@ -29,9 +29,10 @@ Shery.js is a fantastic JavaScript library designed to make your web projects po
    - Custom Scroll Trigger Callback
 9. [Debug Usage](#debug-usage)
    - Preset Usage
-10. [Examples](#examples)
-11. [Contributing](#contributing)
-12. [License](#license)
+10. [Callback Usage](#callback-usage)
+11. [Examples](#examples)
+12. [Contributing](#contributing)
+13. [License](#license)
 
 ## Introduction
 
@@ -414,6 +415,19 @@ Shery.imageEffect("img", {
   style: 2,
   preset: "./presets/wigglewobble.json",
 });
+```
+
+### Callback Usage
+
+Create your own animation or condition for change values of `uniforms` which are variable which you change from debug panel you can use this by option `setUniforms: (uniforms) => {}` you can console log the uniforms to get list of uniforms.
+
+```javascript
+Shery.imageEffect('img', {
+    style: 2,
+    setUniforms: (uniforms) => {
+       uniforms.maskVal.value = 3 // Syntax -> uniforms.uniform_name.value = your
+    }
+})
 ```
 
 ## Examples
