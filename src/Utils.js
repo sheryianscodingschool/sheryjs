@@ -1,6 +1,8 @@
 import * as THREE from "three"
 import ControlKit from "controlkit"
 import { ScrollPos } from "./Effects"
+import gsap from "gsap"
+import { Expo } from "gsap/all"
 
 export const lerp = (x, y, a) => x * (1 - a) + y * a
 
@@ -160,6 +162,8 @@ export const init = (
     },
     gooey: { value: opts.gooey ? true : false },
     infiniteGooey: { value: false },
+    durationOut: { value: 1,range: [.1, 5]},
+    durationIn: { value: 1.5,range: [.1, 5]},
     time: { value: 0 },
     displaceAmount: { value: 0.5 },
     mousei: { value: new THREE.Vector2() },
@@ -302,9 +306,19 @@ export const init = (
           fixed: false,
           position: [dposition + 300, 10],
         })
+        .addSubGroup({label:'InfiniteGooey',enable:false})
         .addCheckbox(uniforms.infiniteGooey, "value", {
-          label: "Infinite Gooey",
+          label: "Enable",
         })
+        .addSlider(uniforms.durationOut, "value", "range", {
+          label: "Duration Out",
+          step: 0.001,
+        })
+        .addSlider(uniforms.durationIn, "value", "range", {
+          label: "Duration In",
+          step: 0.001,
+        })
+        .addGroup()
         .addCheckbox(uniforms.noEffectGooey, "value", {
           label: "GooeyBakEffect",
         })
@@ -411,7 +425,25 @@ export const init = (
   const originalGooey = uniforms.metaball.value
   elem.addEventListener('mousedown', (e) => {
     if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
-      isGooeyLerping = true
+      gsap.to(uniforms.metaball, {
+        value: 4,
+        duration: uniforms.durationOut.value,
+        ease: Expo.easeInOut,
+        onStart: () => {
+          isGooeyLerping = true
+        },
+        onComplete: () => {
+          currentGooey++
+          uniforms.metaball.value = 0
+          isGooeyLerping = false
+          uniforms.uTexture.value = [t[calculateGooey(currentGooey)], t[calculateGooey(currentGooey + 1)]]
+          gsap.to(uniforms.metaball, {
+            value: originalGooey,
+            ease: Expo.easeInOut,
+            duration: uniforms.durationIn.value
+          })
+        }
+      })
     }
   })
 
@@ -540,9 +572,10 @@ export const init = (
   }
 
   fit()
-
   setTimeout(window.dispatchEvent(new Event("resize")), 0)
   addEventListener("resize", fit)
+
+
 
   const clock = new THREE.Clock()
   function animate() {
@@ -565,21 +598,6 @@ export const init = (
         intersect === 1 ? 1 : 0,
         0.07
       )
-
-
-    if (isGooeyLerping && opts.gooey) {
-      uniforms.metaball.value = THREE.MathUtils.damp(uniforms.metaball.value, 4, THREE.MathUtils.inverseLerp(.1, 1.9, 1), THREE.MathUtils.lerp(.01, .008, 1))
-    }
-    if (!isGooeyLerping && opts.gooey) {
-      uniforms.metaball.value = THREE.MathUtils.lerp(uniforms.metaball.value, originalGooey, 0.01)
-    }
-    if ((uniforms.metaball.value > (1.7)) && isGooeyLerping && opts.gooey) {
-      currentGooey++
-      uniforms.metaball.value = 0
-      isGooeyLerping = false
-      console.log(currentGooey,calculateGooey(currentGooey),calculateGooey(currentGooey+1));
-      uniforms.uTexture.value = [t[calculateGooey(currentGooey)], t[calculateGooey(currentGooey + 1)]]
-    }
 
     elemMesh.material.uniforms.time.value = clock.getElapsedTime()
     elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2

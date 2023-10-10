@@ -95,7 +95,7 @@ body{
 }
 
 #controlKit .panel .head .label,
-#controlKit .picker .head .label {
+#controlKit .picker .head .label,#controlKit .panel .group-list .group .sub-group-list .sub-group .head .wrap .label, #controlKit .panel .group-list .group .sub-group-list .sub-group .head-inactive .wrap .label {
     color: #8c92a4 !important;
     font-size: .8em !important;
     text-shadow: none !important;
@@ -108,7 +108,7 @@ body{
     box-shadow: none !important;
 }
 
-#controlKit .panel .select , #controlKit .panel .select-active {
+#controlKit .panel .select , #controlKit .panel .select-active ,#controlKit .panel .group-list .group .sub-group-list .sub-group .head-inactive{
     border-radius: 7px !important;
     box-shadow: none !important;
     text-shadow: none !important;
@@ -129,7 +129,9 @@ body{
     text-align: center !important;
 
 }
-
+ul.sub-group-list{
+    margin-top: 5px !important;
+}
 #controlKit .options ul li:hover,
 #controlKit .options ul .li-selected,
 #controlKit .panel .slider-handle {
