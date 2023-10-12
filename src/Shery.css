@@ -71,11 +71,11 @@ body{
 
 #controlKit .panel .button,
 #controlKit .picker .button {
-    background-color: #383c4a !important;
+    background-color: #383c4a ;
     background-image: none !important;
     box-shadow: none !important;
     border-radius: 7px !important;
-    color: #8c92a4 !important;
+    color: #8c92a4 ;
     font-size: .9em !important;
     text-shadow: none !important;
     font-weight: 800 !important;

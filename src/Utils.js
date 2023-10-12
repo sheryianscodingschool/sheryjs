@@ -357,22 +357,48 @@ export const init = (
         position: [dposition, 10],
         width: 280,
       })
-      .addButton("Save To Clipboard", () => {
-        const {
-          uScroll,
-          isMulti,
-          uSection,
-          time,
-          resolution,
-          uTexture,
-          mouse,
-          mousem,
-          mousei,
-          uIntercept,
-          ...rest
-        } = uniforms
-        navigator.clipboard.writeText(JSON.stringify(rest))
-      })
+    .addButton("Save To Clipboard", () => {
+      const {
+        uScroll,
+        isMulti,
+        uSection,
+        time,
+        resolution,
+        uTexture,
+        mouse,
+        mousem,
+        mousei,
+        uIntercept,
+        ...rest
+      } = uniforms
+      navigator.clipboard.writeText(JSON.stringify(rest)).then(
+        () => {
+          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Copied Successfully"
+          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
+          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "darkgreen"
+          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "white"
+          setTimeout(() => {
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Save To Clipboard"
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "initial"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "#383c4a"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
+          }, 1500)
+        },
+        () => {
+          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Failed To Copy"
+          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
+          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "red"
+          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "white"
+          setTimeout(() => {
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Save To Clipboard"
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "initial"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "#383c4a"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
+          }, 1500)
+        },
+      )
+    })
+    document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
     if (!(elem.nodeName.toLowerCase() === "img") && opts.gooey != true)
       panel.addSelect(debugObj, "scrollType", {
         target: "scrollTypeIs",
