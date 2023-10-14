@@ -1,6 +1,6 @@
 # Shery.js - Add Life to Your Web Experience
 
-![Shery.js Logo](./media/banner.png)
+![Shery.js Logo](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/banner.png)
 
 Shery.js is a fantastic JavaScript library designed to make your web projects pop with eye-catching effects and mesmerizing 3D features. Whether you're a developer looking to jazz up your website or a designer wanting to add that extra flair, Shery.js has got you covered. This GitHub readme will walk you through the key aspects of using Shery.js in your web development journey.
 
@@ -208,7 +208,7 @@ Shery.imageEffect(".img", {
 
 ### Simple Liquid Distortion Effect
 
-![Simple Liquid Distortion Effect](./media/effect1.gif)
+![Simple Liquid Distortion Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect1.gif)
 
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
@@ -221,7 +221,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Distortion Effect
 
-![Dynamic Distortion Effect](./media/effect2.gif)
+![Dynamic Distortion Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect2.gif)
 
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
@@ -234,7 +234,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic 3D Wave/Wobble Effect
 
-![Dynamic 3D Wave/Wobble Effect](./media/effect3.gif)
+![Dynamic 3D Wave/Wobble Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect3.gif)
 
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
@@ -247,7 +247,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic 3D Wind Effect
 
-![Dynamic 3D Wind Effect](./media/effect4.gif)
+![Dynamic 3D Wind Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect4.gif)
 
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
@@ -260,7 +260,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Perlin Noise Effect
 
-![Dynamic Perlin Noise Effect](./media/effect6.gif)
+![Dynamic Perlin Noise Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect6.gif)
 
 The dynamic perlin noise effect adds a perlin noise to your image, can be used to create many type of noise related effects.
 
@@ -273,7 +273,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Cyber Squares Effect
 
-![Dynamic Cyber Squares Effect](./media/effect7.gif)
+![Dynamic Cyber Squares Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect7.gif)
 
 The dynamic cyber square effect adds a Cyber retro square patterns to your image, can be used to create many type of different square partern effects.
 
@@ -286,7 +286,7 @@ Shery.imageEffect(".img", {
 
 ## Multiple Image Scroll Effect
 
-![Multi](./media/multi.gif)
+![Multi](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/multi.gif)
 
 All 3D effects in this library supports multi image with wave scroll effect which increases the productivity and usability of effect, offering a unique and interactive experience.
 
@@ -350,7 +350,7 @@ By adhering to these instructions, you can create and control your unique scroll
 
 ## Dynamic Gooey Effect
 
-![Gooey](./media/gooey.gif)
+![Gooey](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/gooey.gif)
 
 This is very dynamic gooey effect can be applied to any of the above effect with a single param `gooey:true` and can be tweaked in debug mode.
 
@@ -371,7 +371,7 @@ Shery.imageEffect(".images", {
 
 ## Dynamic Zoom Effect
 
-![Zoomer](./media/zoomer.gif)
+![Zoomer](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/zoomer.gif)
 
 This is very dynamic zoom effect can be applied to any of the above effect with a single tick in debug panel `image zoomer` and can be tweaked in debug mode.
 
@@ -384,7 +384,7 @@ Shery.imageEffect(".image", {
 
 ## Debug Usage
 
-![Debug](./media/debug.png)
+![Debug](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/debug.png)
 
 To customize any of the 3d effects provided by Shery.js, simply enable debug mode with parameter `{debug:true}` for effects which supports it.
 
