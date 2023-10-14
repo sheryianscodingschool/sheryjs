@@ -69,14 +69,22 @@ Alternatively use the standalone version found in ./dist locally
 OR CDN version from unpkg
 
 ```html
+
+<!-- USE ANY ONE -->
 <link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" />
+<!-- OR -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/dist/Shery.css" />
+<!-- OR -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.css" />
 ```
 
 ```html
-<script
-  type="text/javascript"
-  src="https://unpkg.com/sheryjs/dist/Shery.js"
-></script>
+<!-- USE ANY ONE -->
+<script  type="text/javascript"  src="https://unpkg.com/sheryjs/dist/Shery.js"></script>
+<!-- OR --> 
+<script  type="text/javascript"  src="https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/dist/Shery.js"></script>
+<!-- OR -->
+<script  type="text/javascript"  src="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.js"></script>
 ```
 
 ## Getting Started
