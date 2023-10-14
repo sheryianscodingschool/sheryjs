@@ -208,7 +208,7 @@ Shery.imageEffect(".img", {
 
 ### Simple Liquid Distortion Effect
 
-![Simple Liquid Distortion Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect1.gif?raw=true)
+![Simple Liquid Distortion Effect](./media/effect1.gif)
 
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
@@ -221,7 +221,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Distortion Effect
 
-![Dynamic Distortion Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect2.gif)
+![Dynamic Distortion Effect](./media/effect2.gif)
 
 The dynamic distortion effect creates a more advanced and reactive distortion animation, providing an engaging visual experience with a debug panel.
 
@@ -234,7 +234,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic 3D Wave/Wobble Effect
 
-![Dynamic 3D Wave/Wobble Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect3.gif)
+![Dynamic 3D Wave/Wobble Effect](./media/effect3.gif)
 
 Bring your web application to life with the dynamic 3D wave/wobble effect, making elements appear to ripple like waves or wobble like gelatin.
 
@@ -247,7 +247,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic 3D Wind Effect
 
-![Dynamic 3D Wind Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect4.gif)
+![Dynamic 3D Wind Effect](./media/effect4.gif)
 
 The dynamic 3D wind effect adds a subtle and natural swaying motion to elements, simulating the movement caused by wind.
 
@@ -260,7 +260,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Perlin Noise Effect
 
-![Dynamic Perlin Noise Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect6.gif)
+![Dynamic Perlin Noise Effect](./media/effect6.gif)
 
 The dynamic perlin noise effect adds a perlin noise to your image, can be used to create many type of noise related effects.
 
@@ -273,7 +273,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Cyber Squares Effect
 
-![Dynamic Cyber Squares Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect7.gif)
+![Dynamic Cyber Squares Effect](./media/effect7.gif)
 
 The dynamic cyber square effect adds a Cyber retro square patterns to your image, can be used to create many type of different square partern effects.
 
