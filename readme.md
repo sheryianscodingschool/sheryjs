@@ -208,7 +208,7 @@ Shery.imageEffect(".img", {
 
 ### Simple Liquid Distortion Effect
 
-![Simple Liquid Distortion Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect1.gif)
+![Simple Liquid Distortion Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect1.gif?raw=true)
 
 The simple liquid distortion effect applies a mesmerizing distortion effect to image, giving the illusion of a liquid-like behavior.
 
@@ -273,7 +273,6 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Cyber Squares Effect
 
-![Multi](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect7.gif)
 ![Dynamic Cyber Squares Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect7.gif)
 
 The dynamic cyber square effect adds a Cyber retro square patterns to your image, can be used to create many type of different square partern effects.
