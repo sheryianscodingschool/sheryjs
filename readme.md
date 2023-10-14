@@ -273,6 +273,7 @@ Shery.imageEffect(".img", {
 
 ### Dynamic Cyber Squares Effect
 
+![Multi](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect7.gif)
 ![Dynamic Cyber Squares Effect](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/effect7.gif)
 
 The dynamic cyber square effect adds a Cyber retro square patterns to your image, can be used to create many type of different square partern effects.
