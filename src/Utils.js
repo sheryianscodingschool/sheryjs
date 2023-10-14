@@ -162,6 +162,7 @@ export const init = (
     },
     gooey: { value: opts.gooey ? true : false },
     infiniteGooey: { value: false },
+    growSize: { value: 4,range: [1, 15]},
     durationOut: { value: 1,range: [.1, 5]},
     durationIn: { value: 1.5,range: [.1, 5]},
     time: { value: 0 },
@@ -454,7 +455,7 @@ export const init = (
   elem.addEventListener('mousedown', (e) => {
     if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
       gsap.to(uniforms.metaball, {
-        value: 4,
+        value: uniforms.growSize,
         duration: uniforms.durationOut.value,
         ease: Expo.easeInOut,
         onStart: () => {
