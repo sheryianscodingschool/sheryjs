@@ -66,24 +66,41 @@ Alternatively use the standalone version found in ./dist locally
 <script type="text/javascript" src="Shery.js"></script>
 ```
 
-OR CDN version from unpkg
+ or use CDN version any one **only** `CSS`.
 
 ```html
-
-<!-- USE ANY ONE -->
 <link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" />
-<!-- OR -->
+```
+
+**OR**
+
+```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/dist/Shery.css" />
-<!-- OR -->
+```
+
+**OR**
+
+```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.css" />
 ```
 
+---
+
+Use **only** one `JAVASCRIP CDN`
+
 ```html
-<!-- USE ANY ONE -->
 <script  type="text/javascript"  src="https://unpkg.com/sheryjs/dist/Shery.js"></script>
-<!-- OR --> 
+```
+
+**OR**
+
+```html
 <script  type="text/javascript"  src="https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/dist/Shery.js"></script>
-<!-- OR -->
+```
+
+**OR**
+
+```html
 <script  type="text/javascript"  src="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.js"></script>
 ```
 
