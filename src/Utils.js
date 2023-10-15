@@ -14,7 +14,7 @@ export const fix = () => {
     "#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap"
   const c = "#controlKit .panel .button, #controlKit .picker .button"
   if (document.querySelector(s))
-    document.querySelectorAll(s).forEach((e) => (e.style.width = "30%"))
+    document.querySelectorAll(s).forEach((e, i) => (e.style.width = i != 3 && "30%"))
   if (document.querySelector(c)) {
     document.querySelector(c).parentElement.style.float = "none"
     document.querySelector(c).parentElement.style.width = "100% "
@@ -24,12 +24,7 @@ export const fix = () => {
 }
 
 export const redraw = (elemMesh, v) => {
-  let newGeometry = new THREE.PlaneGeometry(
-    elemMesh.geometry.parameters.width,
-    elemMesh.geometry.parameters.height,
-    v,
-    v
-  )
+  let newGeometry = new THREE.PlaneGeometry(elemMesh.geometry.parameters.width, elemMesh.geometry.parameters.height, v, v)
   elemMesh.geometry.dispose()
   elemMesh.geometry = newGeometry
 }
@@ -157,14 +152,15 @@ export const init = (
     }
   }
   Object.assign(uniforms, {
+    zindex: { value: -9996999, range: [-9999999, 9999999] },
     aspect: {
       value: elemWidth / elemHeight,
     },
     gooey: { value: opts.gooey ? true : false },
     infiniteGooey: { value: false },
-    growSize: { value: 4,range: [1, 15]},
-    durationOut: { value: 1,range: [.1, 5]},
-    durationIn: { value: 1.5,range: [.1, 5]},
+    growSize: { value: 4, range: [1, 15] },
+    durationOut: { value: 1, range: [.1, 5] },
+    durationIn: { value: 1.5, range: [.1, 5] },
     time: { value: 0 },
     displaceAmount: { value: 0.5 },
     mousei: { value: new THREE.Vector2() },
@@ -309,7 +305,7 @@ export const init = (
           fixed: false,
           position: [dposition + 300, 10],
         })
-        .addSubGroup({label:'InfiniteGooey',enable:false})
+        .addSubGroup({ label: 'InfiniteGooey', enable: false })
         .addCheckbox(uniforms.infiniteGooey, "value", {
           label: "Enable",
         })
@@ -358,47 +354,53 @@ export const init = (
         position: [dposition, 10],
         width: 280,
       })
-    .addButton("Save To Clipboard", () => {
-      const {
-        uScroll,
-        isMulti,
-        uSection,
-        time,
-        resolution,
-        uTexture,
-        mouse,
-        mousem,
-        mousei,
-        uIntercept,
-        ...rest
-      } = uniforms
-      navigator.clipboard.writeText(JSON.stringify(rest)).then(
-        () => {
-          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Copied Successfully"
-          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
-          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "darkgreen"
-          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "white"
-          setTimeout(() => {
-            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Save To Clipboard"
-            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "initial"
-            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "#383c4a"
-            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
-          }, 1500)
-        },
-        () => {
-          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Failed To Copy"
-          document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
-          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "red"
-          document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "white"
-          setTimeout(() => {
-            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Save To Clipboard"
-            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "initial"
-            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "#383c4a"
-            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
-          }, 1500)
-        },
-      )
-    })
+      .addButton("Save To Clipboard", () => {
+        const {
+          uScroll,
+          isMulti,
+          uSection,
+          time,
+          resolution,
+          uTexture,
+          mouse,
+          mousem,
+          mousei,
+          uIntercept,
+          ...rest
+        } = uniforms
+        navigator.clipboard.writeText(JSON.stringify(rest)).then(
+          () => {
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Copied Successfully"
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "darkgreen"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "white"
+            setTimeout(() => {
+              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Save To Clipboard"
+              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "initial"
+              document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "#383c4a"
+              document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
+            }, 1500)
+          },
+          () => {
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Failed To Copy"
+            document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "red"
+            document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "white"
+            setTimeout(() => {
+              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Save To Clipboard"
+              document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "initial"
+              document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.backgroundColor = "#383c4a"
+              document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
+            }, 1500)
+          },
+        )
+      })
+      .addStringInput(uniforms.zindex, "value", {
+        label: "Canvas Z-Index",
+        step: 1,
+        onChange: () => (document.querySelector('._canvas_container').style.zIndex = uniforms.zindex.value),
+      })
+
     document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
     if (!(elem.nodeName.toLowerCase() === "img") && opts.gooey != true)
       panel.addSelect(debugObj, "scrollType", {
