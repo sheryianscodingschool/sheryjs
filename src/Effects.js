@@ -55,6 +55,8 @@ export function mouseFollower(opts = {}) {
       left: dets.clientX,
       duration: opts.duration || 1,
       ease: opts.ease || Expo.easeOut,
+      // Implimented color in mouseFollower====>
+      backgroundColor:opts.color || "black"
     })
   })
 
