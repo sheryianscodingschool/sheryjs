@@ -284,6 +284,7 @@ export const init = (
   const config = (c) => {
     if (c.color) c.color.value = new THREE.Color(c.color.value)
     Object.assign(uniforms, c)
+    document.querySelector('._canvas_container').style.zIndex = uniforms.zindex.value
   }
 
   if (opts.preset)
@@ -404,7 +405,6 @@ export const init = (
         step: 1,
         onChange: () => (document.querySelector('._canvas_container').style.zIndex = uniforms.zindex.value),
       })
-
     document.querySelector('body #controlKit .panel .button, #controlKit .picker .button').style.color = "#8c92a4"
     if (!(elem.nodeName.toLowerCase() === "img") && opts.gooey != true)
       panel.addSelect(debugObj, "scrollType", {
@@ -461,7 +461,12 @@ export const init = (
   elem.addEventListener('mousedown', (e) => {
     if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
       gsap.to(uniforms.metaball, {
-        value: uniforms.growSize.value,
+        value: uniforms.growSize.value
+
+
+
+
+        ,
         duration: uniforms.durationOut.value,
         ease: Expo.easeInOut,
         onStart: () => {
