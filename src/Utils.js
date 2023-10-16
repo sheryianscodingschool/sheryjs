@@ -309,6 +309,10 @@ export const init = (
         .addCheckbox(uniforms.infiniteGooey, "value", {
           label: "Enable",
         })
+        .addSlider(uniforms.growSize, "value", "range", {
+          label: "Grow Size",
+          step: 0.001,
+        })
         .addSlider(uniforms.durationOut, "value", "range", {
           label: "Duration Out",
           step: 0.001,
@@ -457,7 +461,7 @@ export const init = (
   elem.addEventListener('mousedown', (e) => {
     if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
       gsap.to(uniforms.metaball, {
-        value: uniforms.growSize,
+        value: uniforms.growSize.value,
         duration: uniforms.durationOut.value,
         ease: Expo.easeInOut,
         onStart: () => {
