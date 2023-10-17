@@ -14,7 +14,7 @@ export const fix = () => {
     "#controlKit .panel .group-list .group .sub-group-list .sub-group .wrap .wrap"
   const c = "#controlKit .panel .button, #controlKit .picker .button"
   if (document.querySelector(s))
-    document.querySelectorAll(s).forEach((e, i) => (e.style.width = i != 3 && "30%"))
+    document.querySelectorAll(s).forEach((e, i) => (e.style.width = i != 3 ? "30%" : "50%"))
   if (document.querySelector(c)) {
     document.querySelector(c).parentElement.style.float = "none"
     document.querySelector(c).parentElement.style.width = "100% "
@@ -27,6 +27,21 @@ export const redraw = (elemMesh, v) => {
   let newGeometry = new THREE.PlaneGeometry(elemMesh.geometry.parameters.width, elemMesh.geometry.parameters.height, v, v)
   elemMesh.geometry.dispose()
   elemMesh.geometry = newGeometry
+}
+
+function stringify(obj) {
+  let cache = [];
+  let str = JSON.stringify(obj, function(key, value) {
+    if (typeof value === "object" && value !== null) {
+      if (cache.indexOf(value) !== -1) {
+        return;
+      }
+      cache.push(value);
+    }
+    return value;
+  });
+  cache = null;
+  return str;
 }
 
 var isdebug = []
@@ -351,6 +366,7 @@ export const init = (
           step: 0.001,
         })
     }
+    
     panel = controlKit
       .addPanel({
         enable: false,
@@ -373,7 +389,7 @@ export const init = (
           uIntercept,
           ...rest
         } = uniforms
-        navigator.clipboard.writeText(JSON.stringify(rest)).then(
+        navigator.clipboard.writeText(stringify(rest)).then(
           () => {
             document.querySelector('#controlKit .panel .button, #controlKit .picker .button').value = "Copied Successfully"
             document.querySelector('#controlKit .panel .button, #controlKit .picker .button').style.pointerEvents = "none"
@@ -461,12 +477,7 @@ export const init = (
   elem.addEventListener('mousedown', (e) => {
     if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
       gsap.to(uniforms.metaball, {
-        value: uniforms.growSize.value
-
-
-
-
-        ,
+        value: uniforms.growSize.value,
         duration: uniforms.durationOut.value,
         ease: Expo.easeInOut,
         onStart: () => {
