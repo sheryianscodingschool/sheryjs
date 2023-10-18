@@ -444,13 +444,33 @@ Shery.imageEffect("img", {
 
 ### Callback Usage
 
-Create your own animation or condition for change values of `uniforms` which are variable which you change from debug panel you can use this by option `setUniforms: (uniforms) => {}` you can console log the uniforms to get list of uniforms.
+Create your own animation or condition for change values of `uniforms`, `meshes`, `camera`, `etc` where uniform are variable which you change from debug panel you can use this by option `setUniforms: (uniforms) => {}` you can console log the uniforms to get list of uniforms and for other attributes you can use option `setAttribute: (attributes) => {}` the variable attributes is an object which  contains :-
+
+```json
+ {
+    geometry, // Geometry of effect
+    scene, // 3js Scene
+    camera, // 3js Camera
+    renderer, // WebGL Renderer
+    uniforms: [], // Array of uniforms of all elements of given class
+    meshes: []  // Array of meshes of all elements of given class
+  }
+```
 
 ```javascript
 Shery.imageEffect('img', {
     style: 2,
     setUniforms: (uniforms) => {
        uniforms.maskVal.value = 3 // Syntax -> uniforms.uniform_name.value = your
+    }
+})
+```
+
+```javascript
+Shery.imageEffect('img', {
+    style: 2,
+    setAttribute: (attributes) => {
+       uniforms[0].maskVal.value = 3 
     }
 })
 ```
