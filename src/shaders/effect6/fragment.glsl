@@ -19,8 +19,8 @@ void main(){
     uv=masker?mix(uv,uv/max(1.,maskVal),uIntercept):uv/max(1.,maskVal);
     uv=uv*.5+.5;
     
-    float x=uv.x*scale*(noiseDetail/100.)*sin(time)*speed;
-    float y=uv.y*scale*(noiseDetail/100.)*cos(time)*speed;
+    float x=(uv.x-.5)*scale*(noiseDetail/100.)*sin(time)*speed;
+    float y=(uv.y-.5)*scale*(noiseDetail/100.)*cos(time)*speed;
     uv+=snoise(vec3(x,y,0.))*(distortionAmount/100.);
     gl_FragColor=texture2D(uTexture[0],uv);
     vec2 uv2=noEffectGooey?vuv:uv;

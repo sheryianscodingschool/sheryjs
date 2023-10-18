@@ -363,7 +363,7 @@ export function imageEffect(element = "img", opts = {}) {
   let height = innerHeight
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(70, width / height, .1, 1000)
+  const camera = new THREE.PerspectiveCamera(70, width / height, .01, 1000)
   camera.fov = 2 * Math.atan(height / 2 / 10) * (180 / Math.PI)
   camera.position.set(0, 0, 10)
 
@@ -373,6 +373,15 @@ export function imageEffect(element = "img", opts = {}) {
     antialias: true,
     alpha: true,
   })
+
+  const attributes = {
+    geometry,
+    scene,
+    camera,
+    renderer,
+    uniforms: [],
+    meshes: []
+  }
 
   renderer.setSize(width, height)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -396,6 +405,7 @@ export function imageEffect(element = "img", opts = {}) {
         },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -456,6 +466,7 @@ export function imageEffect(element = "img", opts = {}) {
           },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -618,6 +629,7 @@ export function imageEffect(element = "img", opts = {}) {
           },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -677,6 +689,7 @@ export function imageEffect(element = "img", opts = {}) {
           },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -742,6 +755,7 @@ export function imageEffect(element = "img", opts = {}) {
           },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -789,6 +803,7 @@ export function imageEffect(element = "img", opts = {}) {
           },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -850,6 +865,7 @@ export function imageEffect(element = "img", opts = {}) {
           },
           {
             camera,
+            attributes,
             renderer,
             width,
             height,
@@ -938,6 +954,10 @@ export function imageEffect(element = "img", opts = {}) {
         break //!STUB
     }
   })
+
+  if (opts.setAttribute && typeof opts.setAttribute === "function")
+    opts.setAttribute(attributes)
+
 } //!SECTION
 
 export class ScrollPos {

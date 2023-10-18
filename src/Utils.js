@@ -29,19 +29,29 @@ export const redraw = (elemMesh, v) => {
   elemMesh.geometry = newGeometry
 }
 
+function getTranslate3d(el) {
+  var values = el.style.transform.split(/\w+\(|\);?/)
+  if (!values[1] || !values[1].length) {
+    return []
+  }
+  values = values[1].split(/,\s?/g)
+
+  return values.map(c => parseFloat(c.replace('px', '')))
+}
+
 function stringify(obj) {
-  let cache = [];
-  let str = JSON.stringify(obj, function(key, value) {
+  let cache = []
+  let str = JSON.stringify(obj, function (key, value) {
     if (typeof value === "object" && value !== null) {
       if (cache.indexOf(value) !== -1) {
-        return;
+        return
       }
-      cache.push(value);
+      cache.push(value)
     }
-    return value;
-  });
-  cache = null;
-  return str;
+    return value
+  })
+  cache = null
+  return str
 }
 
 var isdebug = []
@@ -51,6 +61,7 @@ export const init = (
   fragment,
   uniforms,
   {
+    attributes,
     camera,
     renderer,
     width,
@@ -62,7 +73,6 @@ export const init = (
     dposition = 1,
   } = {}
 ) => {
-  let intersect = 0
   const o = "#controlKit .options"
 
   let elemWidth = elem.getBoundingClientRect().width
@@ -129,7 +139,7 @@ export const init = (
       opts.gooey && !opts.slideStyle === true
         ? /*glsl*/`       
         vec2 pos=vec2(vuv.x,vuv.y/aspect);
-        vec2 mouse=vec2(mousei.x,(1.-mousei.y)/aspect);
+        vec2 mouse=vec2(mousei.x,(mousei.y)/aspect);
         vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);
         float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
         float val=noise*interpole.y;
@@ -211,14 +221,10 @@ export const init = (
     }
   }
 
-  if (opts.slideStyle && typeof opts.slideStyle === "function")
-    opts.slideStyle(setScroll)
-  if (opts.setUniforms && typeof opts.setUniforms === "function")
-    opts.setUniforms(uniforms)
-
   const snoise = `vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`
 
   const material = new THREE.ShaderMaterial({
+    transparent: true,
     vertexShader: vertex.replace("#define SNOISEHOLDER", snoise),
     fragmentShader: fragment.replace("#define SNOISEHOLDER", snoise),
     uniforms,
@@ -366,7 +372,7 @@ export const init = (
           step: 0.001,
         })
     }
-    
+
     panel = controlKit
       .addPanel({
         enable: false,
@@ -438,33 +444,40 @@ export const init = (
       })
   }
 
-  function setMouseCord(e) {
-    mouse.x = (e.offsetX / elemWidth) * 2 - 1
-    mouse.y = -((e.offsetY / elemHeight) * 2 - 1)
-    uniforms.mousei.value.x = e.offsetX / elemWidth
-    uniforms.mousei.value.y = e.offsetY / elemHeight
+  const raycaster = new THREE.Raycaster()
+  let mouseCoords = new THREE.Vector2(0.5, 0.5)
+
+  let isMouseOverElemMesh = false
+
+  const mover = (event) => {
+    raycaster.setFromCamera(new THREE.Vector2((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1), camera)
+
+    const intersects = raycaster.intersectObject(elemMesh)
+
+    if (intersects.length > 0) {
+      mouseCoords = intersects[0].uv
+      mouse.x = (intersects[0].uv.x) * 2 - 1
+      mouse.y = -(intersects[0].uv.y) * 2 - 1
+
+      if (!isMouseOverElemMesh)
+        isMouseOverElemMesh = true
+    } else if (isMouseOverElemMesh) {
+      isMouseOverElemMesh = false
+    }
   }
 
-  elem.addEventListener("wheel", (e) => {
-    uniforms.mousei.value.x = e.offsetX / elemWidth
-    uniforms.mousei.value.y = e.offsetY / elemHeight
-  })
-
-  function getNormalizedMousePosition(event) {
-    const centerX = window.innerWidth / 2
-    const centerY = window.innerHeight / 2
-    const mouseX = event.clientX
-    const mouseY = event.clientY
-
-    const deltaX = mouseX - centerX
-    const deltaY = mouseY - centerY
-
-    const normalizedX = deltaX / centerX
-    const normalizedY = deltaY / centerY
-
-    mousem.x = normalizedX / 300
-    mousem.y = normalizedY / 300
-  }
+  let scrollPos = null
+  document.addEventListener("mousemove", mover)
+  document.addEventListener("wheel", mover)
+  // document.addEventListener("wheel", (e) => {
+  //   console.log(scrollPos != scrollY, scrollY)
+  //   if (scrollPos != scrollY) {
+  //     if (e.deltaY > 0 || !scrollPos) {
+  //       scrollPos = scrollY
+  //       mouseCoords.y -= e.deltaY / window.innerHeight
+  //     }
+  //   }
+  // })
   let isGooeyLerping = false
   let currentGooey = 0
 
@@ -472,6 +485,11 @@ export const init = (
     var l = src.length
     return i % l
   }
+
+  if (opts.slideStyle && typeof opts.slideStyle === "function")
+    opts.slideStyle(setScroll)
+  if (opts.setUniforms && typeof opts.setUniforms === "function")
+    opts.setUniforms(uniforms)
 
   const originalGooey = uniforms.metaball.value
   elem.addEventListener('mousedown', (e) => {
@@ -498,22 +516,24 @@ export const init = (
     }
   })
 
-  elem.addEventListener("mousemove", (e) => setMouseCord(e))
 
   document.addEventListener("mousemove", (e) => {
-    getNormalizedMousePosition(e)
+    const centerX = window.innerWidth / 2
+    const centerY = window.innerHeight / 2
+    const mouseX = event.clientX
+    const mouseY = event.clientY
+
+    const deltaX = mouseX - centerX
+    const deltaY = mouseY - centerY
+
+    const normalizedX = deltaX / centerX
+    const normalizedY = deltaY / centerY
+
+    mousem.x = normalizedX / 300
+    mousem.y = normalizedY / 300
   })
 
-  elem.addEventListener("mouseleave", (e) => {
-    intersect = 0
-    setMouseCord(e)
 
-  })
-
-  elem.addEventListener("mouseenter", (e) => {
-    intersect = 1
-    setMouseCord(e)
-  })
 
   const fit = () => {
     width = innerWidth
@@ -627,7 +647,6 @@ export const init = (
   addEventListener("resize", fit)
 
 
-
   const clock = new THREE.Clock()
   function animate() {
     if (!opts.slideStyle) if (opts.gooey != true) staticScroll()
@@ -643,19 +662,37 @@ export const init = (
       mouse: { value: mouse },
       mousem: { value: mousem },
     })
+
+    uniforms.mousei.value.x = THREE.MathUtils.lerp(uniforms.mousei.value.x, mouseCoords.x, .07)
+    uniforms.mousei.value.y = THREE.MathUtils.lerp(uniforms.mousei.value.y, mouseCoords.y, .07)
+
     if (!isGooeyLerping)
       uniforms.uIntercept.value = THREE.MathUtils.lerp(
         uniforms.uIntercept.value,
-        intersect === 1 ? 1 : 0,
+        isMouseOverElemMesh ? 1 : 0,
         0.07
       )
 
+    elemLeft = elem.getBoundingClientRect().left
+    elemWidth = elem.getBoundingClientRect().width
+    elemHeight = elem.getBoundingClientRect().height
+
+
+    elemMesh.scale.set(
+      elem.getBoundingClientRect().width,
+      elem.getBoundingClientRect().height
+    )
+
     elemMesh.material.uniforms.time.value = clock.getElapsedTime()
+    if (getTranslate3d(elem)[2])
+      elemMesh.position.z = getTranslate3d(elem)[2]
     elemMesh.position.x = elemLeft - width / 2 + elemWidth / 2
     elemMesh.position.y = -elem.getBoundingClientRect().top + height / 2 - elemHeight / 2
-
     requestAnimationFrame(animate)
   }
+
+  attributes.uniforms.push(uniforms)
+  attributes.meshes.push(elemMesh)
   return {
     material,
     debugObj,

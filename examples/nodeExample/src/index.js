@@ -1,6 +1,7 @@
 import './styles.css'
 import Shery from '../.././../src/Shery'
 import * as THREE from "three"
+import gsap from 'gsap'
 
 Shery.mouseFollower()
 
@@ -20,10 +21,13 @@ Shery.makeMagnet('#left-main-nav img, #left-main-nav a, #right-main-nav a')
 Shery.textAnimate('#left-main-nav h4', { style: 1 })
 
 Shery.imageEffect('#page-1-right', {
-    style: 2,
+    style: 6,
     debug: true,
     gooey: true,
     setUniforms: (uniforms) => {
         console.log(uniforms)
+    },
+    setAttribute: (attributes) => {
+        console.log(attributes)
     }
 })

@@ -20,8 +20,7 @@ void main()
     
     uv-=vec2(.5,.5);
     
-    vec2 mousenew=vec2(mousei.x,1.-mousei.y);
-    float m=mouseMove?smoothstep(mouseMoveEWX,mouseMoveEHY,length(uvx-mousenew)):1.;
+    float m=mouseMove?smoothstep(mouseMoveEWX,mouseMoveEHY,length(uvx-mousei)):1.;
     
     float rot=radians((rotation));
     rot-=radians((autorotate?time:0.));
@@ -60,7 +59,7 @@ void main()
     
     if(gooey){
         vec2 pos=vec2(vuv.x,vuv.y/aspect);
-        vec2 mouse=vec2(mousei.x,(1.-mousei.y)/aspect);
+        vec2 mouse=vec2(mousei.x,(mousei.y)/aspect);
         vec2 interpole=mix(vec2(0),vec2(metaball,noise_height),uIntercept);
         float noise=(snoise(vec3(pos*noise_scale,time*noise_speed))+1.)/2.;
         float val=noise*interpole.y;
