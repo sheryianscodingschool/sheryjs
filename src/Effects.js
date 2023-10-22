@@ -17,10 +17,7 @@ import fragment_7 from './shaders/effect7/fragment.glsl'
 
 import {
   init,
-  getSize,
   fix,
-  setDisplayOld,
-  oldDisplay,
   lerp,
   redraw,
 } from "./Utils"
@@ -133,6 +130,7 @@ export function imageMasker(element = "img", opts = {}) {
         duration: 0.8,
       })
     })
+
     mask.addEventListener("mousemove", function (dets) {
       gsap.to(elem, {
         scale: opts.scale || elem.getBoundingClientRect().width < 450 ? 1.05 : 1.025,
@@ -140,6 +138,7 @@ export function imageMasker(element = "img", opts = {}) {
         duration: opts.duration || 0.7,
       })
     })
+
     mask.addEventListener("mouseleave", function () {
       gsap.to(globalMouseFollower, {
         opacity: 1,
@@ -358,21 +357,32 @@ export function hoverWithMediaCircle(element, opts) {
 } //!SECTION
 
 // SECTION - Image Effects
+
+var scene, camera, renderer, container = null
+
 export function imageEffect(element = "img", opts = {}) {
   let width = innerWidth
   let height = innerHeight
-
-  const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(70, width / height, .01, 1000)
-  camera.fov = 2 * Math.atan(height / 2 / 10) * (180 / Math.PI)
-  camera.position.set(0, 0, 10)
-
   const geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
 
-  const renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    alpha: true,
-  })
+  if (scene == null) {
+    scene = new THREE.Scene()
+    camera = new THREE.PerspectiveCamera(70, width / height, .01, 1000)
+    camera.fov = 2 * Math.atan(height / 2 / 10) * (180 / Math.PI)
+    camera.position.set(0, 0, 10)
+    
+    renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+    })
+    renderer.setSize(width, height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    container = document.createElement("div")
+    container.classList.add("_canvas_container")
+    container.appendChild(renderer.domElement)
+    document.body.appendChild(container)
+  }
 
   const attributes = {
     geometry,
@@ -382,14 +392,6 @@ export function imageEffect(element = "img", opts = {}) {
     uniforms: [],
     meshes: []
   }
-
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-  const container = document.createElement("div")
-  container.classList.add("_canvas_container")
-  container.appendChild(renderer.domElement)
-  document.body.appendChild(container)
 
   document.querySelectorAll(element).forEach(function (elem) {
     elem.style.opacity = "0"
