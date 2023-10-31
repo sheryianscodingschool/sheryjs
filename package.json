@@ -1,6 +1,6 @@
 {
   "name": "sheryjs",
-  "version": "1.0.0-beta.0.0.8",
+  "version": "1.0.0-beta.0.0.9",
   "description": "Shery.js: JavaScript library for captivating web effects and 3D features.",
   "main": "src/Shery.js",
   "directories": {
