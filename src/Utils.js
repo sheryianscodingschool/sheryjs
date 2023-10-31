@@ -303,6 +303,10 @@ export const init = (
   var panel = null
 
   const config = (c) => {
+    c = JSON.parse(JSON.stringify(c))
+    c.color.value = new THREE.Color('ff0000')
+    Object.assign(uniforms, c)
+
     if (c.color) c.color.value = new THREE.Color(c.color.value)
     Object.assign(uniforms, c)
     document.querySelector('._canvas_container').style.zIndex = uniforms.zindex.value
@@ -649,6 +653,7 @@ export const init = (
 
   const clock = new THREE.Clock()
   function animate() {
+
     if (!opts.slideStyle) if (opts.gooey != true) staticScroll()
 
     if (document.querySelector(o))
