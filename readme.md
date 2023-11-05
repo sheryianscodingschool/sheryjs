@@ -69,16 +69,10 @@ Alternatively use the standalone version found in ./dist locally
  or use CDN version any one **only** `CSS`.
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" />
+<link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" /> <!-- Recommended -->
 ```
 
-**OR**
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/dist/Shery.css" />
-```
-
-**OR**
+OR
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.css" />
@@ -89,16 +83,10 @@ Alternatively use the standalone version found in ./dist locally
 Use **only** one `JAVASCRIP CDN`
 
 ```html
-<script  type="text/javascript"  src="https://unpkg.com/sheryjs/dist/Shery.js"></script>
+<script  type="text/javascript"  src="https://unpkg.com/sheryjs/dist/Shery.js"></script> <!-- Recommended -->
 ```
 
-**OR**
-
-```html
-<script  type="text/javascript"  src="https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/dist/Shery.js"></script>
-```
-
-**OR**
+OR
 
 ```html
 <script  type="text/javascript"  src="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.js"></script>
