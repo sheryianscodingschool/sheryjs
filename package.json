@@ -1,6 +1,6 @@
 {
   "name": "sheryjs",
-  "version": "1.0.0-beta.0.1.3",
+  "version": "1.0.0-beta.0.1.4",
   "description": "Shery.js: JavaScript library for captivating web effects and 3D features.",
   "main": "src/Shery.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aayushchouhan24/sheryjs.git"
+    "url": "git+https://bit.ly/sheryjs"
   },
   "keywords": [
     "javascript",
@@ -23,9 +23,9 @@
   "author": "@aayushchouhan24, @asynchronousJavascriptor",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aayushchouhan24/sheryjs/issues"
+    "url": "https://bit.ly/sheryjs-issues"
   },
-  "homepage": "https://github.com/aayushchouhan24/sheryjs#readme",
+  "homepage": "https://bit.ly/sheryjs-homepage",
   "dependencies": {
     "controlkit": "^0.1.9",
     "gsap": "^3.12.2",
