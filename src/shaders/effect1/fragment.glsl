@@ -6,6 +6,8 @@ uniform float maskVal,aspect,noise_speed,metaball,discard_threshold,antialias_th
 
 varying vec2 vuv;
 #define SNOISEHOLDER
+#define SHAPEMODIFIER
+
 void main(){
     vec2 uv=(vuv/1.1)+.05;
     uv=uv*2.-1.;
@@ -16,6 +18,7 @@ void main(){
     surface=onMouse==0.?surface:onMouse==1.?mix(vec2(0.),surface,uIntercept):mix(surface,vec2(0.),uIntercept);
     uv+=refract(vec2(.0,.0),surface,b);
     gl_FragColor=texture2D(uTexture[0],uv);
-    vec2 uv2= noEffectGooey?vuv:uv;
+    vec2 uv2=noEffectGooey?vuv:uv;
     !isMulti;
+    roundedBoxSDF();    
 }

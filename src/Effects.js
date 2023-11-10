@@ -370,7 +370,7 @@ export function imageEffect(element = "img", opts = {}) {
     camera = new THREE.PerspectiveCamera(70, width / height, .01, 1000)
     camera.fov = 2 * Math.atan(height / 2 / 10) * (180 / Math.PI)
     camera.position.set(0, 0, 10)
-    
+
     renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -476,7 +476,6 @@ export function imageEffect(element = "img", opts = {}) {
             geometry,
             effect: 2,
             opts,
-            dposition: 380,
           }
         )
         if (panel) {
@@ -519,7 +518,7 @@ export function imageEffect(element = "img", opts = {}) {
               label: "Controls Panel",
               width: 350,
               fixed: false,
-              position: [10, 10],
+              position: [10, opts.debug ? 90 : 50],
             })
             .addSlider(debugObj.speed, "normal", "range", {
               label: "Speed",

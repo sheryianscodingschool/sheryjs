@@ -24,7 +24,7 @@ mat2 rotate2D(float r){
 }
 
 #define SNOISEHOLDER
-
+#define SHAPEMODIFIER
 vec4 img(vec2 uv,float c){
     uv=uv*2.-1.;
     uv=masker?mix(uv,uv/max(1.,maskVal),uIntercept):uv/max(1.,maskVal);
@@ -151,5 +151,5 @@ void main(){
     final=mix(final*brightness,mix(maxx(final,vec4(1.)),final,contrast),.5);
     final=onMouse==0?final:onMouse==1?mix(base,final,uIntercept):mix(final,base,uIntercept);
     gl_FragColor=final;
-    
+    roundedBoxSDF();    
 }

@@ -9,7 +9,7 @@ uniform vec3 color;
 uniform sampler2D uTexture[16];
 
 #define SNOISEHOLDER
-
+#define SHAPEMODIFIER
 void main()
 {
     vec2 uv=vuv;
@@ -69,5 +69,5 @@ void main()
         float alpha=smoothstep(discard_threshold-antialias_threshold,discard_threshold,val);
         gl_FragColor=vec4(mix(gl_FragColor,invert?mix(texture2D(uTexture[1],uvx),col,value):mix(col,texture2D(uTexture[1],uvx),value),alpha));
     }
-    
+    roundedBoxSDF();    
 }

@@ -12,7 +12,7 @@ uniform float distortionAmount;
 uniform float scale,speed;
 
 #define SNOISEHOLDER
-
+#define SHAPEMODIFIER
 void main(){
     vec2 uv=vuv;
     uv=uv*2.-1.;
@@ -25,4 +25,6 @@ void main(){
     gl_FragColor=texture2D(uTexture[0],uv);
     vec2 uv2=noEffectGooey?vuv:uv;
     !isMulti;
+    roundedBoxSDF();
+    
 }
