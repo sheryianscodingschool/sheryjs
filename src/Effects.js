@@ -518,7 +518,7 @@ export function imageEffect(element = "img", opts = {}) {
               label: "Controls Panel",
               width: 350,
               fixed: false,
-              position: [10, opts.debug ? 90 : 50],
+              position: [20, opts.debug ? 90 : 50],
             })
             .addSlider(debugObj.speed, "normal", "range", {
               label: "Speed",

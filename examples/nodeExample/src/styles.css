@@ -158,8 +158,8 @@
     align-items: center;
     justify-content: center;
     object-fit: cover;
-    height: 90vh;
-    width: 50vw;
+    height: 40vh;
+    width: 70vw;
     background-size: cover;
     background-position: center;
   }

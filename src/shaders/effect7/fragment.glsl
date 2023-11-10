@@ -26,7 +26,7 @@ void main()
     rot-=radians((autorotate?time:0.));
     mat2 rotation_matrix=mat2(cos(rot),-sin(rot),sin(rot),cos(rot));
     uv=rotation_matrix*uv;
-    vec2 scaled_uv=(1.-scale+1.)*uv;
+    vec2 scaled_uv=(1.-scale+1.)*vec2(vuv.x,vuv.y/aspect);
     vec2 tile=fract(scaled_uv);
     float tile_dist=min(min(tile.x,1.-tile.x),min(tile.y,1.-tile.y));
     float square_dist=length(floor(scaled_uv));
