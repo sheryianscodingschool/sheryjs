@@ -209,6 +209,7 @@ ul.sub-group-list{
 }
 
 ._canvas_container {
+    pointer-events: none;
     width: 100vw;
     height: 100vh;
     position: fixed;
