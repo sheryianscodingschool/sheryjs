@@ -25,14 +25,15 @@ Shery.js is a fantastic JavaScript library designed to make your web projects po
    - Dynamin Cyber Squares Effect
 6. [Dynamic Gooey Effect](#dynamic-gooey-effect)
 7. [Dynamic Zoom Effect](#dynamic-zoom-effect)
-8. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
+8. [Shape Controls](#shape-controls)
+9. [Multiple Image (Scroll Effect)](#multiple-image-scroll-effect)
    - Custom Scroll Trigger Callback
-9. [Debug Usage](#debug-usage)
-   - Preset Usage
-10. [Callback Usage](#callback-usage)
-11. [Examples](#examples)
-12. [Contributing](#contributing)
-13. [License](#license)
+10. [Debug Usage](#debug-usage)
+    - Preset Usage
+11. [Callback Usage](#callback-usage)
+12. [Examples](#examples)
+13. [Contributing](#contributing)
+14. [License](#license)
 
 ## Introduction
 
@@ -387,6 +388,21 @@ Shery.imageEffect(".image", {
 });
 ```
 
+## Shape Controls
+
+![Shape Control](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/shape-controls.gif)
+
+This feature empowers users with precise control over the shape of the desired effect, allowing for the seamless customization of elements such as round corners and smooth corners. Additionally, users can employ basic clipping functionalities to finely define the shape, ensuring a tailored and polished appearance. These versatile controls provide a nuanced and intuitive means of shaping the visual impact, offering a range of options for users to craft designs with precision and finesse.
+
+To use this feature just enable debug panel and you can find `Shape Control`.
+
+```javascript
+Shery.imageEffect(".image", {
+  style: 6,
+  debug: true,
+});
+```
+
 ## Debug Usage
 
 ![Debug](https://cdn.jsdelivr.net/gh/aayushchouhan24/sheryjs@main/media/debug.png)
@@ -436,12 +452,23 @@ Create your own animation or condition for change values of `uniforms`, `meshes`
 
 ```json
  {
-    geometry, // Geometry of effect
-    scene, // 3js Scene
-    camera, // 3js Camera
-    renderer, // WebGL Renderer
-    uniforms: [], // Array of uniforms of all elements of given class
-    meshes: []  // Array of meshes of all elements of given class
+   // Geometry of effect
+    geometry,
+
+    // 3js Scene
+    scene, 
+
+    // 3js Camera
+    camera, 
+
+    // WebGL Renderer
+    renderer, 
+
+    // Array of uniforms of all elements of given class
+    uniforms: [],
+     
+    // Array of meshes of all elements of given class
+    meshes: []  
   }
 ```
 
