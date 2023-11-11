@@ -183,8 +183,8 @@ export const init = (
     zindex: { value: -9996999, range: [-9999999, 9999999] },
     aspect: {
       value: elemWidth / elemHeight,
-    },    
-    ignoreShapeAspect: { value: true },   
+    },
+    ignoreShapeAspect: { value: true },
     shapePosition: { value: new THREE.Vector2(0.0, 0.0)},
     shapeScale: { value: new THREE.Vector2(0.5, 0.5) },
     shapeEdgeSoftness: { value: 0.0, range: [0, .5] },
@@ -538,7 +538,7 @@ export const init = (
 
   const originalGooey = uniforms.metaball.value
   elem.addEventListener('mousedown', (e) => {
-    if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey) {
+    if ((e.button == 0) && !isGooeyLerping && uniforms.infiniteGooey.value && opts.gooey && !opts.slideStyle) {
       gsap.to(uniforms.metaball, {
         value: uniforms.growSize.value,
         duration: uniforms.durationOut.value,
@@ -712,7 +712,8 @@ export const init = (
 
     uniforms.mousei.value.x = THREE.MathUtils.lerp(uniforms.mousei.value.x, mouseCoords.x, .07)
     uniforms.mousei.value.y = THREE.MathUtils.lerp(uniforms.mousei.value.y, mouseCoords.y, .07)
-    doAction(uniforms.scrollLerp.value)
+    if (!opts.gooey || opts.slideStyle)
+      doAction(uniforms.scrollLerp.value)
 
 
     if (!isGooeyLerping)
