@@ -178,9 +178,9 @@ export function makeMagnet(element, opts = {}) {
       )
 
       gsap.to(".mousefollower", {
-        scale: 4,
+        scale: opts.scale || 4,
         ease: Power2,
-        duration: 0.5,
+        duration: opts.duration || 0.5,
       })
 
       gsap.to(elem, {
@@ -194,7 +194,7 @@ export function makeMagnet(element, opts = {}) {
       gsap.to(".mousefollower", {
         scale: 1,
         ease: Power2,
-        duration: 0.5,
+        duration: opts.duration || 0.5,
       })
       gsap.to(elem, {
         x: 0,
