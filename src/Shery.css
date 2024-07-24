@@ -220,7 +220,7 @@ ul.sub-group-list{
     width: 100vw;
     height: 100vh;
     position: fixed;
-    z-index: -9996999;
+    z-index: 0;
     top: 0;
     left: 0;
 }

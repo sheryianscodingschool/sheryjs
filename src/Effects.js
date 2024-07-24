@@ -976,7 +976,7 @@ export class ScrollPos {
     this.mouseDown = false
     this.lastDelta = 0
 
-    document.addEventListener("touchstart", e => e.preventDefault(), { passive: false })
+    document.addEventListener("touchstart", e => e, { passive: false })
 
     window.addEventListener("touchend", () => this.lastDelta = 0)
 

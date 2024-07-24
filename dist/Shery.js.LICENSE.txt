@@ -1,6 +1,6 @@
 /*!
  * @license
- * Copyright 2023-2023 Three.js Aayush Chouhan, Harsh Vandana Sharma
+ * Copyright 2023-2024 Three.js Aayush Chouhan, Harsh Vandana Sharma
  * License: MIT
  */
 
