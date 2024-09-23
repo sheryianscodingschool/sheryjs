@@ -43,7 +43,7 @@ Shery.js is designed to make it easy for developers to incorporate cool visual e
 
 To use Shery.js in your project, you can include it in your HTML file via a CDN or import it in js by using node.
 
-When using node or browserify install
+When using node or browserify install 
 
 ```bash
 npm install sheryjs
